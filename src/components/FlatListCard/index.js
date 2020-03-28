@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import openMap from 'react-native-open-maps';
 
 import {
   Collapse,
@@ -8,6 +9,16 @@ import {
 } from 'accordion-collapse-react-native';
 
 export default function FlatListCard(props) {
+  function OpenCoordinate(coordinate) {
+    const [latidude, longitude] = coordinate.split(',');
+    
+    openMap({
+      latitude: Number(latidude),
+      longitude: Number(longitude),
+      provider: 'google',
+    });
+  }
+
   return (
     <>
       <View style={styles.card}>
@@ -49,7 +60,9 @@ export default function FlatListCard(props) {
               </View>
             </View>
             <View>
-              <Text style={styles.location_btn}>Localização</Text>
+              <TouchableOpacity onPress={() => OpenCoordinate(props.data.coordenadas)}>
+                <Text style={styles.location_btn}>Localização</Text>
+              </TouchableOpacity>
               <Text style={styles.close_request_btn}>Fechar chamado</Text>
             </View>
           </CollapseBody>
