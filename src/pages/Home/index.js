@@ -23,14 +23,14 @@ export default function Home() {
     async function loadAPI() {
       const response = await api.post('requests', {
         tecnico: 5,
-        date: '2020-03-06T00:00:00.000Z',
+        date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
       });
       
       setData(response.data);
     }
 
     loadAPI();
-  }, []);
+  }, [date]);
 
   function handlePrevDay() {
     setDate(subDays(date, 1));
