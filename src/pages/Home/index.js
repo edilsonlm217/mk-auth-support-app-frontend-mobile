@@ -1,35 +1,21 @@
 import React, {useMemo, useState, useEffect, useReducer} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+
 import pt from 'date-fns/locale/pt';
-
 import api from '../../services/api';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
-import FlatListCard from '../../components/FlatListCard/index';
+import TabViewComponent from '../../components/TabViewComponent/index';
 
 export default function Home() {
   const [date, setDate] = useState(new Date());
-  const [index, setIndex] = useState(0);
-  const [routes] = useState([
-    { key: 'first', title: 'Abertos' },
-    { key: 'second', title: 'Fechados' },
-  ]);
 
   const [state, dispatch] = useReducer(reducer, {
     open_requests: [],
     close_requests: [],
   });
-
-  const initialLayout = {width: Dimensions.get('window').width};
-
-  const dateFormatted = useMemo(
-    () => format(date, "dd 'de' MMMM", {locale: pt}),
-    [date],
-  );
 
   useEffect(() => {
     async function loadAPI() {
@@ -45,16 +31,17 @@ export default function Home() {
         },
       });
     }
-
+    
     loadAPI();
   }, [date]);
-
+  
+  
   function reducer(state, action) {
     switch (action.type) {
       case 'save_requests':
         let open_arr = [];
         let close_arr = [];
-
+        
         if (action.payload.requests.length !== 0) {
           action.payload.requests.map(item => {
             if (item.status === 'fechado') {
@@ -72,7 +59,12 @@ export default function Home() {
         }
     }
   }
-
+    
+  const dateFormatted = useMemo(
+    () => format(date, "dd 'de' MMMM", {locale: pt}),
+    [date],
+  );
+  
   function handlePrevDay() {
     setDate(subDays(date, 1));
   }
@@ -80,49 +72,6 @@ export default function Home() {
   function handleNextDay() {
     setDate(addDays(date, 1));
   }
-
-  const OpenRequestsRoute = () => (
-    <View style={styles.section_container}>
-        <FlatList
-          data={state.open_requests}
-          renderItem={({ item }) => <FlatListCard data={item}/>}
-          keyExtractor={item => String(item.id)}
-        />
-    </View>
-  );
-
-  const CloseRequestsRoute = () => (
-    <View style={styles.section_container}>
-        <FlatList
-          data={state.close_requests}
-          renderItem={({ item }) => <FlatListCard data={item}/>}
-          keyExtractor={item => String(item.id)}
-        />
-    </View>
-  );
-
-  const renderScene = SceneMap({
-    first: OpenRequestsRoute,
-    second: CloseRequestsRoute,
-  });
-
-  const renderTabBar = props => (
-    <TabBar
-      {...props}
-      indicatorStyle={{backgroundColor: '#337AB7', height: 4, borderRadius: 8}}
-      labelStyle={{
-        color: '#000',
-        fontWeight: 'bold',
-        fontSize: 16,
-      }}
-      style={{
-        backgroundColor: '#FFF',
-        borderTopRightRadius: 20,
-        borderTopLeftRadius: 20,
-        height: 50,
-      }}
-    />
-  );
 
   return (
     <View style={styles.container}>
@@ -136,15 +85,8 @@ export default function Home() {
           <Icon name="chevron-right" size={30} color="#FFF" />
         </TouchableOpacity>
       </View>
-
       
-      <TabView
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={initialLayout}
-          renderTabBar={renderTabBar}
-      />
+      <TabViewComponent state={state}/>
 
     </View>
   );
@@ -168,10 +110,5 @@ const styles = StyleSheet.create({
     marginRight: 15,
     color: '#FFF',
     fontSize: 18,
-  },
-
-  section_container: {
-    flex: 1,
-    backgroundColor: '#FFF',
   },
 });
