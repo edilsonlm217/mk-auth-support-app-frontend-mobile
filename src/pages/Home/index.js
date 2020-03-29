@@ -1,4 +1,4 @@
-import React, {useMemo, useState, useEffect} from 'react';
+import React, {useMemo, useState, useEffect, useReducer} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Dimensions, FlatList} from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -13,12 +13,16 @@ import FlatListCard from '../../components/FlatListCard/index';
 
 export default function Home() {
   const [date, setDate] = useState(new Date());
-  const [data, setData] = useState([]);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'first', title: 'Abertos' },
     { key: 'second', title: 'Fechados' },
   ]);
+
+  const [state, dispatch] = useReducer(reducer, {
+    open_requests: [],
+    close_requests: [],
+  });
 
   const initialLayout = {width: Dimensions.get('window').width};
 
@@ -34,11 +38,40 @@ export default function Home() {
         date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
       });
       
-      setData(response.data);
+      dispatch({
+        type: 'save_requests',
+        payload: {
+          requests: response.data,
+        },
+      });
     }
 
     loadAPI();
   }, [date]);
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'save_requests':
+        let open_arr = [];
+        let close_arr = [];
+
+        if (action.payload.requests.length !== 0) {
+          action.payload.requests.map(item => {
+            if (item.status === 'fechado') {
+              close_arr.push(item);
+            }
+            else {
+              open_arr.push(item);
+            }
+          });
+        }
+        
+        return {
+          open_requests: open_arr,
+          close_requests: close_arr,
+        }
+    }
+  }
 
   function handlePrevDay() {
     setDate(subDays(date, 1));
@@ -51,7 +84,7 @@ export default function Home() {
   const OpenRequestsRoute = () => (
     <View style={styles.section_container}>
         <FlatList
-          data={data}
+          data={state.open_requests}
           renderItem={({ item }) => <FlatListCard data={item}/>}
           keyExtractor={item => String(item.id)}
         />
@@ -61,7 +94,7 @@ export default function Home() {
   const CloseRequestsRoute = () => (
     <View style={styles.section_container}>
         <FlatList
-          data={data}
+          data={state.close_requests}
           renderItem={({ item }) => <FlatListCard data={item}/>}
           keyExtractor={item => String(item.id)}
         />
