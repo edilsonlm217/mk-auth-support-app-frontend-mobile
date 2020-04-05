@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
-import {View, Dimensions, FlatList, StyleSheet} from 'react-native';
+import {View, Dimensions, StyleSheet, ScrollView, TouchableOpacity, Text} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-import FlatListCard from '../../components/FlatListCard/index';
+import Modal from '../Modal/index';
 
 export default function TabViewComponent(props) {
   const [index, setIndex] = useState(0);
@@ -11,14 +11,35 @@ export default function TabViewComponent(props) {
     { key: 'second', title: 'Fechados' },
   ]);
 
+  const [isVisbile, setIsVisible] = useState(true);
+  
+  function handleModalOpening() {
+    setIsVisible(true);
+  }
+
+  function handleModalClosing() {
+    setIsVisible(false);
+  }
+
   function OpenRequestsRoute() {
     return (
       <View style={styles.section_container}>
-          <FlatList
-            data={props.state.open_requests}
-            renderItem={({ item }) => <FlatListCard data={item}/>}
-            keyExtractor={item => String(item.id)}
-          />
+        <ScrollView >
+          { props.state.open_requests.map(item => (
+            <TouchableOpacity key={item.id} onPress={handleModalOpening}>
+              <View style={styles.card}>
+                <View style={styles.card_header_content_container}>
+                  <View style={styles.card_header}>
+                    <Text style={styles.client_name}>{item.nome}</Text>
+                    <Text style={styles.visit_time}>{item.visita}</Text>
+                  </View>
+                  <Text>{`${item.endereco}, ${item.numero} - ${item.bairro}`}</Text>
+                  <Text>{`Serviço: ${item.assunto}`}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))} 
+        </ScrollView>
       </View>
     );
   }
@@ -26,11 +47,22 @@ export default function TabViewComponent(props) {
   function CloseRequestsRoute() {
     return (
       <View style={styles.section_container}>
-          <FlatList
-            data={props.state.close_requests}
-            renderItem={({ item }) => <FlatListCard data={item}/>}
-            keyExtractor={item => String(item.id)}
-          />
+        <ScrollView>
+          { props.state.close_requests.map(item => (
+            <TouchableOpacity key={item.id} onPress={handleModalOpening}>
+              <View style={styles.card}>
+                <View style={styles.card_header_content_container}>
+                  <View style={styles.card_header}>
+                    <Text style={styles.client_name}>{item.nome}</Text>
+                    <Text style={styles.visit_time}>{item.visita}</Text>
+                  </View>
+                  <Text>{`${item.endereco}, ${item.numero} - ${item.bairro}`}</Text>
+                  <Text>{`Serviço: ${item.assunto}`}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))} 
+        </ScrollView>
       </View>
     );
   }
@@ -41,20 +73,27 @@ export default function TabViewComponent(props) {
   });
 
   return (
-    <TabView
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{width: Dimensions.get('window').width}}
-          renderTabBar={props =>
-            <TabBar
-              {...props}
-              indicatorStyle={styles.indicatorStyle}
-              labelStyle={styles.label_style}
-              style={styles.tabBar_style}
-            />
-          }
+    <>
+      <TabView
+        navigationState={{index, routes}}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{width: Dimensions.get('window').width}}
+        renderTabBar={props =>
+          <TabBar
+            {...props}
+            indicatorStyle={styles.indicatorStyle}
+            labelStyle={styles.label_style}
+            style={styles.tabBar_style}
+          />
+        }
       />
+
+      <Modal
+        show={isVisbile}
+        close={() => handleModalClosing()}
+      />
+    </>
   );
 }
 
@@ -81,5 +120,45 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
     height: 50,
+  },
+  card: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 10,
+    marginBottom: 10,
+    borderRadius: 6,
+    backgroundColor: '#FFF',
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 10,
+  },
+
+  card_header_content_container: {
+    padding: 20,
+  },
+
+  card_header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  
+  client_name: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    maxWidth: 250,
+    color: '#808080',
+  },
+
+  visit_time: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#808080',
   },
 });
