@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {View, Dimensions, StyleSheet, ScrollView, TouchableOpacity, Text} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
-import Modal from '../Modal/index';
+import Card from '../Card/index';
 
 export default function TabViewComponent(props) {
   const [index, setIndex] = useState(0);
@@ -11,36 +11,17 @@ export default function TabViewComponent(props) {
     { key: 'second', title: 'Fechados' },
   ]);
 
-  const [isVisbile, setIsVisible] = useState(true);
-  
-  function handleModalOpening() {
-    setIsVisible(true);
-  }
-
-  function handleModalClosing() {
-    setIsVisible(false);
-  }
-
   function OpenRequestsRoute() {
     return (
-      <View style={styles.section_container}>
-        <ScrollView >
-          { props.state.open_requests.map(item => (
-            <TouchableOpacity key={item.id} onPress={handleModalOpening}>
-              <View style={styles.card}>
-                <View style={styles.card_header_content_container}>
-                  <View style={styles.card_header}>
-                    <Text style={styles.client_name}>{item.nome}</Text>
-                    <Text style={styles.visit_time}>{item.visita}</Text>
-                  </View>
-                  <Text>{`${item.endereco}, ${item.numero} - ${item.bairro}`}</Text>
-                  <Text>{`Serviço: ${item.assunto}`}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))} 
-        </ScrollView>
-      </View>
+      <>
+        <View style={styles.section_container}>
+          <ScrollView >
+            { props.state.open_requests.map(item => (
+              <Card key={item.id} item={item}/>
+            ))} 
+          </ScrollView>
+        </View>
+      </>
     );
   }
 
@@ -49,18 +30,7 @@ export default function TabViewComponent(props) {
       <View style={styles.section_container}>
         <ScrollView>
           { props.state.close_requests.map(item => (
-            <TouchableOpacity key={item.id} onPress={handleModalOpening}>
-              <View style={styles.card}>
-                <View style={styles.card_header_content_container}>
-                  <View style={styles.card_header}>
-                    <Text style={styles.client_name}>{item.nome}</Text>
-                    <Text style={styles.visit_time}>{item.visita}</Text>
-                  </View>
-                  <Text>{`${item.endereco}, ${item.numero} - ${item.bairro}`}</Text>
-                  <Text>{`Serviço: ${item.assunto}`}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+            <Card key={item.id} item={item}/>
           ))} 
         </ScrollView>
       </View>
@@ -87,11 +57,6 @@ export default function TabViewComponent(props) {
             style={styles.tabBar_style}
           />
         }
-      />
-
-      <Modal
-        show={isVisbile}
-        close={() => handleModalClosing()}
       />
     </>
   );
