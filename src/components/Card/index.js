@@ -32,7 +32,13 @@ export default function Card(props) {
 
       <Modal
         onBackdropPress={handleModalClosing}
-        children={<RequestDetail data={props.item} CloseModal={() => setIsVisible(false)} />}
+        children={
+          <RequestDetail 
+            data={props.item} 
+            navigation={props.navigation} 
+            CloseModal={() => setIsVisible(false)} 
+          />
+        }
         isVisible={isVisible}
         style={{margin: 0}}
         animationInTiming={500}

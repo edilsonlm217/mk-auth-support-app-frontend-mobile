@@ -13,15 +13,13 @@ export default function TabViewComponent(props) {
 
   function OpenRequestsRoute() {
     return (
-      <>
-        <View style={styles.section_container}>
+      <View style={styles.section_container}>
           <ScrollView >
             { props.state.open_requests.map(item => (
-              <Card key={item.id} item={item}/>
+              <Card key={item.id} item={item} navigation={props.navigation}/>
             ))} 
           </ScrollView>
-        </View>
-      </>
+      </View>
     );
   }
 
@@ -30,7 +28,7 @@ export default function TabViewComponent(props) {
       <View style={styles.section_container}>
         <ScrollView>
           { props.state.close_requests.map(item => (
-            <Card key={item.id} item={item}/>
+            <Card key={item.id} item={item} navigation={props.navigation}/>
           ))} 
         </ScrollView>
       </View>
