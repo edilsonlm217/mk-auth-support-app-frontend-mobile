@@ -4,7 +4,14 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function RequestDetails(props) {
-  console.log(props);
+  function handleNavigate() {
+    props.CloseModal();
+
+    props.navigation.navigate('Details', {
+      data: props.data,
+    });
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
@@ -29,7 +36,7 @@ export default function RequestDetails(props) {
         </Text>
       </View>
       <View style={styles.line_container}>
-        <Text style={styles.sub_text}>Login e Senha</Text>
+        <Text style={styles.sub_text}>Login e senha</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
           <Text style={styles.main_text}>evandro.feitoza</Text>
           <Text style={styles.main_text}>12345678</Text>
@@ -39,7 +46,7 @@ export default function RequestDetails(props) {
         <TouchableOpacity onPress={props.CloseModal} style={styles.secondary_btn}>
           <Text style={styles.secondary_btn_text}>Fechar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.main_btn}>
+        <TouchableOpacity style={styles.main_btn} onPress={handleNavigate}>
           <Text style={styles.main_btn_text}>Mais detalhes</Text>
         </TouchableOpacity>
       </View>
