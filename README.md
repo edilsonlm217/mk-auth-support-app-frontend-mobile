@@ -13,5 +13,4 @@ Assim que a maior parte das funcionalidades desenvolvidas para este sistema esti
 
 Por agora, estas são algumas screenshots disponíveis para acompanhamento do trabalho:
 
-![Image of Yaktocat](https://octodex.github.com/images/yaktocat.png)
 ![Image description](https://ibb.co/Ks7WF65)
