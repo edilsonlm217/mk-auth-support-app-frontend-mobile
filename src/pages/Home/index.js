@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AppHeader from '../../components/AppHeader/index';
 import TabViewComponent from '../../components/TabViewComponent/index';
 
-export default function Home() {
+export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
 
   const [state, dispatch] = useReducer(reducer, {
@@ -86,7 +86,7 @@ export default function Home() {
         </TouchableOpacity>
       </View>
       
-      <TabViewComponent state={state}/>
+      <TabViewComponent state={state} navigation={navigation}/>
 
     </View>
   );
