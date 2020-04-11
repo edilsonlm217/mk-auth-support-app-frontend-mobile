@@ -18,7 +18,15 @@ export default function RequestDetails(props) {
         <Icon name="account" size={25} color="#000" />
         <View style={{marginLeft: 10}}>
           <Text style={styles.main_text}>{props.data.nome}</Text>
-          <Text style={styles.sub_text}>Econômico ETH|PPPOE|192.168.0.2</Text>
+          <Text style={styles.sub_text}>
+            <Text style={styles.sub_text}>
+              {
+              `${props.data.plano === 'nenhum' 
+                ? 'Nenhum'
+                : props.data.plano} | ${props.data.tipo.toUpperCase()} | ${props.data.ip}`
+              }
+            </Text>
+          </Text>
         </View>
       </View>
       <View style={styles.line_container}>
@@ -38,8 +46,8 @@ export default function RequestDetails(props) {
       <View style={styles.line_container}>
         <Text style={styles.sub_text}>Login e senha</Text>
         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.main_text}>evandro.feitoza</Text>
-          <Text style={styles.main_text}>12345678</Text>
+          <Text style={styles.main_text}>{props.data.login}</Text>
+          <Text style={styles.main_text}>{props.data.senha}</Text>
         </View>
       </View>
       <View style={styles.btns_contaier}>
