@@ -13,4 +13,4 @@ Assim que a maior parte das funcionalidades desenvolvidas para este sistema esti
 
 Por agora, estas são algumas screenshots disponíveis para acompanhamento do trabalho:
 
-![Image description](http://ibb.co/Ks7WF65)
+![Image description](https://imgur.com/Cxt2Bca)
