@@ -1,9 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, Text, Dimensions, Image, TextInput, TouchableOpacity } from 'react-native';
+import { 
+  View, 
+  StyleSheet, 
+  Text, 
+  Dimensions, 
+  Image, 
+  TextInput, 
+  TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import gear from '../../assets/gear.png'
+import gear from '../../assets/gear.png';
 
 export default function InitialConfig() {
   return (
