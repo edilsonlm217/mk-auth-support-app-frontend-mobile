@@ -24,9 +24,10 @@ export default function RootStack() {
         options={{
           title: 'Mais detalhes',
           headerStyle: {
-            backgroundColor: '#337AB7',
+            backgroundColor: '#FFF',
           },
-          headerTintColor: '#fff',
+          headerTintColor: '#337AB7',
+          headerTransparent: true,
           headerTitleStyle: {
             fontWeight: 'bold',
             fontSize: 24,
