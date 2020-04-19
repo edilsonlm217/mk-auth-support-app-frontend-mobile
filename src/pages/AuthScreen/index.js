@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -6,13 +6,44 @@ import {
   Dimensions, 
   Image, 
   TextInput, 
-  TouchableOpacity } from 'react-native';
+  TouchableOpacity,
+  Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import api from '../../services/api';
+import { store } from '../../store/store';
+
 import lock from '../../assets/unlocked.png';
 
-export default function AuthScreen() {
+export default function AuthScreen({ navigation }) {
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+
+  const globalState = useContext(store);
+  const { dispatch } = globalState;
+
+  async function handleConnect() {
+    try {
+      const response = await api.post('sessions', {
+        login,
+        password,
+      });
+      
+      dispatch({ type: 'signIn', payload: {
+        employee_id: response.data.user.employee_id,
+        token: response.data.token,
+      }});
+    }
+    catch {
+      Alert.alert('Falha no login', 'Login ou senha inválidos. Tente novamente!');
+    }
+  }
+  
+  function handlePrevScreen() {
+    navigation.goBack();
+  }
+
   return (
     <LinearGradient
       colors={['#002f58', '#337ab7']}
@@ -33,6 +64,7 @@ export default function AuthScreen() {
             <TextInput 
               placeholder="Login do técnico" 
               style={styles.text_input_style}
+              onChangeText={login => setLogin(login)}
             />
           </View>
 
@@ -41,6 +73,7 @@ export default function AuthScreen() {
             <TextInput 
               placeholder="Sua senha secreta" 
               style={styles.text_input_style}
+              onChangeText={password => setPassword(password)}
             />
           </View>
         </View>
@@ -48,12 +81,12 @@ export default function AuthScreen() {
         <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
       </View>
 
-      <TouchableOpacity style={styles.next_btn_style}>
+      <TouchableOpacity onPress={handleConnect} style={styles.next_btn_style}>
         <Text style={styles.navigators_text_style}>Conectar</Text>
         <Icon name="chevron-right" size={30} color="#FFF" />
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.prev_btn_style}>
+      <TouchableOpacity onPress={handlePrevScreen} style={styles.prev_btn_style}>
         <Icon name="chevron-left" size={30} color="#FFF" />
         <Text style={styles.navigators_text_style}>Voltar</Text>
       </TouchableOpacity>
