@@ -12,7 +12,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import gear from '../../assets/gear.png';
 
-export default function InitialConfig() {
+export default function InitialConfig({ navigation }) {
+  function handleNextPage() {
+    navigation.navigate('AuthScreen');
+  }
+
   return (
     <LinearGradient
       colors={['#002f58', '#337ab7']}
@@ -48,7 +52,7 @@ export default function InitialConfig() {
         <Text style={[styles.sub_text, {marginTop: 40}]}>1/2</Text>
       </View>
 
-      <TouchableOpacity style={styles.next_btn_style}>
+      <TouchableOpacity onPress={handleNextPage} style={styles.next_btn_style}>
         <Text style={styles.navigators_text_style}>Próximo</Text>
         <Icon name="chevron-right" size={30} color="#FFF" />
       </TouchableOpacity>
