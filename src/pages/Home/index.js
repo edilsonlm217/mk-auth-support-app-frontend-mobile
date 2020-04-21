@@ -1,9 +1,10 @@
-import React, {useMemo, useState, useEffect, useReducer} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
+import axios from 'axios';
 
 import pt from 'date-fns/locale/pt';
-import api from '../../services/api';
+import { store } from '../../store/store';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
@@ -12,6 +13,8 @@ import TabViewComponent from '../../components/TabViewComponent/index';
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
 
+  const globalState = useContext(store);
+
   const [state, dispatch] = useReducer(reducer, {
     open_requests: [],
     close_requests: [],
@@ -19,11 +22,11 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     async function loadAPI() {
-      const response = await api.post('requests', {
+      const response = await axios.post(`http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, {
         tecnico: 5,
         date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
       });
-      
+
       dispatch({
         type: 'save_requests',
         payload: {
