@@ -10,13 +10,13 @@ import {
   Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
 
-import api from '../../services/api';
 import { store } from '../../store/store';
 
 import lock from '../../assets/unlocked.png';
 
-export default function AuthScreen({ navigation }) {
+export default function AuthScreen({ route, navigation }) {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
@@ -25,7 +25,7 @@ export default function AuthScreen({ navigation }) {
 
   async function handleConnect() {
     try {
-      const response = await api.post('sessions', {
+      const response = await axios.post(`http://${route.params.server_ip}:${route.params.server_port}/sessions`, {
         login,
         password,
       });
@@ -33,6 +33,8 @@ export default function AuthScreen({ navigation }) {
       dispatch({ type: 'signIn', payload: {
         employee_id: response.data.user.employee_id,
         token: response.data.token,
+        server_ip: route.params.server_ip,
+        server_port: route.params.server_port,
       }});
     }
     catch {

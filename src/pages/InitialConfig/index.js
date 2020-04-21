@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   StyleSheet, 
@@ -13,8 +13,16 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import gear from '../../assets/gear.png';
 
 export default function InitialConfig({ navigation }) {
-  function handleNextPage() {
-    navigation.navigate('AuthScreen');
+  const [serverIP, setServerIP] = useState('');
+  const [port, setPort] = useState('');
+  
+  async function handleNextPage() {
+    if (serverIP !== '' && port !== '') {
+      navigation.navigate('AuthScreen', {
+        server_ip: serverIP,
+        server_port: port,
+      });
+    }
   }
 
   return (
@@ -37,6 +45,7 @@ export default function InitialConfig({ navigation }) {
             <TextInput 
               placeholder="Endereço IP do servidor" 
               style={styles.text_input_style}
+              onChangeText={ip => setServerIP(ip)}
             />
           </View>
 
@@ -45,6 +54,7 @@ export default function InitialConfig({ navigation }) {
             <TextInput 
               placeholder="Porta de conexão" 
               style={styles.text_input_style}
+              onChangeText={port => setPort(port)}
             />
           </View>
         </View>

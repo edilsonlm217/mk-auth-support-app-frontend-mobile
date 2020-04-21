@@ -4,6 +4,8 @@ const initialState = {
   token: null,
   employee_id: null,
   isSigned: false,
+  server_ip: null,
+  server_port: null,
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -16,8 +18,9 @@ const StateProvider = ( { children } ) => {
           token: action.payload.token,
           employee_id: action.payload.employee_id,
           isSigned: true,
+          server_ip: action.payload.server_ip,
+          server_port: action.payload.server_port,
         }
-
         
         return newState;
       default:
