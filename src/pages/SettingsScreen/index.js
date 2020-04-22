@@ -1,11 +1,24 @@
-import React, { useEffect, useState, useContext }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useContext }  from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import { store } from '../../store/store';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function SettingsScreen() {
   const globalState = useContext(store);
+  const { dispatch } = globalState;
+
+  async function handleLogout() {
+    try {
+      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port']
+      await AsyncStorage.multiRemove(keys);
+      dispatch({ type: 'logout' });
+    } catch {
+      Alert.alert('Falha ao deslogar. Tente novamente!')
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -30,7 +43,7 @@ export default function SettingsScreen() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.close_request_btn}>
+      <TouchableOpacity onPress={handleLogout} style={styles.close_request_btn}>
           <Text style={styles.btn_label}>Sair Do Sistema</Text>
       </TouchableOpacity>
     </View>
