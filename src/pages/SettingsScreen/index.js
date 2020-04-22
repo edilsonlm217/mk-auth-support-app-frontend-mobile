@@ -1,52 +1,132 @@
-import React, { useContext }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import React, { useContext, useState }  from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
+import Dialog from "react-native-dialog";
 
 import { store } from '../../store/store';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function SettingsScreen() {
+export default function SettingsScreen({ navigation }) {
+  const [isIPDialogVisible, setIsIPDialogVisible] = useState(false);
+  const [serverIP, setServerIP] = useState(null);
+
+  const [isPortDialogVisible, setIsPortDialogVisible] = useState(false);
+  const [serverPort, setServerPort] = useState(null);
+
   const globalState = useContext(store);
   const { dispatch } = globalState;
 
+  function handleSaving() {
+    ToastAndroid.show("Alteração salva com sucesso!", ToastAndroid.SHORT);
+
+    dispatch({ type: 'changeServerConfig', payload: {
+      server_ip: serverIP !== null ? serverIP : globalState.state.server_ip,
+      server_port: serverPort !== null ? serverPort : globalState.state.server_port,
+    }});
+
+    navigation.goBack();
+    
+  }
+
+  function handleIPCancelBtn() {
+    setIsIPDialogVisible(false);
+    setServerIP(null);
+  }
+
+  function handlePortCancelBtn() {
+    setIsPortDialogVisible(false);
+    setServerPort(null);
+  }
+
+  function SaveButton() {
+    if ((serverPort !== null && serverPort !== globalState.state.server_port) || (serverIP !== null && serverIP !== globalState.state.server_ip)) {
+    
+      return (
+        <TouchableOpacity onPress={handleSaving} style={styles.close_request_btn}>
+          <Text style={styles.btn_label}>Salvar Alterações</Text>
+        </TouchableOpacity>
+      );
+    }
+    
+    return (
+      <>
+      </>
+    );
+  }
+
   async function handleLogout() {
     try {
-      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port']
+      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port'];
       await AsyncStorage.multiRemove(keys);
       dispatch({ type: 'logout' });
     } catch {
-      Alert.alert('Falha ao deslogar. Tente novamente!')
+      Alert.alert('Falha ao deslogar. Tente novamente!');
     }
   }
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Endereço IP</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={styles.main_text}>
-              {globalState.state.server_ip}
-            </Text>
-            <Icon name="chevron-right" size={25} color="#000" />
+    <>
+      <View style={styles.container}>
+        <TouchableOpacity onPress={() => setIsIPDialogVisible(true)}>
+          <View style={styles.line_container}>
+            <Text style={styles.sub_text}>Endereço IP</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.main_text}>
+                {serverIP === null ? globalState.state.server_ip : serverIP}
+              </Text>
+              <Icon name="chevron-right" size={25} color="#000" />
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Porta</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={styles.main_text}>{globalState.state.server_port}</Text>
-            <Icon name="chevron-right" size={25} color="#000" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setIsPortDialogVisible(true)}>
+          <View style={styles.line_container}>
+            <Text style={styles.sub_text}>Porta</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.main_text}>{serverPort === null ? globalState.state.server_port : serverPort}</Text>
+              <Icon name="chevron-right" size={25} color="#000" />
+            </View>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+        
+        <TouchableOpacity onPress={handleLogout}>
+          <View style={styles.line_container}>
+            <Text style={styles.sub_text}>Opções de usuário</Text>
+            <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.main_text}>Sair do Sistema</Text>
+              <Icon name="chevron-right" size={25} color="#000" />
+            </View>
+          </View>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleLogout} style={styles.close_request_btn}>
-          <Text style={styles.btn_label}>Sair Do Sistema</Text>
-      </TouchableOpacity>
-    </View>
+        <SaveButton />
+
+      </View>
+
+      <View>
+        <Dialog.Container visible={isIPDialogVisible}>
+          <Dialog.Title>Endereço IP</Dialog.Title>
+          <Dialog.Description>
+            Por favor informe o endereço IP de seu servidor
+          </Dialog.Description>
+          <Dialog.Input onChangeText={ip => {setServerIP(ip)}} label='IP' wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}/>
+          <Dialog.Button onPress={handleIPCancelBtn} label="Cancelar" />
+          <Dialog.Button onPress={() => setIsIPDialogVisible(false)} label="Confirmar" />
+        </Dialog.Container>
+      </View>
+
+      <View>
+        <Dialog.Container visible={isPortDialogVisible}>
+          <Dialog.Title>Porta do Servidor</Dialog.Title>
+          <Dialog.Description>
+            Por favor informe a porta de acesso do IP informado
+          </Dialog.Description>
+          <Dialog.Input onChangeText={port => {setServerPort(port)}} label='Porta' wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}/>
+          <Dialog.Button onPress={handlePortCancelBtn} label="Cancelar" />
+          <Dialog.Button onPress={() => setIsPortDialogVisible(false)} label="Confirmar" />
+        </Dialog.Container>
+      </View>
+    </>
   );
 }
 
@@ -148,7 +228,7 @@ const styles = StyleSheet.create({
   close_request_btn: {
     width: 230,
     height: 60,
-    backgroundColor: '#db2007',
+    backgroundColor: '#337AB7',
     alignSelf: 'center',
     position: "absolute",
     bottom: 30,
