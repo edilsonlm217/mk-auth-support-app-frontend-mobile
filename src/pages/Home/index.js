@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
 import axios from 'axios';
 
@@ -22,17 +22,22 @@ export default function Home({ navigation }) {
 
   useEffect(() => {
     async function loadAPI() {
-      const response = await axios.post(`http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, {
-        tecnico: globalState.state.employee_id,
-        date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
-      });
+      try {
+        const response = await axios.post(`http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, {
+          tecnico: globalState.state.employee_id,
+          date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
+        });
 
-      dispatch({
-        type: 'save_requests',
-        payload: {
-          requests: response.data,
-        },
-      });
+        dispatch({
+          type: 'save_requests',
+          payload: {
+            requests: response.data,
+          },
+        });
+      } catch {
+        Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
+      }
+
     }
     
     loadAPI();
