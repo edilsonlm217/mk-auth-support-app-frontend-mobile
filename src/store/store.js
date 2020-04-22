@@ -23,6 +23,18 @@ const StateProvider = ( { children } ) => {
         }
         
         return newState;
+
+      case 'setTokenFromAsync':
+        const partialState = { 
+          token: action.payload.token,
+          employee_id: action.payload.employee_id,
+          isSigned: true,
+          server_ip: action.payload.server_ip,
+          server_port: action.payload.server_port,
+        }
+        
+        return partialState;
+
       default:
         throw new Error();
     };

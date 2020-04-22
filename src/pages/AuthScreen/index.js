@@ -11,6 +11,7 @@ import {
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { store } from '../../store/store';
 
@@ -29,6 +30,11 @@ export default function AuthScreen({ route, navigation }) {
         login,
         password,
       });
+
+      await AsyncStorage.setItem('@auth_token', response.data.token.toString());
+      await AsyncStorage.setItem('@employee_id', response.data.user.employee_id.toString());
+      await AsyncStorage.setItem('@server_ip', route.params.server_ip);
+      await AsyncStorage.setItem('@server_port', route.params.server_port);
       
       dispatch({ type: 'signIn', payload: {
         employee_id: response.data.user.employee_id,
