@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
 import axios from 'axios';
 
@@ -78,7 +78,7 @@ export default function Home({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <AppHeader />
+      <AppHeader navigation={navigation} />
       <View style={styles.date_selector}>
         <TouchableOpacity onPress={handlePrevDay}>
           <Icon name="chevron-left" size={30} color="#FFF" />
