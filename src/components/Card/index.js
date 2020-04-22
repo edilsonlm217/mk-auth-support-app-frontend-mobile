@@ -15,6 +15,21 @@ export default function Card(props) {
     setIsVisible(false);
   }
 
+  function UserAdress() {
+    
+    if (props.item.endereco === null) {
+      return <Text>Sem endereço</Text>
+    } else {
+      const endereco = props.item.endereco;
+      const numero = props.item.numero ? props.item.numero : 'S/N'
+      const bairro = props.item.bairro
+
+      return (
+        <Text>{`${endereco}, ${numero} - ${bairro}`}</Text>
+      );
+    }
+  }
+
   return (
     <>
       <TouchableOpacity onPress={handleModalOpening}>
@@ -24,7 +39,7 @@ export default function Card(props) {
               <Text style={styles.client_name}>{props.item.nome}</Text>
               <Text style={styles.visit_time}>{props.item.visita}</Text>
             </View>
-            <Text>{`${props.item.endereco}, ${props.item.numero} - ${props.item.bairro}`}</Text>
+            <UserAdress />
             <Text>{`Serviço: ${props.item.assunto}`}</Text>
           </View>
         </View>
