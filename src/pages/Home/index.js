@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
 import pt from 'date-fns/locale/pt';
@@ -12,6 +13,7 @@ import TabViewComponent from '../../components/TabViewComponent/index';
 
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const globalState = useContext(store);
 
@@ -23,10 +25,13 @@ export default function Home({ navigation }) {
   useEffect(() => {
     async function loadAPI() {
       try {
-        const response = await axios.post(`http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, {
-          tecnico: globalState.state.employee_id,
-          date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
-        });
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
+          {
+            tecnico: globalState.state.employee_id,
+            date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
+          }
+        );
 
         dispatch({
           type: 'save_requests',
@@ -81,22 +86,48 @@ export default function Home({ navigation }) {
     setDate(addDays(date, 1));
   }
 
-  return (
-    <View style={styles.container}>
-      <AppHeader navigation={navigation} />
-      <View style={styles.date_selector}>
-        <TouchableOpacity onPress={handlePrevDay}>
-          <Icon name="chevron-left" size={30} color="#FFF" />
-        </TouchableOpacity>
-        <Text style={styles.date}>{dateFormatted}</Text>
-        <TouchableOpacity onPress={handleNextDay}>
-          <Icon name="chevron-right" size={30} color="#FFF" />
-        </TouchableOpacity>
-      </View>
-      
-      <TabViewComponent state={state} navigation={navigation}/>
+  function handleNewDate(event, selectedDate) {
+    if (event.type === 'set') {
+      setIsDatePickerVisible(false);
+      setDate(selectedDate);
+    } else if (event.type === 'dismissed') {
+      setIsDatePickerVisible(false);
+    }
+  }
 
-    </View>
+  return (
+    <>
+      <View style={styles.container}>
+        <AppHeader navigation={navigation} />
+        <View style={styles.date_selector}>
+          <TouchableOpacity onPress={handlePrevDay}>
+            <Icon name="chevron-left" size={32} color="#FFF" />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+            <Text style={styles.date}>{dateFormatted}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleNextDay}>
+            <Icon name="chevron-right" size={32} color="#FFF" />
+          </TouchableOpacity>
+        </View>
+        
+        <TabViewComponent state={state} navigation={navigation}/>
+
+      </View>
+
+      {
+        isDatePickerVisible
+        ?
+          <DateTimePicker
+            mode={date}
+            display="calendar"
+            value={date}
+            onChange={(event, selectedDate) => {handleNewDate(event, selectedDate)}}
+            style={{backgroundColor: 'red'}}
+          />
+        : <></>
+      }
+    </>
   );
 }
 
@@ -114,9 +145,9 @@ const styles = StyleSheet.create({
   },
 
   date: {
-    marginLeft: 15,
-    marginRight: 15,
+    marginLeft: 25,
+    marginRight: 25,
     color: '#FFF',
-    fontSize: 18,
+    fontSize: 22,
   },
 });
