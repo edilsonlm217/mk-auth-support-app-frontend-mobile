@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -24,19 +24,25 @@ export default function RootStack() {
     const server_ip = await AsyncStorage.getItem('@server_ip');
     const server_port = await AsyncStorage.getItem('@server_port');
 
-    if (token !== null && employee_id !== null) {
-      dispatch({ type: 'setTokenFromAsync', payload: {
-        employee_id,
-        token,
-        server_ip,
-        server_port,
-      }});
-    }
-
     if (isSigned === false) {
+      if (token !== null && employee_id !== null) {
+        dispatch({ type: 'setTokenFromAsync', payload: {
+          employee_id,
+          token,
+          server_ip,
+          server_port,
+        }});
+      }
+
       if (globalState.state.token !== null) {
         setIsSigned(true);
-        //const token = await AsyncStorage.getItem('@auth_token');
+      }
+    }
+
+
+    if (isSigned === true) {
+      if (globalState.state.token === null) {
+        setIsSigned(false);
       }
     }
   }
