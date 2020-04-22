@@ -46,6 +46,17 @@ const StateProvider = ( { children } ) => {
           
           return logoutState;
 
+          case 'changeServerConfig':
+            const changedState = { 
+              token: state.token,
+              employee_id: state.employee_id,
+              isSigned: state.isSigned,
+              server_ip: action.payload.server_ip,
+              server_port: action.payload.server_port,
+            }
+            
+            return changedState;
+
       default:
         throw new Error();
     };
