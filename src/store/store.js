@@ -35,27 +35,27 @@ const StateProvider = ( { children } ) => {
         
         return partialState;
 
-        case 'logout':
-          const logoutState = { 
-            token: null,
-            employee_id: null,
-            isSigned: false,
-            server_ip: null,
-            server_port: null,
-          }
-          
-          return logoutState;
+      case 'logout':
+        const logoutState = { 
+          token: null,
+          employee_id: null,
+          isSigned: false,
+          server_ip: null,
+          server_port: null,
+        }
+        
+        return logoutState;
 
-          case 'changeServerConfig':
-            const changedState = { 
-              token: state.token,
-              employee_id: state.employee_id,
-              isSigned: state.isSigned,
-              server_ip: action.payload.server_ip,
-              server_port: action.payload.server_port,
-            }
-            
-            return changedState;
+      case 'changeServerConfig':
+        const changedState = { 
+          token: state.token,
+          employee_id: state.employee_id,
+          isSigned: state.isSigned,
+          server_ip: action.payload.server_ip,
+          server_port: action.payload.server_port,
+        }
+        
+        return changedState;
 
       default:
         throw new Error();
