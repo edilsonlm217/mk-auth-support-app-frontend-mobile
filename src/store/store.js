@@ -35,6 +35,17 @@ const StateProvider = ( { children } ) => {
         
         return partialState;
 
+        case 'logout':
+          const logoutState = { 
+            token: null,
+            employee_id: null,
+            isSigned: false,
+            server_ip: null,
+            server_port: null,
+          }
+          
+          return logoutState;
+
       default:
         throw new Error();
     };
