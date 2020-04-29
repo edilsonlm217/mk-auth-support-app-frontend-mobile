@@ -13,9 +13,11 @@ Assim que a maior parte das funcionalidades desenvolvidas para este sistema esti
 
 Por agora, estas são algumas screenshots disponíveis para acompanhamento do trabalho:
 
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551740-7f2b5c00-8992-11ea-82f5-1651bbe04808.JPG"/>
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551742-805c8900-8992-11ea-8fe2-36c1e7db220a.JPG"/>
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551743-805c8900-8992-11ea-943c-6bcbaba87ddc.JPG"/>
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551744-80f51f80-8992-11ea-8f7f-850ca69e653c.JPG"/>
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551745-818db600-8992-11ea-868e-8e9352bd758c.JPG"/>
-<img height="600" src="https://user-images.githubusercontent.com/55609083/80551746-818db600-8992-11ea-8196-ada602a38512.JPG"/>
+<div style="display: flex; flex-direction: row;">
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551740-7f2b5c00-8992-11ea-82f5-1651bbe04808.JPG"/>
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551742-805c8900-8992-11ea-8fe2-36c1e7db220a.JPG"/>
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551743-805c8900-8992-11ea-943c-6bcbaba87ddc.JPG"/>
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551744-80f51f80-8992-11ea-8f7f-850ca69e653c.JPG"/>
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551745-818db600-8992-11ea-868e-8e9352bd758c.JPG"/>
+  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551746-818db600-8992-11ea-8196-ada602a38512.JPG"/>
+</div>
