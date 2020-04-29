@@ -13,6 +13,6 @@ Assim que a maior parte das funcionalidades desenvolvidas para este sistema esti
 
 Por agora, estas são algumas screenshots disponíveis para acompanhamento do trabalho:
 
-<img height="200" src="https://user-images.githubusercontent.com/55609083/80551740-7f2b5c00-8992-11ea-82f5-1651bbe04808.JPG"/>
+<img height="800" src="https://user-images.githubusercontent.com/55609083/80551740-7f2b5c00-8992-11ea-82f5-1651bbe04808.JPG"/>
 
 
