@@ -1,5 +1,11 @@
 import React, { useContext, useState }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
+import {
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Alert, 
+  ToastAndroid } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Dialog from "react-native-dialog";
 
@@ -15,15 +21,15 @@ export default function SettingsScreen({ navigation }) {
   const [serverPort, setServerPort] = useState(null);
 
   const globalState = useContext(store);
-  const { signOut } = globalState.methods;
+  const { signOut, changeConfig } = globalState.methods;
 
   function handleSaving() {
     ToastAndroid.show("Alteração salva com sucesso!", ToastAndroid.SHORT);
 
-    dispatch({ type: 'changeServerConfig', payload: {
-      server_ip: serverIP !== null ? serverIP : globalState.state.server_ip,
-      server_port: serverPort !== null ? serverPort : globalState.state.server_port,
-    }});
+    changeConfig({
+      serverIP: serverIP === null ? globalState.state.server_ip : serverIP,
+      serverPort: serverPort === null ? globalState.state.server_port : serverPort,
+    });
 
     navigation.goBack();
     
@@ -41,9 +47,11 @@ export default function SettingsScreen({ navigation }) {
 
   function SaveButton() {
     if ((serverPort !== null && serverPort !== globalState.state.server_port) || (serverIP !== null && serverIP !== globalState.state.server_ip)) {
-    
       return (
-        <TouchableOpacity onPress={handleSaving} style={styles.close_request_btn}>
+        <TouchableOpacity 
+        onPress={handleSaving} 
+        style={styles.close_request_btn}
+      >
           <Text style={styles.btn_label}>Salvar Alterações</Text>
         </TouchableOpacity>
       );
@@ -84,7 +92,9 @@ export default function SettingsScreen({ navigation }) {
           <View style={styles.line_container}>
             <Text style={styles.sub_text}>Porta</Text>
             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={styles.main_text}>{serverPort === null ? globalState.state.server_port : serverPort}</Text>
+              <Text style={styles.main_text}>
+                {serverPort === null ? globalState.state.server_port : serverPort}
+              </Text>
               <Icon name="chevron-right" size={25} color="#000" />
             </View>
           </View>
@@ -110,7 +120,11 @@ export default function SettingsScreen({ navigation }) {
           <Dialog.Description>
             Por favor informe o endereço IP de seu servidor
           </Dialog.Description>
-          <Dialog.Input onChangeText={ip => {setServerIP(ip)}} label='IP' wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}/>
+          <Dialog.Input
+            onChangeText={ip => {setServerIP(ip)}} 
+            label='IP' 
+            wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}
+          />
           <Dialog.Button onPress={handleIPCancelBtn} label="Cancelar" />
           <Dialog.Button onPress={() => setIsIPDialogVisible(false)} label="Confirmar" />
         </Dialog.Container>
@@ -122,7 +136,11 @@ export default function SettingsScreen({ navigation }) {
           <Dialog.Description>
             Por favor informe a porta de acesso do IP informado
           </Dialog.Description>
-          <Dialog.Input onChangeText={port => {setServerPort(port)}} label='Porta' wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}/>
+          <Dialog.Input 
+            onChangeText={port => {setServerPort(port)}} 
+            label='Porta' 
+            wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}
+          />
           <Dialog.Button onPress={handlePortCancelBtn} label="Cancelar" />
           <Dialog.Button onPress={() => setIsPortDialogVisible(false)} label="Confirmar" />
         </Dialog.Container>
