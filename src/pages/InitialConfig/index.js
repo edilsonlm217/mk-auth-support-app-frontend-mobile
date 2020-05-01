@@ -5,7 +5,8 @@ import {
   Text, 
   Dimensions, 
   Image, 
-  TextInput, 
+  TextInput,
+  Alert, 
   TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -22,6 +23,8 @@ export default function InitialConfig({ navigation }) {
         server_ip: serverIP,
         server_port: port,
       });
+    } else {
+      Alert.alert('É obrigatório informar as configurações de conexão');
     }
   }
 
