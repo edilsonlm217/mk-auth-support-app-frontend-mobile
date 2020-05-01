@@ -8,6 +8,7 @@ const initialState = {
   userToken: null,
   server_ip: null,
   server_port: null,
+  employee_id: null,
 };
 
 const store = createContext(initialState);
@@ -23,6 +24,7 @@ const StateProvider = ( { children } ) => {
           userToken: action.payload.token,
           server_ip: action.payload.server_ip,
           server_port: action.payload.server_port,
+          employee_id: action.payload.employee_id,
         };
 
       case 'RESTORE_TOKEN':
@@ -73,15 +75,13 @@ const StateProvider = ( { children } ) => {
     () => ({
       signIn: async data => {
         const { login, password, server_ip, server_port } = data;
-        console.log(server_ip);
-        console.log(server_port);
         
-        const response = await axios.post(`http://10.0.2.2:3333/sessions`, {
+        const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
           login,
           password,
         });
-        
-        const { token } = response.data;
+
+        const { token, user } = response.data;
 
         await AsyncStorage.setItem('@auth_token', response.data.token.toString());
 
@@ -89,6 +89,7 @@ const StateProvider = ( { children } ) => {
           token,
           server_ip,
           server_port,
+          employee_id: user.employee_id,
         } });
       },
       
