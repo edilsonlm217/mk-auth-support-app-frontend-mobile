@@ -6,6 +6,9 @@ const initialState = {
   isLoading: true,
   isSignout: false,
   userToken: null,
+  server_ip: null,
+  server_port: null,
+  employee_id: null,
 };
 
 const store = createContext(initialState);
@@ -18,7 +21,10 @@ const StateProvider = ( { children } ) => {
         return {
           ...prevState,
           isSignout: false,
-          userToken: action.token,
+          userToken: action.payload.token,
+          server_ip: action.payload.server_ip,
+          server_port: action.payload.server_port,
+          employee_id: action.payload.employee_id,
         };
 
       case 'RESTORE_TOKEN':
@@ -34,6 +40,15 @@ const StateProvider = ( { children } ) => {
           isSignout: true,
           userToken: null,
         };
+
+      case 'CHANGE_SERVER_CONFIG':
+        const changedState = { 
+          ...prevState,
+          server_ip: action.payload.server_ip,
+          server_port: action.payload.server_port,
+        }
+        
+        return changedState;
 
       default:
         throw new Error();
@@ -59,20 +74,33 @@ const StateProvider = ( { children } ) => {
   const methods = React.useMemo(
     () => ({
       signIn: async data => {
-        const { login, password } = data;
+        const { login, password, server_ip, server_port } = data;
         
-        const response = await axios.post(`http://10.0.2.2:3333/sessions`, {
+        const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
           login,
           password,
         });
-        
-        const { token } = response.data;
+
+        const { token, user } = response.data;
 
         await AsyncStorage.setItem('@auth_token', response.data.token.toString());
 
-        dispatch({ type: 'SIGN_IN', token: token });
+        dispatch({ type: 'SIGN_IN', payload: {
+          token,
+          server_ip,
+          server_port,
+          employee_id: user.employee_id,
+        } });
       },
+      
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
+
+      changeConfig: (data) => {
+        dispatch({ type: 'CHANGE_SERVER_CONFIG', payload: {
+          server_ip: data.serverIP,
+          server_port: data.serverPort,
+        }});
+      },
       
     }), []);
 

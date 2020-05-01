@@ -22,6 +22,15 @@ export default function AuthScreen({ route, navigation }) {
   const globalState = useContext(store);
   const { signIn } = globalState.methods;
 
+  function handleSignIn() {
+    signIn({
+      login,
+      password, 
+      server_ip: route.params.server_ip,
+      server_port: route.params.server_port,
+    });
+  }
+
   function handlePrevScreen() {
     navigation.goBack();
   }
@@ -64,7 +73,7 @@ export default function AuthScreen({ route, navigation }) {
         <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
       </View>
 
-      <TouchableOpacity onPress={() => signIn({login, password})} style={styles.next_btn_style}>
+      <TouchableOpacity onPress={handleSignIn} style={styles.next_btn_style}>
         <Text style={styles.navigators_text_style}>Conectar</Text>
         <Icon name="chevron-right" size={30} color="#FFF" />
       </TouchableOpacity>
