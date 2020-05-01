@@ -4,6 +4,8 @@ import {format, subDays, addDays} from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
+import { store } from '../../store/store';
+
 import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -14,6 +16,8 @@ export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
+  const globalState = useContext(store);
+
   const [state, dispatch] = useReducer(reducer, {
     open_requests: [],
     close_requests: [],
@@ -23,10 +27,9 @@ export default function Home({ navigation }) {
     async function loadAPI() {
       try {
         const response = await axios.post(
-          `http://10.0.2.2:3333/requests`, 
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
           {
-            tecnico: 5,
-            //tecnico: globalState.state.employee_id,
+            tecnico: globalState.state.employee_id,
             date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
           }
         );
