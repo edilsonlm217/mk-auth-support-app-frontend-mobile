@@ -5,7 +5,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 
 import pt from 'date-fns/locale/pt';
-import { store } from '../../store/store';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
@@ -14,8 +13,6 @@ import TabViewComponent from '../../components/TabViewComponent/index';
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-
-  const globalState = useContext(store);
 
   const [state, dispatch] = useReducer(reducer, {
     open_requests: [],
@@ -26,9 +23,10 @@ export default function Home({ navigation }) {
     async function loadAPI() {
       try {
         const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
+          `http://10.0.2.2:3333/requests`, 
           {
-            tecnico: globalState.state.employee_id,
+            tecnico: 5,
+            //tecnico: globalState.state.employee_id,
             date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
           }
         );
@@ -42,7 +40,6 @@ export default function Home({ navigation }) {
       } catch {
         Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
       }
-
     }
     
     loadAPI();

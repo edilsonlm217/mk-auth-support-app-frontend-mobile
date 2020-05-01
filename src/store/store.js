@@ -1,68 +1,82 @@
-import React, {createContext, useReducer} from 'react';
+import React, {createContext, useReducer, useEffect} from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios';
 
 const initialState = {
-  token: null,
-  employee_id: null,
-  isSigned: false,
-  server_ip: null,
-  server_port: null,
+  isLoading: true,
+  isSignout: false,
+  userToken: null,
 };
+
 const store = createContext(initialState);
 const { Provider } = store;
 
 const StateProvider = ( { children } ) => {
-  const [state, dispatch] = useReducer((state, action) => {
+  const [state, dispatch] = useReducer((prevState, action) => {
     switch(action.type) {
-      case 'signIn':
-        const newState = { 
-          token: action.payload.token,
-          employee_id: action.payload.employee_id,
-          isSigned: true,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
-        }
-        
-        return newState;
+      case 'SIGN_IN':
+        return {
+          ...prevState,
+          isSignout: false,
+          userToken: action.token,
+        };
 
-      case 'setTokenFromAsync':
-        const partialState = { 
-          token: action.payload.token,
-          employee_id: action.payload.employee_id,
-          isSigned: true,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
-        }
-        
-        return partialState;
+      case 'RESTORE_TOKEN':
+        return {
+          ...prevState,
+            userToken: action.token,
+            isLoading: false,
+        };
 
-      case 'logout':
-        const logoutState = { 
-          token: null,
-          employee_id: null,
-          isSigned: false,
-          server_ip: null,
-          server_port: null,
-        }
-        
-        return logoutState;
-
-      case 'changeServerConfig':
-        const changedState = { 
-          token: state.token,
-          employee_id: state.employee_id,
-          isSigned: state.isSigned,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
-        }
-        
-        return changedState;
+      case 'SIGN_OUT':
+        return {
+          ...prevState,
+          isSignout: true,
+          userToken: null,
+        };
 
       default:
         throw new Error();
     };
   }, initialState);
 
-  return <Provider value={{ state, dispatch }}>{children}</Provider>;
+  useEffect(() => {
+    const bootstrapAsync = async () => {
+      let userToken;
+
+      try {
+        userToken = await AsyncStorage.getItem('@auth_token');
+      } catch (e) {
+        // Restoring token failed
+      }
+      
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const methods = React.useMemo(
+    () => ({
+      signIn: async data => {
+        const { login, password } = data;
+        
+        const response = await axios.post(`http://10.0.2.2:3333/sessions`, {
+          login,
+          password,
+        });
+        
+        const { token } = response.data;
+
+        await AsyncStorage.setItem('@auth_token', response.data.token.toString());
+
+        dispatch({ type: 'SIGN_IN', token: token });
+      },
+      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      
+    }), []);
+
+  return <Provider value={{ state, methods }}>{children}</Provider>;
 };
 
 export { store, StateProvider }

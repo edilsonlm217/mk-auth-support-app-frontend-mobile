@@ -10,8 +10,6 @@ import {
   Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import { store } from '../../store/store';
 
@@ -22,32 +20,8 @@ export default function AuthScreen({ route, navigation }) {
   const [password, setPassword] = useState('');
 
   const globalState = useContext(store);
-  const { dispatch } = globalState;
+  const { signIn } = globalState.methods;
 
-  async function handleConnect() {
-    try {
-      const response = await axios.post(`http://${route.params.server_ip}:${route.params.server_port}/sessions`, {
-        login,
-        password,
-      });
-
-      await AsyncStorage.setItem('@auth_token', response.data.token.toString());
-      await AsyncStorage.setItem('@employee_id', response.data.user.employee_id.toString());
-      await AsyncStorage.setItem('@server_ip', route.params.server_ip);
-      await AsyncStorage.setItem('@server_port', route.params.server_port);
-      
-      dispatch({ type: 'signIn', payload: {
-        employee_id: response.data.user.employee_id,
-        token: response.data.token,
-        server_ip: route.params.server_ip,
-        server_port: route.params.server_port,
-      }});
-    }
-    catch {
-      Alert.alert('Falha no login', 'Login ou senha inválidos. Tente novamente!');
-    }
-  }
-  
   function handlePrevScreen() {
     navigation.goBack();
   }
@@ -82,6 +56,7 @@ export default function AuthScreen({ route, navigation }) {
               placeholder="Sua senha secreta" 
               style={styles.text_input_style}
               onChangeText={password => setPassword(password)}
+              secureTextEntry={true}
             />
           </View>
         </View>
@@ -89,7 +64,7 @@ export default function AuthScreen({ route, navigation }) {
         <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
       </View>
 
-      <TouchableOpacity onPress={handleConnect} style={styles.next_btn_style}>
+      <TouchableOpacity onPress={() => signIn({login, password})} style={styles.next_btn_style}>
         <Text style={styles.navigators_text_style}>Conectar</Text>
         <Icon name="chevron-right" size={30} color="#FFF" />
       </TouchableOpacity>
