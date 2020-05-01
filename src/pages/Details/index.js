@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
-  
+
   useEffect(() => {
     const { data } = route.params;
     setState(data);
@@ -22,17 +22,53 @@ export default function Details({ route, navigation }) {
     });
   }
   
+  function ClosingReason() {
+    if (state.motivo_fechamento === null) {
+      return (
+        <View style={styles.line_container}>
+          <View>
+            <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+            <Text style={styles.main_text}>Não informado</Text>
+          </View>
+        </View>
+      );
+    } else {
+      
+      const [ , closing_reason] = state.motivo_fechamento.split(': ');
+      const [date, hora] = state.fechamento.split(' ');
+      const [yyyy, mm, dd] = date.split('-');
+
+      return (
+        <>
+          <View style={styles.line_container}>
+            <View>
+              <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+              <Text style={styles.main_text}>{closing_reason}</Text>
+            </View>
+          </View>
+          <View style={styles.line_container}>
+            <View>
+              <Text style={styles.sub_text}>Data de Fechamento</Text>
+              <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
+            </View>
+          </View>
+        </>
+      );
+    }
+  }
+  
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
         <Icon name="account" size={25} color="#000" />
         <View style={{marginLeft: 10}}>
           <Text style={styles.main_text}>{state.nome}</Text>
-          <Text style={styles.sub_text}>{
-              `${state.plano === 'nenhum' 
-                ? 'Nenhum'
-                : state.plano} | ${state.tipo ? state.tipo.toUpperCase() : state.tipo} | ${state.ip}`
-              }</Text>
+          <Text style={styles.sub_text}>
+            {`${state.plano === 'nenhum' 
+              ? 'Nenhum'
+              : state.plano} | ${state.tipo ? state.tipo.toUpperCase() : state.tipo} | ${state.ip}`
+            }
+          </Text>
         </View>
       </View>
       <View style={styles.line_container}>
@@ -73,9 +109,20 @@ export default function Details({ route, navigation }) {
           </View>
         </View>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.close_request_btn}>
-          <Text style={styles.btn_label}>Fechar Chamado</Text>
-      </TouchableOpacity>
+      {state.status === 'fechado'
+        ?
+          (<ClosingReason />)
+        :
+          <></>
+      }
+        
+      {state.status === 'aberto'
+        ? 
+          (<TouchableOpacity style={styles.close_request_btn}>
+            <Text style={styles.btn_label}>Fechar Chamado</Text>
+          </TouchableOpacity>)
+        : <></>
+      }
     </View>
   );
 }
