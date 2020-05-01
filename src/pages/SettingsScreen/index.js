@@ -15,7 +15,7 @@ export default function SettingsScreen({ navigation }) {
   const [serverPort, setServerPort] = useState(null);
 
   const globalState = useContext(store);
-  const { dispatch } = globalState;
+  const { signOut } = globalState.methods;
 
   function handleSaving() {
     ToastAndroid.show("Alteração salva com sucesso!", ToastAndroid.SHORT);
@@ -59,7 +59,8 @@ export default function SettingsScreen({ navigation }) {
     try {
       const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port'];
       await AsyncStorage.multiRemove(keys);
-      dispatch({ type: 'logout' });
+      
+      signOut();
     } catch {
       Alert.alert('Falha ao deslogar. Tente novamente!');
     }
@@ -91,7 +92,7 @@ export default function SettingsScreen({ navigation }) {
         
         <TouchableOpacity onPress={handleLogout}>
           <View style={styles.line_container}>
-            <Text style={styles.sub_text}>Opções de usuário</Text>
+            <Text style={styles.sub_text}></Text>
             <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={styles.main_text}>Sair do Sistema</Text>
               <Icon name="chevron-right" size={25} color="#000" />
