@@ -101,13 +101,13 @@ export default function Home({ navigation }) {
         <AppHeader navigation={navigation} />
         <View style={styles.date_selector}>
           <TouchableOpacity onPress={handlePrevDay}>
-            <Icon name="chevron-left" size={32} color="#FFF" />
+            <Icon name="chevron-left" size={34} color="#FFF" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
             <Text style={styles.date}>{dateFormatted}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleNextDay}>
-            <Icon name="chevron-right" size={32} color="#FFF" />
+            <Icon name="chevron-right" size={34} color="#FFF" />
           </TouchableOpacity>
         </View>
         
@@ -142,12 +142,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: '5%',
+    marginBottom: 5,
   },
 
   date: {
     marginLeft: 25,
     marginRight: 25,
     color: '#FFF',
-    fontSize: 22,
+    fontSize: 24,
   },
 });
