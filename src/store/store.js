@@ -30,7 +30,10 @@ const StateProvider = ( { children } ) => {
       case 'RESTORE_TOKEN':
         return {
           ...prevState,
-            userToken: action.token,
+            userToken: action.payload.userToken,
+            server_ip: action.payload.server_ip,
+            server_port: action.payload.server_port,
+            employee_id: action.payload.employee_id,
             isLoading: false,
         };
 
@@ -61,11 +64,19 @@ const StateProvider = ( { children } ) => {
 
       try {
         userToken = await AsyncStorage.getItem('@auth_token');
+        server_ip = await AsyncStorage.getItem('@server_ip');
+        server_port = await AsyncStorage.getItem('@server_port');
+        employee_id = await AsyncStorage.getItem('@employee_id');
       } catch (e) {
         // Restoring token failed
       }
       
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+      dispatch({ type: 'RESTORE_TOKEN', payload: {
+        userToken,
+        server_ip,
+        server_port,
+        employee_id,
+      }});
     };
 
     bootstrapAsync();
@@ -83,7 +94,16 @@ const StateProvider = ( { children } ) => {
 
         const { token, user } = response.data;
 
-        await AsyncStorage.setItem('@auth_token', response.data.token.toString());
+        const auth_token_key = ['@auth_token', response.data.token.toString()];
+        const server_ip_key = ['@server_ip', server_ip];
+        const server_port_key = ['@server_port', server_port];
+        const employee_id_key = ['@employee_id', user.employee_id.toString()];
+
+        try {
+          await AsyncStorage.multiSet([auth_token_key, server_ip_key, server_port_key, employee_id_key]);
+        } catch(e) {
+          //save error
+        }
 
         dispatch({ type: 'SIGN_IN', payload: {
           token,
