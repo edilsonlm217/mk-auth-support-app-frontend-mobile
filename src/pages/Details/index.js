@@ -1,25 +1,43 @@
 import React, { useEffect, useState }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native';
 import openMap from 'react-native-open-maps';
+import Geolocation from '@react-native-community/geolocation';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
-
+  
   useEffect(() => {
     const { data } = route.params;
     setState(data);
   }, []);
-
-  function OpenCoordinate(coordinate) {
+  
+  async function OpenCoordinate(coordinate) {
     const [latidude, longitude] = coordinate.split(',');
     
-    openMap({
-      latitude: Number(latidude),
-      longitude: Number(longitude),
-      provider: 'google',
-    });
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+      );
+
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        Geolocation.getCurrentPosition(geo_success => {      
+          const current_longitude = geo_success.coords.longitude;
+          const current_latitude = geo_success.coords.latitude;
+    
+          openMap({
+            provider: 'google',
+            start: `${current_latitude},${current_longitude}`,
+            end: `${latidude},${longitude}`
+          });
+        });
+      } else {
+        Alert.alert('Não foi possível recuperar sua Localização');
+      }
+    } catch (err) {
+      // console.warn(err)
+    }
   }
   
   function ClosingReason() {
