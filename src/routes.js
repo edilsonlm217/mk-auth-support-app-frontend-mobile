@@ -8,6 +8,7 @@ import Details from './pages/Details/index';
 import InitialConfig from './pages/InitialConfig/index';
 import AuthScreen from './pages/AuthScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
+import CTOMapping from './pages/CTOMapping/index';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +32,23 @@ export default function RootStack() {
             component={Details} 
             options={{
               title: 'Mais detalhes',
+              headerStyle: {
+                backgroundColor: '#FFF',
+              },
+              headerTintColor: '#337AB7',
+              headerTransparent: true,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 24,
+              },
+            }}
+          />
+
+          <Stack.Screen 
+            name="CTOs" 
+            component={CTOMapping} 
+            options={{
+              title: 'Mapa de CTOs',
               headerStyle: {
                 backgroundColor: '#FFF',
               },
