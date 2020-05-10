@@ -74,6 +74,16 @@ export default function Details({ route, navigation }) {
       );
     }
   }
+
+  function handleNavigateCTOMap(coordinate) {
+    const [latidude, longitude] = coordinate.split(',');
+    
+    navigation.navigate('CTOs', {
+      latidude: latidude,
+      longitude: longitude,
+      client_name: state.nome,
+    });
+  }
   
   return (
     <View style={styles.container}>
@@ -141,6 +151,11 @@ export default function Details({ route, navigation }) {
           </TouchableOpacity>)
         : <></>
       }
+      <View>
+        <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+          <Text>Ver CTOs</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
