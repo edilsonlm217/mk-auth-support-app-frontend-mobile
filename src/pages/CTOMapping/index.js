@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import MapView, { PROVIDER_GOOGLE, Marker } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import axios from 'axios';
 
@@ -40,7 +40,7 @@ export default function CTOMapping({ route }) {
   useEffect(() => {
     async function getCTOs() {
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto`
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`
       );
       
       var queries_array = [];
@@ -49,17 +49,8 @@ export default function CTOMapping({ route }) {
         const latitude = parseFloat(item.latitude);
         const longitude = parseFloat(item.longitude);
 
-        const d = getDistanceFromLatLonInKm(
-          latitude, 
-          longitude, 
-          client_latitude, 
-          client_longitude
-        );
-
-        if (d <= 0.3) {
           array_cto.push(item);
           queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
-        }
       });
 
       await axios.all(queries_array).then(response => {
@@ -73,24 +64,6 @@ export default function CTOMapping({ route }) {
 
     getCTOs();
   }, []);
-
-  function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2-lat1);  // deg2rad below
-    var dLon = deg2rad(lon2-lon1); 
-    var a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2)
-      ; 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    var d = R * c; // Distance in km
-    return d;
-  }
-  
-  function deg2rad(deg) {
-    return deg * (Math.PI/180)
-  }
 
   function handleTraceRoute(dest_lat, dest_lgt) {
     dispatch({ 
@@ -129,11 +102,16 @@ export default function CTOMapping({ route }) {
               latitude: parseFloat(cto.latitude),
               longitude: parseFloat(cto.longitude),
             }}
-            title={cto.nome}
-            description={`Distancia: ${cto.distance}`}
             onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
           >
             <Icon name={"access-point-network"} size={30} color="#FF0000"/>
+            <Callout tooltip={true}>
+              <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
+                <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
+                <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
+              </View>
+            </Callout>
           </Marker>
          ))
        }
