@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+import { View, Text, StyleSheet } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import axios from 'axios';
 
@@ -75,74 +75,70 @@ export default function CTOMapping({ route }) {
     });
   }
 
-  return  (
-    <View style={styles.container}>
-      <MapView
-       provider={PROVIDER_GOOGLE} // remove if not using Google Maps
-       style={styles.map}
-       region={{
-         latitude: client_latitude,
-         longitude: client_longitude,
-         latitudeDelta: 0.01,
-         longitudeDelta: 0,
-       }}
-     >
-      <Marker 
-        coordinate={{
-          latitude: client_latitude,
-          longitude: client_longitude,
-        }}
-        title={client_name}
-      />
-       {
-         arrayCTOs.map((cto) => (
-          <Marker
-            key={cto.id}
+  return (
+    <>
+      <View style={styles.container}>
+        <MapView
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={styles.map}
+          region={{
+            latitude: client_latitude,
+            longitude: client_longitude,
+            latitudeDelta: 0.01,
+            longitudeDelta: 0,
+          }}
+        >
+          <Marker 
             coordinate={{
-              latitude: parseFloat(cto.latitude),
-              longitude: parseFloat(cto.longitude),
+              latitude: client_latitude,
+              longitude: client_longitude,
             }}
-            onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
-          >
-            <Icon name={"access-point-network"} size={30} color="#FF0000"/>
-            <Callout tooltip={true}>
-              <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
-                <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
-                <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
-              </View>
-            </Callout>
-          </Marker>
-         ))
-       }
-       {
-          state.dest_latitude !== null 
-          ? 
-            (
-              <MapViewDirections
-                origin={{
-                  latitude: state.origin_latitude,
-                  longitude: state.origin_longitude,
+            title={client_name}
+          />
+          {
+            arrayCTOs.map((cto) => (
+              <Marker
+                key={cto.id}
+                coordinate={{
+                  latitude: parseFloat(cto.latitude),
+                  longitude: parseFloat(cto.longitude),
                 }}
-                destination={{
-                  latitude: state.dest_latitude,
-                  longitude: state.dest_longitude, 
-                }}
-                apikey={GOOGLE_MAPS_APIKEY}
-                strokeWidth={8}
-                strokeColor="hotpink"
-                mode="WALKING"
-              />
-            ) 
-          : <></>
-        }
-     </MapView>
-     <View
-      style={{position: "absolute", bottom: 50}}
-    >
-      <Text>Hello World</Text>
-    </View>
-    </View>
+                onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+              >
+                <Icon name={"access-point-network"} size={30} color="#FF0000"/>
+                <Callout tooltip={true}>
+                  <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                    <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
+                    <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
+                    <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
+                  </View>
+                </Callout>
+              </Marker>
+            ))
+          }
+          { state.dest_latitude !== null 
+            ? 
+              (
+                <MapViewDirections
+                  origin={{
+                    latitude: state.origin_latitude,
+                    longitude: state.origin_longitude,
+                  }}
+                  destination={{
+                    latitude: state.dest_latitude,
+                    longitude: state.dest_longitude, 
+                  }}
+                  apikey={GOOGLE_MAPS_APIKEY}
+                  strokeWidth={8}
+                  strokeColor="hotpink"
+                  mode="WALKING"
+                />
+              ) 
+            : <></>
+          }
+        </MapView>
+      </View>
+    </>
   );
 }
 
