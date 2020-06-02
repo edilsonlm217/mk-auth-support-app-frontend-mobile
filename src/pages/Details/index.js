@@ -153,7 +153,12 @@ export default function Details({ route, navigation }) {
       }
       <View>
         <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-          <Text>Ver CTOs</Text>
+          <View style={styles.line_container}>
+            <View>
+              <Text style={styles.sub_text}>Visualizar</Text>
+              <Text style={styles.main_text}>CTO's Próximas</Text>
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
     </View>
