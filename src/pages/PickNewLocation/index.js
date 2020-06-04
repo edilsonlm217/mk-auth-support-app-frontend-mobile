@@ -3,6 +3,8 @@ import MapView from 'react-native-maps';
 import { View, PermissionsAndroid, StyleSheet, Alert, Text, TouchableOpacity } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 export default function PickNewLocation() {
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
