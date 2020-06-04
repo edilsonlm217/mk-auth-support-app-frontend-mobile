@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import { store } from './store/store';
@@ -9,6 +9,7 @@ import InitialConfig from './pages/InitialConfig/index';
 import AuthScreen from './pages/AuthScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
+import PickNewLocation from './pages/PickNewLocation/index';
 
 const Stack = createStackNavigator();
 
@@ -60,6 +61,23 @@ export default function RootStack() {
               },
             }}
           /> 
+
+          <Stack.Screen 
+            name="UpdateClienteLocation" 
+            component={PickNewLocation} 
+            options={{
+              title: 'Atualizar endereço',
+              headerStyle: {
+                backgroundColor: '#FFF',
+              },
+              headerTintColor: '#337AB7',
+              headerTransparent: true,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 24,
+              },
+            }}
+          />
 
           <Stack.Screen
             name="Settings" 

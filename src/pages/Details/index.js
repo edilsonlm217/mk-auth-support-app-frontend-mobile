@@ -2,11 +2,13 @@ import React, { useEffect, useState }  from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
+import Modal from 'react-native-modal';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
+  const [isVisible, setIsVisible] = useState(false);
   
   useEffect(() => {
     const { data } = route.params;
@@ -84,6 +86,23 @@ export default function Details({ route, navigation }) {
       client_name: state.nome,
     });
   }
+
+  function handleNavigateNewLocationPicker() {
+    setIsVisible(false);
+    navigation.navigate('UpdateClienteLocation', {
+      data: {
+        id: state.client_id,
+      }
+    });
+  }
+
+  function handleModalOpening() {
+    setIsVisible(true);
+  }
+
+  function handleModalClosing() {
+    setIsVisible(false);
+  }
   
   return (
     <View style={styles.container}>
@@ -126,7 +145,7 @@ export default function Details({ route, navigation }) {
           <Text style={styles.main_text}>{state.senha}</Text>
         </View>
       </View>
-      <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)}>
+      <TouchableOpacity onPress={handleModalOpening}>
         <View style={styles.location_line}>
           <View>
             <Text style={styles.sub_text}>Endereço</Text>
@@ -161,6 +180,25 @@ export default function Details({ route, navigation }) {
           </View>
         </TouchableOpacity>
       </View>
+      <Modal
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_style}>
+            <Text style={styles.modal_header}>Selecione uma opção...</Text>
+            <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
+              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
+              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{margin: 0}}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
     </View>
   );
 }
@@ -277,4 +315,49 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
   },
+
+  modal_style: {
+    width: 300,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 10,
+    padding: 20,
+    paddingTop: 10,
+  },
+
+  modal_header: {
+    fontWeight: "bold",
+    fontSize: 18,
+    width: '100%',
+    marginBottom: 5,
+  },
+
+  modal_btn: {
+    width: '100%',
+    height: 40,
+    marginTop: 10,
+    display: "flex",
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#FFF',
+    
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 4,
+  },
+
+  modal_btn_style: {
+    fontSize: 18,
+    paddingLeft: 15,
+    textAlign: "center",
+    
+
+  }
 });

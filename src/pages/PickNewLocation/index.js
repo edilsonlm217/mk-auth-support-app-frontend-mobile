@@ -1,9 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import MapView from 'react-native-maps';
-import { View, PermissionsAndroid, StyleSheet, Alert, Text, TouchableOpacity } from 'react-native';
+import { View, PermissionsAndroid, StyleSheet, Alert, Text, TouchableOpacity, ToastAndroid } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
+import axios from 'axios';
 
-export default function PickNewLocation() {
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { store } from '../../store/store';
+
+export default function PickNewLocation({ route, navigation }) {
+  const globalState = useContext(store);
+
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
 
@@ -30,8 +36,22 @@ export default function PickNewLocation() {
   }, []);
 
   function handleRegionChange({ latitude, longitude }) {
-    console.log(latitude);
-    console.log(longitude);
+    setLatitude(latitude);
+    setLongitude(longitude);
+  }
+
+  async function updateClientCoordinates() {
+    const client_id = route.params.data.id;
+
+    const response = await axios.post(
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}/${latitude}/${longitude}`
+    );
+
+    if (response.status === 200) {
+      ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
+      navigation.goBack();
+    }
+
   }
 
   return  (
@@ -55,7 +75,7 @@ export default function PickNewLocation() {
         <View style={styles.bottom_option}>
           <Text style={styles.option_label}>MOVA O MAPA PARA LOCALIZAR</Text>
 
-          <TouchableOpacity style={styles.confirm_btn}>
+          <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
             <Text style={styles.btn_label} >CONFIRMAR</Text>
           </TouchableOpacity>
         </View>
