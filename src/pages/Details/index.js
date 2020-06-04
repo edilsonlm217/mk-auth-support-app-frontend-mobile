@@ -87,6 +87,11 @@ export default function Details({ route, navigation }) {
     });
   }
 
+  function handleNavigateNewLocationPicker() {
+    setIsVisible(false);
+    navigation.navigate('UpdateClienteLocation');
+  }
+
   function handleModalOpening() {
     setIsVisible(true);
   }
@@ -179,7 +184,7 @@ export default function Details({ route, navigation }) {
             <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
               <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.modal_btn}>
+            <TouchableOpacity onPress={handleNavigateNewLocationPicker} style={styles.modal_btn}>
               <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
             </TouchableOpacity>
           </View>
