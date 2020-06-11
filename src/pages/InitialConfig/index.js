@@ -59,9 +59,12 @@ export default function InitialConfig({ navigation }) {
           </Text>
         </HideWithKeyboard>
         
-        <View>
+        <View style={{width: '100%'}}>
+          
           <View style={styles.input_container}>
-            <Icon name="laptop" size={28} color="#002f58" />
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="laptop" size={28} color="#002f58" />
+            </View>
             <TextInput
               keyboardType="number-pad"
               placeholder="Endereço IP do servidor" 
@@ -71,7 +74,9 @@ export default function InitialConfig({ navigation }) {
           </View>
 
           <View style={[styles.input_container, {marginTop: 25}]}>
-            <Icon name="transit-connection-variant" size={28} color="#002f58" />
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="transit-connection-variant" size={28} color="#002f58" />
+            </View>
             <TextInput
               keyboardType="number-pad" 
               placeholder="Porta de conexão" 
@@ -99,6 +104,7 @@ const styles = StyleSheet.create({
     marginLeft: 30,
     marginRight: 30,
     marginTop: 70,
+    flex: 1,
   },
 
   linearGradient: {
@@ -130,13 +136,15 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 15,
     height: 60,
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 
   text_input_style: {
-    marginLeft: 10,
     fontSize: 18,
+    width: '90%',
   },
 
   next_btn_style: {

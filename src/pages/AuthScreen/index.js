@@ -53,8 +53,11 @@ export default function AuthScreen({ route, navigation }) {
         
         <View>
           <View style={styles.input_container}>
-            <Icon name="account" size={28} color="#002f58" />
-            <TextInput 
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="account" size={28} color="#002f58" />
+            </View>
+            <TextInput
+              autoCapitalize="none"
               placeholder="Login do técnico" 
               style={styles.text_input_style}
               onChangeText={login => setLogin(login)}
@@ -62,7 +65,9 @@ export default function AuthScreen({ route, navigation }) {
           </View>
 
           <View style={[styles.input_container, {marginTop: 25}]}>
-            <Icon name="lock" size={28} color="#002f58" />
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="lock" size={28} color="#002f58" />
+            </View>
             <TextInput 
               placeholder="Sua senha secreta" 
               style={styles.text_input_style}
@@ -126,13 +131,16 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 15,
     height: 60,
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 
+
   text_input_style: {
-    marginLeft: 10,
     fontSize: 18,
+    width: '90%',
   },
 
   next_btn_style: {
