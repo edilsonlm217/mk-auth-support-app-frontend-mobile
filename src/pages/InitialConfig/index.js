@@ -20,13 +20,27 @@ export default function InitialConfig({ navigation }) {
   
   async function handleNextPage() {
     if (serverIP !== '' && port !== '') {
-      navigation.navigate('AuthScreen', {
-        server_ip: serverIP,
-        server_port: port,
-      });
+      const isValidIP = ValidateIPaddress(serverIP);
+
+      if (isValidIP) {
+        navigation.navigate('AuthScreen', {
+          server_ip: serverIP,
+          server_port: port,
+        });
+      } else {
+        Alert.alert('Este endereço IP não é válido');  
+      }
     } else {
-      Alert.alert('É obrigatório informar as configurações de conexão');
+      Alert.alert('Todos os campos são obrigatórios');
     }
+  }
+
+  function ValidateIPaddress(ipaddress) {  
+    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
+      return (true)  
+    }  
+     
+    return (false)  
   }
 
   return (
@@ -48,7 +62,8 @@ export default function InitialConfig({ navigation }) {
         <View>
           <View style={styles.input_container}>
             <Icon name="laptop" size={28} color="#002f58" />
-            <TextInput 
+            <TextInput
+              keyboardType="number-pad"
               placeholder="Endereço IP do servidor" 
               style={styles.text_input_style}
               onChangeText={ip => setServerIP(ip)}
@@ -57,7 +72,8 @@ export default function InitialConfig({ navigation }) {
 
           <View style={[styles.input_container, {marginTop: 25}]}>
             <Icon name="transit-connection-variant" size={28} color="#002f58" />
-            <TextInput 
+            <TextInput
+              keyboardType="number-pad" 
               placeholder="Porta de conexão" 
               style={styles.text_input_style}
               onChangeText={port => setPort(port)}
