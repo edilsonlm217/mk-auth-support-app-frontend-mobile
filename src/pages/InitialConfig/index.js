@@ -9,6 +9,7 @@ import {
   Alert, 
   TouchableOpacity } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import gear from '../../assets/gear.png';
@@ -38,9 +39,11 @@ export default function InitialConfig({ navigation }) {
 
         <Text style={styles.main_text} >Configuração inicial</Text>
 
-        <Text style={styles.sub_text} >
-          Para conectar com seu servidor MK-AUTH informe o endereço IP externo e porta para conexão
-        </Text>
+        <HideWithKeyboard>
+          <Text style={styles.sub_text} >
+            Para conectar com seu servidor MK-AUTH informe o endereço IP externo e porta para conexão
+          </Text>
+        </HideWithKeyboard>
         
         <View>
           <View style={styles.input_container}>
@@ -61,8 +64,9 @@ export default function InitialConfig({ navigation }) {
             />
           </View>
         </View>
-
-        <Text style={[styles.sub_text, {marginTop: 40}]}>1/2</Text>
+        <HideWithKeyboard>
+          <Text style={[styles.sub_text, {marginTop: 40}]}>1/2</Text>
+        </HideWithKeyboard>
       </View>
 
       <TouchableOpacity onPress={handleNextPage} style={styles.next_btn_style}>

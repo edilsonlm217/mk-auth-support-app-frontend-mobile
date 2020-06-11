@@ -10,6 +10,7 @@ import {
   Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
 
 import { store } from '../../store/store';
 
@@ -44,10 +45,11 @@ export default function AuthScreen({ route, navigation }) {
         <Image source={lock} style={styles.logo_style} />
 
         <Text style={styles.main_text} >Quase lá</Text>
-
-        <Text style={styles.sub_text} >
-          Agora informe seu login e senha de técnico para carregar os seus chamados
-        </Text>
+        <HideWithKeyboard>
+          <Text style={styles.sub_text} >
+            Agora informe seu login e senha de técnico para carregar os seus chamados
+          </Text>
+        </HideWithKeyboard>
         
         <View>
           <View style={styles.input_container}>
@@ -69,8 +71,9 @@ export default function AuthScreen({ route, navigation }) {
             />
           </View>
         </View>
-
-        <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
+        <HideWithKeyboard>
+          <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
+        </HideWithKeyboard>
       </View>
 
       <TouchableOpacity onPress={handleSignIn} style={styles.next_btn_style}>
