@@ -46,6 +46,7 @@ export default function Card(props) {
       </TouchableOpacity>
 
       <Modal
+        onBackButtonPress={handleModalClosing}
         onBackdropPress={handleModalClosing}
         children={
           <RequestDetail 
