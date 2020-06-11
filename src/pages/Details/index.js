@@ -181,7 +181,7 @@ export default function Details({ route, navigation }) {
         </TouchableOpacity>
       </View>
       <Modal
-      onBackButtonPress={handleModalClosing}
+        onBackButtonPress={handleModalClosing}
         onBackdropPress={handleModalClosing}
         children={
           <View style={styles.modal_style}>
