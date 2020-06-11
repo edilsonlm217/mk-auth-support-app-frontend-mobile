@@ -1,6 +1,7 @@
 import React, {createContext, useReducer, useEffect} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
+import { Alert } from 'react-native';
 
 const initialState = {
   isLoading: true,
@@ -87,30 +88,39 @@ const StateProvider = ( { children } ) => {
       signIn: async data => {
         const { login, password, server_ip, server_port } = data;
         
-        const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
-          login,
-          password,
-        });
-
-        const { token, user } = response.data;
-
-        const auth_token_key = ['@auth_token', response.data.token.toString()];
-        const server_ip_key = ['@server_ip', server_ip];
-        const server_port_key = ['@server_port', server_port];
-        const employee_id_key = ['@employee_id', user.employee_id.toString()];
-
         try {
-          await AsyncStorage.multiSet([auth_token_key, server_ip_key, server_port_key, employee_id_key]);
-        } catch(e) {
-          //save error
-        }
+          const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
+            login,
+            password,
+          });
 
-        dispatch({ type: 'SIGN_IN', payload: {
-          token,
-          server_ip,
-          server_port,
-          employee_id: user.employee_id,
-        } });
+          const { token, user } = response.data;
+  
+          const auth_token_key = ['@auth_token', response.data.token.toString()];
+          const server_ip_key = ['@server_ip', server_ip];
+          const server_port_key = ['@server_port', server_port];
+          const employee_id_key = ['@employee_id', user.employee_id.toString()];
+  
+          try {
+            await AsyncStorage.multiSet([auth_token_key, server_ip_key, server_port_key, employee_id_key]);
+          } catch(e) {
+            Alert.alert('Não foi possível salvar dados na Storage');
+          }
+  
+          dispatch({ type: 'SIGN_IN', payload: {
+            token,
+            server_ip,
+            server_port,
+            employee_id: user.employee_id,
+          } });
+
+        } catch (err) {
+          if (err.message.includes('401')) {
+            Alert.alert('Usuário ou senha inválidos');
+          } else {
+            Alert.alert('Não foi possível encontrar o servidor');
+          }
+        }
       },
       
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
