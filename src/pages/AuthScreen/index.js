@@ -24,12 +24,17 @@ export default function AuthScreen({ route, navigation }) {
   const { signIn } = globalState.methods;
 
   function handleSignIn() {
-    signIn({
-      login,
-      password, 
-      server_ip: route.params.server_ip,
-      server_port: route.params.server_port,
-    });
+    if (login !== '' && password !== '') {
+      signIn({
+        login,
+        password, 
+        server_ip: route.params.server_ip,
+        server_port: route.params.server_port,
+      });
+    } else {
+      Alert.alert('Por favor informe todos os campos');
+    }
+
   }
 
   function handlePrevScreen() {
@@ -57,6 +62,7 @@ export default function AuthScreen({ route, navigation }) {
               <Icon name="account" size={28} color="#002f58" />
             </View>
             <TextInput
+              autoCorrect={false}
               autoCapitalize="none"
               placeholder="Login do técnico" 
               style={styles.text_input_style}
