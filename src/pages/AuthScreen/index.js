@@ -10,6 +10,7 @@ import {
   Alert } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
 
 import { store } from '../../store/store';
 
@@ -23,12 +24,17 @@ export default function AuthScreen({ route, navigation }) {
   const { signIn } = globalState.methods;
 
   function handleSignIn() {
-    signIn({
-      login,
-      password, 
-      server_ip: route.params.server_ip,
-      server_port: route.params.server_port,
-    });
+    if (login !== '' && password !== '') {
+      signIn({
+        login,
+        password, 
+        server_ip: route.params.server_ip,
+        server_port: route.params.server_port,
+      });
+    } else {
+      Alert.alert('Por favor informe todos os campos');
+    }
+
   }
 
   function handlePrevScreen() {
@@ -44,15 +50,20 @@ export default function AuthScreen({ route, navigation }) {
         <Image source={lock} style={styles.logo_style} />
 
         <Text style={styles.main_text} >Quase lá</Text>
-
-        <Text style={styles.sub_text} >
-          Agora informe seu login e senha de técnico para carregar os seus chamados
-        </Text>
+        <HideWithKeyboard>
+          <Text style={styles.sub_text} >
+            Agora informe seu login e senha de técnico para carregar os seus chamados
+          </Text>
+        </HideWithKeyboard>
         
         <View>
           <View style={styles.input_container}>
-            <Icon name="account" size={28} color="#002f58" />
-            <TextInput 
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="account" size={28} color="#002f58" />
+            </View>
+            <TextInput
+              autoCorrect={false}
+              autoCapitalize="none"
               placeholder="Login do técnico" 
               style={styles.text_input_style}
               onChangeText={login => setLogin(login)}
@@ -60,7 +71,9 @@ export default function AuthScreen({ route, navigation }) {
           </View>
 
           <View style={[styles.input_container, {marginTop: 25}]}>
-            <Icon name="lock" size={28} color="#002f58" />
+            <View style={{width: '10%', alignItems: 'center'}}>
+              <Icon name="lock" size={28} color="#002f58" />
+            </View>
             <TextInput 
               placeholder="Sua senha secreta" 
               style={styles.text_input_style}
@@ -69,8 +82,9 @@ export default function AuthScreen({ route, navigation }) {
             />
           </View>
         </View>
-
-        <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
+        <HideWithKeyboard>
+          <Text style={[styles.sub_text, {marginTop: 40}]}>2/2</Text>
+        </HideWithKeyboard>
       </View>
 
       <TouchableOpacity onPress={handleSignIn} style={styles.next_btn_style}>
@@ -123,13 +137,16 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     flexDirection: "row",
     alignItems: "center",
-    paddingLeft: 15,
     height: 60,
+    width: '100%',
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 
+
   text_input_style: {
-    marginLeft: 10,
     fontSize: 18,
+    width: '90%',
   },
 
   next_btn_style: {

@@ -26,6 +26,7 @@
     "react-native-dialog": "^5.6.0",
     "react-native-dotenv": "^0.2.0",
     "react-native-gesture-handler": "^1.6.0",
+    "react-native-hide-with-keyboard": "^1.2.1",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-maps": "0.27.1",
     "react-native-maps-directions": "^1.8.0",
