@@ -73,7 +73,7 @@ export default function PickNewLocation({ route, navigation }) {
         <Icon style={{alignSelf: "center"}} name="location-on" size={40} color="#ad1f1f" />
       
         <View style={styles.bottom_option}>
-          <Text style={styles.option_label}>MOVA O MAPA PARA LOCALIZAR</Text>
+          <Text style={styles.option_label}>MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO</Text>
 
           <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
             <Text style={styles.btn_label} >CONFIRMAR</Text>
