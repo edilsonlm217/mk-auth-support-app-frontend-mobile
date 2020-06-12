@@ -1,8 +1,9 @@
 import React, { useEffect, useState }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, BackHandler, DeviceEventEmitter } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
+import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -38,7 +39,7 @@ export default function Details({ route, navigation }) {
         Alert.alert('Não foi possível recuperar sua Localização');
       }
     } catch (err) {
-      // console.warn(err)
+      Alert.alert('Erro');
     }
   }
   
@@ -97,7 +98,22 @@ export default function Details({ route, navigation }) {
   }
 
   function handleModalOpening() {
-    setIsVisible(true);
+    LocationServicesDialogBox.checkLocationServicesIsEnabled({
+      message: "<h2 style='color: #0af13e'>Usar Localização ?</h2>Este app quer alterar as configurações do seu dispositivo:<br/><br/>Usar GPS, Wi-Fi e rede do celular para localização<br/><br/><a href='#'>Saiba mais</a>",
+      ok: "SIM",
+      cancel: "NÃO",
+      enableHighAccuracy: true,
+      showDialog: true, 
+      openLocationServices: true, 
+      preventOutSideTouch: false, 
+      preventBackClick: false, 
+      providerListener: false 
+    }).then(function(success) {
+        setIsVisible(true);
+    }).catch((error) => {
+        // console.log(error.message);
+    });
+
   }
 
   function handleModalClosing() {

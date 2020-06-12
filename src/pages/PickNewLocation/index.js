@@ -13,6 +13,9 @@ export default function PickNewLocation({ route, navigation }) {
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
 
+  const [latitudeDelta, setLatitudeDelta] = useState(0.001);
+  const [longitudeDelta, setLongitudeDelta] = useState(0.001);
+
   useEffect(() => {
     async function getUserLocation() {
       const granted = await PermissionsAndroid.request(
@@ -35,9 +38,11 @@ export default function PickNewLocation({ route, navigation }) {
     getUserLocation();
   }, []);
 
-  function handleRegionChange({ latitude, longitude }) {
+  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
     setLatitude(latitude);
     setLongitude(longitude);
+    setLatitudeDelta(latitudeDelta);
+    setLongitudeDelta(longitudeDelta);
   }
 
   async function updateClientCoordinates() {
@@ -65,8 +70,8 @@ export default function PickNewLocation({ route, navigation }) {
         region={{
           latitude: latitude,
           longitude: longitude,
-          latitudeDelta: 0.001,
-          longitudeDelta: 0.001,
+          latitudeDelta: latitudeDelta,
+          longitudeDelta: longitudeDelta,
         }}
       />
       <View style={styles.mapMarkerContainer}>
