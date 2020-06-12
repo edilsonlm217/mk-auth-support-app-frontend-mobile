@@ -18,6 +18,12 @@ export default function CTOMapping({ route }) {
   
   const [arrayCTOs, setArrayCTOs] = useState([]);
 
+  const [latitude, setLatitude] = useState(parseFloat(route.params.latidude));
+  const [longitude, setLongitude] = useState(parseFloat(route.params.longitude));
+
+  const [latitudeDelta, setLatitudeDelta] = useState(0.01);
+  const [longitudeDelta, setLongitudeDelta] = useState(0);
+
   const [state, dispatch] = useReducer(reducer, {
     origin_latitude: client_latitude,
     origin_longitude: client_longitude,
@@ -75,17 +81,25 @@ export default function CTOMapping({ route }) {
     });
   }
 
+  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
+    setLatitude(latitude);
+    setLongitude(longitude);
+    setLatitudeDelta(latitudeDelta);
+    setLongitudeDelta(longitudeDelta);
+  }
+
   return (
     <>
       <View style={styles.container}>
         <MapView
+          onRegionChangeComplete={handleRegionChange}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
           region={{
-            latitude: client_latitude,
-            longitude: client_longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0,
+            latitude: latitude,
+            longitude: longitude,
+            latitudeDelta: latitudeDelta,
+            longitudeDelta: longitudeDelta,
           }}
         >
           <Marker 
