@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, BackHandler, DeviceEventEmitter } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
@@ -188,10 +188,13 @@ export default function Details({ route, navigation }) {
       }
       <View>
         <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-          <View style={styles.line_container}>
+          <View style={styles.cto_line}>
             <View>
-              <Text style={styles.sub_text}>Visualizar</Text>
-              <Text style={styles.main_text}>CTO's Próximas</Text>
+              <Text style={styles.sub_text}>Caixa Sugerida</Text>
+              <Text style={styles.main_text}>{state.caixa_hermetica}</Text>
+            </View>
+            <View style={{justifyContent: 'center'}}>
+              <Icon name="map-search" size={30} color="#000" />
             </View>
           </View>
         </TouchableOpacity>
@@ -249,6 +252,13 @@ const styles = StyleSheet.create({
   },
   
   location_line: {
+    padding: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: "space-between"
+  },
+
+  cto_line: {
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
