@@ -189,9 +189,9 @@ export default function CTOMapping({ route }) {
                   <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto.nome)} style={styles.sub_cards}>
                     <View style={styles.main_line}>
                       <Text style={styles.sub_card_title}>{cto.nome}</Text>
-                      <Text style={styles.sub_card_title}>0.5km</Text>
+                      <Text style={styles.sub_card_title}>{cto.distance}</Text>
                     </View>
-                    <Text style={styles.sub_line}>7 Conectados</Text>
+                    <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
                   </TouchableOpacity>
                 :
                   <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto.nome)} style={styles.sub_cards_selected}>
