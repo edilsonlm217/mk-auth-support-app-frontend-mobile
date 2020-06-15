@@ -64,8 +64,18 @@ export default function CTOMapping({ route }) {
       await axios.all(queries_array).then(response => {
         response.forEach((element, index) => {
           array_cto[index].distance = element.data.rows[0].elements[0].distance.text;
-          
+          array_cto[index].distance_value = element.data.rows[0].elements[0].distance.value;
         });
+      });
+
+      // Ordenação do array com mais próximos primeiro
+      array_cto.sort(function(a, b) {
+        var keyA = a.distance_value,
+          keyB = b.distance_value;
+  
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
       });
 
       setArrayCTOs(array_cto);
