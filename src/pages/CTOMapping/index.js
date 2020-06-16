@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useReducer } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
+import Modal from 'react-native-modal';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -33,6 +34,8 @@ export default function CTOMapping({ route }) {
   });
 
   const [selectedBtn, setSelectedBtn] = useState('');
+
+  const [isVisible, setIsVisible] = useState(false);
 
   function reducer(state, action) {
     switch (action.type) {
@@ -103,11 +106,16 @@ export default function CTOMapping({ route }) {
 
   function handleSelection(cto) {
     if (selectedBtn === cto.nome) {
-      setSelectedBtn('');
+      setIsVisible(true);
     } else {
       setSelectedBtn(cto.nome);
       handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))
     }
+  }
+
+  function handleModalClosing() {
+    setSelectedBtn('');
+    setIsVisible(false);
   }
 
   return (
@@ -219,6 +227,26 @@ export default function CTOMapping({ route }) {
           </View>
         </ScrollView>
       </View>
+      <Modal
+          onBackButtonPress={handleModalClosing}
+          onBackdropPress={handleModalClosing}
+          children={
+            <View style={styles.modal_style}>
+              <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?</Text>
+              <TouchableOpacity style={styles.modal_cancel_btn}>
+                <Text onPress={handleModalClosing} style={styles.modal_btn_style}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.modal_confirm_btn}>
+                <Text style={styles.modal_btn_style}>Confirmar</Text>
+              </TouchableOpacity>
+            </View>
+          }
+          isVisible={isVisible}
+          style={{margin: 0}}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
     </View>
   );
 }
@@ -346,5 +374,68 @@ const styles = StyleSheet.create({
 
   sub_line: {
     color: '#AFAFAF',
+  },
+
+  modal_style: {
+    width: 300,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 10,
+    padding: 20,
+    paddingTop: 10,
+  },
+
+  modal_header: {
+    fontWeight: "bold",
+    fontSize: 18,
+    width: '100%',
+    marginBottom: 5,
+  },
+
+  modal_confirm_btn: {
+    width: '100%',
+    height: 40,
+    marginTop: 10,
+    display: "flex",
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#3842D2',
+    
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 4,
+  },
+
+  modal_cancel_btn: {
+    width: '100%',
+    height: 40,
+    marginTop: 10,
+    display: "flex",
+    justifyContent: 'center',
+    borderRadius: 4,
+    backgroundColor: '#000',
+    
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 4,
+  },
+
+  modal_btn_style: {
+    fontSize: 18,
+    textAlign: "center",
+    color: '#FFF',
   },
 });
