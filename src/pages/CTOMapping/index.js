@@ -119,7 +119,7 @@ export default function CTOMapping({ route }) {
   }
 
   function handleSelection(cto) {
-    if (selectedBtn === cto.nome) {
+    if (selectedBtn === cto.nome && cto.nome !== suggestedCTO?.nome) {
       setIsVisible(true);
     } else {
       setSelectedBtn(cto.nome);
