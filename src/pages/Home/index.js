@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, RefreshControl } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import axios from 'axios';
 
 import { store } from '../../store/store';
@@ -10,7 +11,7 @@ import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
-import TabViewComponent from '../../components/TabViewComponent/index';
+import Card from '../../components/Card/index';
 
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
@@ -23,29 +24,45 @@ export default function Home({ navigation }) {
     close_requests: [],
   });
 
-  useEffect(() => {
-    async function loadAPI() {
-      try {
-        const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
-          {
-            tecnico: globalState.state.employee_id,
-            date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
-          }
-        );
+  const [index, setIndex] = useState(0);
+  const [routes] = useState([
+    { key: 'first', title: 'Abertos' },
+    { key: 'second', title: 'Fechados' },
+  ]);
 
-        dispatch({
-          type: 'save_requests',
-          payload: {
-            requests: response.data,
-          },
-        });
-      } catch {
-        Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
-      }
-    }
-    
+  const [refreshing, setRefreshing] = useState(false);
+
+  async function onRefresh() {
+    setRefreshing(true);
     loadAPI();
+    setRefreshing(false);
+  }
+
+  async function loadAPI() {
+    try {
+      const response = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
+        {
+          tecnico: globalState.state.employee_id,
+          date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
+        }
+      );
+
+      dispatch({
+        type: 'save_requests',
+        payload: {
+          requests: response.data,
+        },
+      });
+    } catch {
+      Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
+    }
+  }
+
+  useEffect(() => {
+    setRefreshing(true);
+    loadAPI();
+    setRefreshing(false);
   }, [date]);
   
   
@@ -95,6 +112,74 @@ export default function Home({ navigation }) {
     }
   }
 
+  function OpenRequestsRoute() {
+    return (
+      <View style={styles.section_container}>
+        { state.open_requests.length !== 0
+          ?
+            <ScrollView 
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              { state.open_requests.map(item => (
+                <Card key={item.id} item={item} navigation={navigation}/>
+              ))} 
+            </ScrollView>
+          :
+            <View style={{flex: 1}}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+              >
+                <View>
+                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                </View>
+              </ScrollView>
+            </View>
+        }
+      </View>
+    );
+  }
+
+  function CloseRequestsRoute() {
+    return (
+      <View style={styles.section_container}>
+        {
+          state.close_requests.length !== 0
+          ?
+            <ScrollView
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }
+            >
+              { state.close_requests.map(item => (
+                <Card key={item.id} item={item} navigation={navigation}/>
+              ))} 
+            </ScrollView>
+          :
+            <View style={{flex: 1}}>
+              <ScrollView
+                refreshControl={
+                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                }
+              >
+                <View>
+                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                </View>
+              </ScrollView>
+            </View>
+        }
+      </View>
+    );
+  }
+
+  const renderScene = SceneMap({
+    first: OpenRequestsRoute,
+    second: CloseRequestsRoute,
+  });
+
   return (
     <>
       <View style={styles.container}>
@@ -111,7 +196,20 @@ export default function Home({ navigation }) {
           </TouchableOpacity>
         </View>
         
-        <TabViewComponent state={state} navigation={navigation}/>
+        <TabView
+          navigationState={{index, routes}}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{width: Dimensions.get('window').width}}
+          renderTabBar={props =>
+            <TabBar
+              {...props}
+              indicatorStyle={styles.indicatorStyle}
+              labelStyle={styles.label_style}
+              style={styles.tabBar_style}
+            />
+          }
+        />
 
       </View>
 
@@ -150,5 +248,83 @@ const styles = StyleSheet.create({
     marginRight: 25,
     color: '#FFF',
     fontSize: 24,
+  },
+
+  section_container: {
+    flex: 1,
+    backgroundColor: '#FFF',
+  },
+
+  indicatorStyle: {
+    backgroundColor: '#337AB7', 
+    height: 4, 
+    borderRadius: 8,
+  },
+
+  label_style: {
+    color: '#000',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+
+  tabBar_style: {
+    backgroundColor: '#FFF',
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+    height: 50,
+  },
+  card: {
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 10,
+    marginBottom: 10,
+    borderRadius: 6,
+    backgroundColor: '#FFF',
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 10,
+  },
+
+  card_header_content_container: {
+    padding: 20,
+  },
+
+  card_header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  
+  client_name: {
+    fontWeight: 'bold',
+    fontSize: 20,
+    maxWidth: 250,
+    color: '#808080',
+  },
+
+  visit_time: {
+    fontWeight: 'bold',
+    fontSize: 18,
+    color: '#808080',
+  },
+  
+  all_done_container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  illustration_container: {
+    resizeMode: "contain",
+    width: 300,
+    opacity: 0.8,
+    height: 300,
+    alignSelf: 'center',
   },
 });
