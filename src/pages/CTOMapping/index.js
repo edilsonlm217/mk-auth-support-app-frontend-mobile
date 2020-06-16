@@ -24,8 +24,6 @@ export default function CTOMapping({ route }) {
   const [latitude, setLatitude] = useState(parseFloat(route.params.latidude));
   const [longitude, setLongitude] = useState(parseFloat(route.params.longitude));
 
-
-
   const [latitudeDelta, setLatitudeDelta] = useState(0.01);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
 
@@ -201,16 +199,28 @@ export default function CTOMapping({ route }) {
       <View style={styles.bottom_menu}>
         <Text style={styles.main_title}>Caixa Sugerida</Text>
         
-        <TouchableOpacity onPress={() => handleTraceRoute(suggestedCTO ? parseFloat(suggestedCTO.latitude) : null, suggestedCTO ? parseFloat(suggestedCTO.longitude) : null)} style={styles.suggested_card}>
+        <TouchableOpacity 
+          style={styles.suggested_card}
+          onPress={() => handleTraceRoute(
+            suggestedCTO ? parseFloat(suggestedCTO.latitude)  : null, 
+            suggestedCTO ? parseFloat(suggestedCTO.longitude) : null)
+          } 
+        >
           <View style={styles.card_name}>
             <View style={styles.icon_container}>
               <Icon name={"access-point-network"} size={30} color="#000"/>
             </View>
-            <Text style={styles.card_title}>{suggestedCTO ? suggestedCTO.nome : route.params.suggested_cto}</Text>
+            <Text style={styles.card_title}>
+              {suggestedCTO ? suggestedCTO.nome : route.params.suggested_cto}
+            </Text>
           </View>
           <View style={styles.distance_container}>
-            <Text style={styles.card_distance}>{suggestedCTO ? suggestedCTO.distance : ''}</Text>
-            <Text style={styles.connection_amount}>{suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}</Text>
+            <Text style={styles.card_distance}>
+              {suggestedCTO ? suggestedCTO.distance : ''}
+            </Text>
+            <Text style={styles.connection_amount}>
+              {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
+            </Text>
           </View>
         </TouchableOpacity>
         
@@ -224,7 +234,11 @@ export default function CTOMapping({ route }) {
                 cto.nome === route.params.suggested_cto ? <></> :
                 selectedBtn !== cto.nome 
                 ?
-                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto)} style={styles.sub_cards}>
+                  <TouchableOpacity 
+                    key={cto.nome} 
+                    onPress={() => handleSelection(cto)} 
+                    style={styles.sub_cards}
+                  >
                     <View style={styles.main_line}>
                       <Text style={styles.sub_card_title}>{cto.nome}</Text>
                       <Text style={styles.sub_card_title}>{cto.distance}</Text>
@@ -232,7 +246,11 @@ export default function CTOMapping({ route }) {
                     <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
                   </TouchableOpacity>
                 :
-                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto)} style={styles.sub_cards_selected}>
+                  <TouchableOpacity 
+                    key={cto.nome} 
+                    onPress={() => handleSelection(cto)} 
+                    style={styles.sub_cards_selected}
+                  >
                     <View style={styles.main_line_selected}>
                       <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
                       <Icon name={"checkbox-marked-circle"} size={30} color="#FFF"/>
@@ -249,7 +267,9 @@ export default function CTOMapping({ route }) {
           onBackdropPress={handleModalClosing}
           children={
             <View style={styles.modal_style}>
-              <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?</Text>
+              <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
+                Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?
+              </Text>
               <TouchableOpacity style={styles.modal_cancel_btn}>
                 <Text onPress={handleModalClosing} style={styles.modal_btn_style}>Cancelar</Text>
               </TouchableOpacity>
