@@ -78,13 +78,14 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function handleNavigateCTOMap(coordinate) {
+  function handleNavigateCTOMap(coordinate, suggested_cto) {
     const [latidude, longitude] = coordinate.split(',');
     
     navigation.navigate('CTOs', {
       latidude: latidude,
       longitude: longitude,
       client_name: state.nome,
+      suggested_cto: suggested_cto !== null ? suggested_cto : 'Não informada',
     });
   }
 
@@ -183,11 +184,11 @@ export default function Details({ route, navigation }) {
         }
           
         <View>
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas, state.caixa_hermetica)}>
             <View style={styles.cto_line}>
               <View>
                 <Text style={styles.sub_text}>Caixa Sugerida</Text>
-                <Text style={styles.main_text}>{state.caixa_hermetica}</Text>
+                <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Não informada'}</Text>
               </View>
               <View style={{justifyContent: 'center'}}>
                 <Icon name="map-search" size={30} color="#000" />
