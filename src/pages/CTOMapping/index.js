@@ -200,11 +200,8 @@ export default function CTOMapping({ route }) {
         <Text style={styles.main_title}>Caixa Sugerida</Text>
         
         <TouchableOpacity 
-          style={styles.suggested_card}
-          onPress={() => handleTraceRoute(
-            suggestedCTO ? parseFloat(suggestedCTO.latitude)  : null, 
-            suggestedCTO ? parseFloat(suggestedCTO.longitude) : null)
-          } 
+          style={suggestedCTO?.nome !== selectedBtn ? styles.suggested_card : styles.suggested_card_selected}
+          onPress={() => handleSelection(suggestedCTO)} 
         >
           <View style={styles.card_name}>
             <View style={styles.icon_container}>
@@ -324,6 +321,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderRadius: 20,
     borderColor: '#AFAFAF',
+  },
+
+  suggested_card_selected: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    padding: 10,
+    marginBottom: 15,
+    marginTop: 10,
+    borderRadius: 20,
+    borderColor: '#3842D2',
+    borderWidth: 1,
   },
 
   card_name: {
