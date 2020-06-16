@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import Modal from 'react-native-modal';
 import axios from 'axios';
@@ -17,10 +17,14 @@ export default function CTOMapping({ route }) {
   const client_longitude = parseFloat(route.params.longitude);
   const client_name = route.params.client_name;
   
+  const [suggestedCTO, setSuggestedCTO] = useState(null);
+  
   const [arrayCTOs, setArrayCTOs] = useState([]);
 
   const [latitude, setLatitude] = useState(parseFloat(route.params.latidude));
   const [longitude, setLongitude] = useState(parseFloat(route.params.longitude));
+
+
 
   const [latitudeDelta, setLatitudeDelta] = useState(0.01);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
@@ -87,14 +91,26 @@ export default function CTOMapping({ route }) {
     getCTOs();
   }, []);
 
-  function handleTraceRoute(dest_lat, dest_lgt) {
-    dispatch({ 
-      type: 'traceroute',
-      payload: {
-        cto_latitude: dest_lat,
-        cto_longitude: dest_lgt,
-      },
+  useEffect(() => {
+    arrayCTOs.map(cto => {
+      if (cto.nome === route.params.suggested_cto) {
+        setSuggestedCTO(cto);
+      }
     });
+  }, [arrayCTOs]);
+
+  function handleTraceRoute(dest_lat, dest_lgt) {
+    if (dest_lat == null || dest_lgt == null) {
+      Alert.alert('Caixa Hermetica sugerida não está no mapa');
+    } else {
+      dispatch({ 
+        type: 'traceroute',
+        payload: {
+          cto_latitude: dest_lat,
+          cto_longitude: dest_lgt,
+        },
+      });
+    }
   }
 
   function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
@@ -185,16 +201,16 @@ export default function CTOMapping({ route }) {
       <View style={styles.bottom_menu}>
         <Text style={styles.main_title}>Caixa Sugerida</Text>
         
-        <TouchableOpacity style={styles.suggested_card}>
+        <TouchableOpacity onPress={() => handleTraceRoute(suggestedCTO ? parseFloat(suggestedCTO.latitude) : null, suggestedCTO ? parseFloat(suggestedCTO.longitude) : null)} style={styles.suggested_card}>
           <View style={styles.card_name}>
             <View style={styles.icon_container}>
               <Icon name={"access-point-network"} size={30} color="#000"/>
             </View>
-            <Text style={styles.card_title}>CTO 256</Text>
+            <Text style={styles.card_title}>{suggestedCTO ? suggestedCTO.nome : route.params.suggested_cto}</Text>
           </View>
           <View style={styles.distance_container}>
-            <Text style={styles.card_distance}>0.5km</Text>
-            <Text style={styles.connection_amount}>7 conectados</Text>
+            <Text style={styles.card_distance}>{suggestedCTO ? suggestedCTO.distance : ''}</Text>
+            <Text style={styles.connection_amount}>{suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}</Text>
           </View>
         </TouchableOpacity>
         
@@ -205,6 +221,7 @@ export default function CTOMapping({ route }) {
           <View style={styles.sub_cards_container}>
             {
               arrayCTOs.map(cto => (
+                cto.nome === route.params.suggested_cto ? <></> :
                 selectedBtn !== cto.nome 
                 ?
                   <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto)} style={styles.sub_cards}>
