@@ -101,11 +101,12 @@ export default function CTOMapping({ route }) {
     setLongitudeDelta(longitudeDelta);
   }
 
-  function handleSelection(cto_name) {
-    if (selectedBtn === cto_name) {
+  function handleSelection(cto) {
+    if (selectedBtn === cto.nome) {
       setSelectedBtn('');
     } else {
-      setSelectedBtn(cto_name);
+      setSelectedBtn(cto.nome);
+      handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))
     }
   }
 
@@ -198,7 +199,7 @@ export default function CTOMapping({ route }) {
               arrayCTOs.map(cto => (
                 selectedBtn !== cto.nome 
                 ?
-                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto.nome)} style={styles.sub_cards}>
+                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto)} style={styles.sub_cards}>
                     <View style={styles.main_line}>
                       <Text style={styles.sub_card_title}>{cto.nome}</Text>
                       <Text style={styles.sub_card_title}>{cto.distance}</Text>
@@ -206,7 +207,7 @@ export default function CTOMapping({ route }) {
                     <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
                   </TouchableOpacity>
                 :
-                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto.nome)} style={styles.sub_cards_selected}>
+                  <TouchableOpacity key={cto.nome} onPress={() => handleSelection(cto)} style={styles.sub_cards_selected}>
                     <View style={styles.main_line_selected}>
                       <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
                       <Icon name={"checkbox-marked-circle"} size={30} color="#FFF"/>
