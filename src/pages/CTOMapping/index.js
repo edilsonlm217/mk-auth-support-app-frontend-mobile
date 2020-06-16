@@ -11,44 +11,119 @@ import { store } from '../../store/store';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
 export default function CTOMapping({ route }) {
-  const globalState = useContext(store);
-
+  // Estes dados do cliente nunca tem seus valores alterados
   const client_latitude = parseFloat(route.params.latidude);
   const client_longitude = parseFloat(route.params.longitude);
+  const client_id = route.params.client_id;
   const client_name = route.params.client_name;
   
-  const [suggestedCTO, setSuggestedCTO] = useState(null);
-  
-  const [arrayCTOs, setArrayCTOs] = useState([]);
-
-  const [latitude, setLatitude] = useState(parseFloat(route.params.latidude));
-  const [longitude, setLongitude] = useState(parseFloat(route.params.longitude));
-
+  // Estados para lidar com iteração do usuário com o mapa
+  const [latitude, setLatitude] = useState(client_latitude);
+  const [longitude, setLongitude] = useState(client_longitude);
   const [latitudeDelta, setLatitudeDelta] = useState(0.01);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
 
-  const [state, dispatch] = useReducer(reducer, {
-    origin_latitude: client_latitude,
-    origin_longitude: client_longitude,
+  // Estado contendo todas as CTOs existente dentro do raio de busca
+  const [arrayCTOs, setArrayCTOs] = useState([]);
 
+  // Declaração do estado global da aplicação
+  const globalState = useContext(store);
+
+  // Estado que controla todo o calculo de rotas
+  const [state, dispatch] = useReducer(reducer, {
     dest_latitude: null,
     dest_longitude: null,
   });
 
+  // Estado que guarda os dados da CTO sugerida pelo administrador
+  const [suggestedCTO, setSuggestedCTO] = useState(null);
+
+  // Estado que guarda a informação de qual CTO o usuário selecionou
   const [selectedBtn, setSelectedBtn] = useState('');
 
+  // Estado que controla a visibilidade do modal de confirmação da alteração de CTO
   const [isVisible, setIsVisible] = useState(false);
 
   function reducer(state, action) {
     switch (action.type) {
       case 'traceroute':
         return {
-          ...state,
           dest_latitude: action.payload.cto_latitude,
           dest_longitude: action.payload.cto_longitude,
         }
     }
   }
+
+  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
+    setLatitude(latitude);
+    setLongitude(longitude);
+    setLatitudeDelta(latitudeDelta);
+    setLongitudeDelta(longitudeDelta);
+  }
+
+  function handleTraceRoute(dest_lat, dest_lgt) {
+    if (dest_lat == null || dest_lgt == null) {
+      Alert.alert('Caixa Hermetica sugerida não está no mapa');
+    } else {
+      dispatch({ 
+        type: 'traceroute',
+        payload: {
+          cto_latitude: dest_lat,
+          cto_longitude: dest_lgt,
+        },
+      });
+    }
+  }
+
+  async function handleUpdateCTO() {
+    const response_update = await axios.post(
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+        new_cto: selectedBtn,
+      }
+    );
+    
+    if (response_update.status === 200) {
+      ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
+      handleModalClosing();
+    }
+  }
+
+  function handleModalClosing() {
+    setSelectedBtn('');
+    setIsVisible(false);
+  }
+
+  function handleSelection(cto) {
+    if (selectedBtn === cto.nome && cto.nome !== suggestedCTO?.nome) {
+      setIsVisible(true);
+    } else {
+      setSelectedBtn(cto.nome);
+      handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))
+    }
+  }
+
+  useEffect(() => {
+    async function loadSuggestedCTOData() {
+      const client = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`
+      );
+      
+      const { caixa_herm } = client.data;
+
+      const current_client_cto = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`
+      );
+
+      const route_response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude},${current_client_cto.data.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`)
+      
+      current_client_cto.data.distance = route_response.data.rows[0].elements[0].distance.text;
+      current_client_cto.data.distance_value = route_response.data.rows[0].elements[0].distance.value;
+      
+      setSuggestedCTO(current_client_cto.data);
+    }
+
+    loadSuggestedCTOData();
+  }, []);
 
   useEffect(() => {
     async function getCTOs() {
@@ -62,8 +137,8 @@ export default function CTOMapping({ route }) {
         const latitude = parseFloat(item.latitude);
         const longitude = parseFloat(item.longitude);
 
-          array_cto.push(item);
-          queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
+        array_cto.push(item);
+        queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
       });
 
       await axios.all(queries_array).then(response => {
@@ -88,63 +163,7 @@ export default function CTOMapping({ route }) {
 
     getCTOs();
   }, []);
-
-  useEffect(() => {
-    arrayCTOs.map(cto => {
-      if (cto.nome === route.params.suggested_cto) {
-        setSuggestedCTO(cto);
-      }
-    });
-  }, [arrayCTOs]);
-
-  function handleTraceRoute(dest_lat, dest_lgt) {
-    if (dest_lat == null || dest_lgt == null) {
-      Alert.alert('Caixa Hermetica sugerida não está no mapa');
-    } else {
-      dispatch({ 
-        type: 'traceroute',
-        payload: {
-          cto_latitude: dest_lat,
-          cto_longitude: dest_lgt,
-        },
-      });
-    }
-  }
-
-  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
-    setLatitude(latitude);
-    setLongitude(longitude);
-    setLatitudeDelta(latitudeDelta);
-    setLongitudeDelta(longitudeDelta);
-  }
-
-  function handleSelection(cto) {
-    if (selectedBtn === cto.nome && cto.nome !== suggestedCTO?.nome) {
-      setIsVisible(true);
-    } else {
-      setSelectedBtn(cto.nome);
-      handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))
-    }
-  }
-
-  function handleModalClosing() {
-    setSelectedBtn('');
-    setIsVisible(false);
-  }
-
-  async function handleUpdateCTO() {
-    const response_update = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.client_id}`, {
-        new_cto: suggestedCTO.nome,
-      }
-    );
-    
-    if (response_update.status === 200) {
-      ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
-      handleModalClosing();
-    }
-  }
-
+  
   return (
     <View style={styles.container}>
       <View style={styles.map_container}>
@@ -166,54 +185,66 @@ export default function CTOMapping({ route }) {
             }}
             title={client_name}
           />
-          {
-            arrayCTOs.map((cto) => (
-              <Marker
-                key={cto.id}
-                coordinate={{
-                  latitude: parseFloat(cto.latitude),
-                  longitude: parseFloat(cto.longitude),
-                }}
-                onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
-              >
-                <Icon name={"access-point-network"} size={30} color="#FF0000"/>
-                <Callout tooltip={true}>
-                  <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                    <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
-                  </View>
-                </Callout>
-              </Marker>
-            ))
+          { arrayCTOs.map((cto) => (
+            <Marker
+              key={cto.id}
+              coordinate={{
+                latitude: parseFloat(cto.latitude),
+                longitude: parseFloat(cto.longitude),
+              }}
+              onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+            >
+              <Icon name={"access-point-network"} size={30} color="#FF0000"/>
+              <Callout tooltip={true}>
+                <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                  <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
+                  <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
+                  <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          ))}
+          { suggestedCTO !== null &&
+            <Marker
+              key={suggestedCTO.id}
+              coordinate={{
+                latitude: parseFloat(suggestedCTO.latitude),
+                longitude: parseFloat(suggestedCTO.longitude),
+              }}
+              onPress={() => handleTraceRoute(parseFloat(suggestedCTO.latitude), parseFloat(suggestedCTO.longitude))}
+            >
+              <Icon name={"access-point-network"} size={30} color="#3842D2"/>
+              <Callout tooltip={true}>
+                <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                  <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{suggestedCTO.nome}</Text>
+                  <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {suggestedCTO.distance}</Text>
+                  <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {suggestedCTO.connection_amount}</Text>
+                </View>
+              </Callout>
+            </Marker>
           }
-          { state.dest_latitude !== null 
-            ? 
-              (
-                <MapViewDirections
-                  origin={{
-                    latitude: state.origin_latitude,
-                    longitude: state.origin_longitude,
-                  }}
-                  destination={{
-                    latitude: state.dest_latitude,
-                    longitude: state.dest_longitude, 
-                  }}
-                  apikey={GOOGLE_MAPS_APIKEY}
-                  strokeWidth={8}
-                  strokeColor="hotpink"
-                  mode="WALKING"
-                />
-              ) 
-            : <></>
+          { state.dest_latitude !== null && 
+            <MapViewDirections
+              apikey={GOOGLE_MAPS_APIKEY}
+              strokeWidth={8}
+              strokeColor="hotpink"
+              mode="WALKING"
+              origin={{
+                latitude: client_latitude,
+                longitude: client_longitude,
+              }}
+              destination={{
+                latitude: state.dest_latitude,
+                longitude: state.dest_longitude, 
+              }}
+            />
           }
         </MapView>
       </View>
       <View style={styles.bottom_menu}>
         <Text style={styles.main_title}>Caixa Sugerida</Text>
-        
         <TouchableOpacity 
-          style={suggestedCTO?.nome !== selectedBtn ? styles.suggested_card : styles.suggested_card_selected}
+          style={suggestedCTO?.nome === selectedBtn ? styles.suggested_card_selected : styles.suggested_card}
           onPress={() => handleSelection(suggestedCTO)} 
         >
           <View style={styles.card_name}>
@@ -221,7 +252,7 @@ export default function CTOMapping({ route }) {
               <Icon name={"access-point-network"} size={30} color="#000"/>
             </View>
             <Text style={styles.card_title}>
-              {suggestedCTO ? suggestedCTO.nome : route.params.suggested_cto}
+              {suggestedCTO && suggestedCTO.nome }
             </Text>
           </View>
           <View style={styles.distance_container}>
@@ -232,6 +263,7 @@ export default function CTOMapping({ route }) {
               {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
             </Text>
           </View>
+
         </TouchableOpacity>
         
         <Text style={styles.main_title}>Mais opções</Text>
@@ -241,7 +273,7 @@ export default function CTOMapping({ route }) {
           <View style={styles.sub_cards_container}>
             {
               arrayCTOs.map(cto => (
-                cto.nome === route.params.suggested_cto ? <></> :
+                cto.nome === suggestedCTO?.nome ? <></> :
                 selectedBtn !== cto.nome 
                 ?
                   <TouchableOpacity 
@@ -273,27 +305,27 @@ export default function CTOMapping({ route }) {
         </ScrollView>
       </View>
       <Modal
-          onBackButtonPress={handleModalClosing}
-          onBackdropPress={handleModalClosing}
-          children={
-            <View style={styles.modal_style}>
-              <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
-                Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?
-              </Text>
-              <TouchableOpacity style={styles.modal_cancel_btn}>
-                <Text onPress={handleModalClosing} style={styles.modal_btn_style}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleUpdateCTO} style={styles.modal_confirm_btn}>
-                <Text style={styles.modal_btn_style}>Confirmar</Text>
-              </TouchableOpacity>
-            </View>
-          }
-          isVisible={isVisible}
-          style={{margin: 0}}
-          animationInTiming={500}
-          animationOutTiming={500}
-          useNativeDriver={true}
-        />
+        onBackButtonPress={handleModalClosing}
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_style}>
+            <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
+              Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?
+            </Text>
+            <TouchableOpacity style={styles.modal_cancel_btn}>
+              <Text onPress={handleModalClosing} style={styles.modal_btn_style}>Cancelar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleUpdateCTO} style={styles.modal_confirm_btn}>
+              <Text style={styles.modal_btn_style}>Confirmar</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{margin: 0}}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
     </View>
   );
 }
