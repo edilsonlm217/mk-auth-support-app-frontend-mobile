@@ -1,20 +1,45 @@
-import React, { useEffect, useState }  from 'react';
+import React, { useEffect, useState, useContext }  from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, ScrollView } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
+import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { store } from '../../store/store';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
   const [isVisible, setIsVisible] = useState(false);
+
+  const [caixaHermetica, setCaixaHermetica] = useState(null);
+
+  // Hook para verificar se a tela atual está focada
+  const isFocused = useIsFocused(false);
+
+  // Declaração do estado global da aplicação
+  const globalState = useContext(store);
   
   useEffect(() => {
     const { data } = route.params;
     setState(data);
   }, []);
+
+  useEffect(() => {
+    checkForUpdate();
+  }, [isFocused]);
+
+  async function checkForUpdate() {
+    if (isFocused) {
+      const response = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.data.client_id}`
+      );
+
+      setCaixaHermetica(response.data.caixa_herm);
+    }
+  }
   
   async function OpenCoordinate(coordinate) {
     const [latidude, longitude] = coordinate.split(',');
@@ -87,6 +112,7 @@ export default function Details({ route, navigation }) {
       client_name: state.nome,
       client_id: state.client_id,
       suggested_cto: suggested_cto !== null ? suggested_cto : null,
+      checkForUpdate: checkForUpdate,
     });
   }
 
@@ -189,7 +215,7 @@ export default function Details({ route, navigation }) {
             <View style={styles.cto_line}>
               <View>
                 <Text style={styles.sub_text}>Caixa Sugerida</Text>
-                <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Não informada'}</Text>
+                <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Não informada'}</Text>
               </View>
               <View style={{justifyContent: 'center'}}>
                 <Icon name="map-search" size={30} color="#000" />

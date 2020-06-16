@@ -10,7 +10,7 @@ import { store } from '../../store/store';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
-export default function CTOMapping({ route }) {
+export default function CTOMapping({ route, navigation }) {
   // Estes dados do cliente nunca tem seus valores alterados
   const client_latitude = parseFloat(route.params.latidude);
   const client_longitude = parseFloat(route.params.longitude);
@@ -85,6 +85,7 @@ export default function CTOMapping({ route }) {
     if (response_update.status === 200) {
       ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
       handleModalClosing();
+      navigation.goBack();
     }
   }
 
