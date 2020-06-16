@@ -1,5 +1,5 @@
 import React, { useEffect, useState }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, ScrollView } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
@@ -134,51 +134,88 @@ export default function Details({ route, navigation }) {
           </Text>
         </View>
       </View>
-      <View style={styles.line_container}>
-        <Text style={styles.sub_text}>Horário de visita</Text>
-        <Text style={styles.main_text}>
-          {state.visita}
-        </Text>
-      </View>
-      <View style={styles.line_container}>
-        <Text style={styles.sub_text}>Serviço</Text>
-        <Text style={styles.main_text}>{state.assunto}</Text>
-      </View>
-      <View style={styles.line_container}>
-        <Text style={styles.sub_text}>Relato do cliente</Text>
-        <Text style={styles.main_text}>
-          {
-            state.mensagem
-              ? state.mensagem
-              : 'Sem comentários'
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.line_container}>
+          <Text style={styles.sub_text}>Horário de visita</Text>
+          <Text style={styles.main_text}>
+            {state.visita}
+          </Text>
+        </View>
+        <View style={styles.line_container}>
+          <Text style={styles.sub_text}>Serviço</Text>
+          <Text style={styles.main_text}>{state.assunto}</Text>
+        </View>
+        <View style={styles.line_container}>
+          <Text style={styles.sub_text}>Relato do cliente</Text>
+          <Text style={styles.main_text}>
+            {
+              state.mensagem
+                ? state.mensagem
+                : 'Sem comentários'
+            }
+          </Text>
+        </View>
+        <View style={styles.line_container}>
+          <Text style={styles.sub_text}>Login e senha</Text>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text style={styles.main_text}>{state.login}</Text>
+            <Text style={styles.main_text}>{state.senha}</Text>
+          </View>
+        </View>
+        <TouchableOpacity onPress={handleModalOpening}>
+          <View style={styles.location_line}>
+            <View>
+              <Text style={styles.sub_text}>Endereço</Text>
+              <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+            </View>
+            <View style={{justifyContent: 'center'}}>
+              <Icon name="navigation" size={30} color="#000" />
+            </View>
+          </View>
+        </TouchableOpacity>
+        {state.status === 'fechado'
+          ?
+            (<ClosingReason />)
+          :
+            <></>
+        }
+          
+        <View>
+          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+            <View style={styles.cto_line}>
+              <View>
+                <Text style={styles.sub_text}>Caixa Sugerida</Text>
+                <Text style={styles.main_text}>{state.caixa_hermetica}</Text>
+              </View>
+              <View style={{justifyContent: 'center'}}>
+                <Icon name="map-search" size={30} color="#000" />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </View>
+        <Modal
+          onBackButtonPress={handleModalClosing}
+          onBackdropPress={handleModalClosing}
+          children={
+            <View style={styles.modal_style}>
+              <Text style={styles.modal_header}>Selecione uma opção...</Text>
+              <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
+                <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
+                <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
+              </TouchableOpacity>
+            </View>
           }
-        </Text>
-      </View>
-      <View style={styles.line_container}>
-        <Text style={styles.sub_text}>Login e senha</Text>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.main_text}>{state.login}</Text>
-          <Text style={styles.main_text}>{state.senha}</Text>
-        </View>
-      </View>
-      <TouchableOpacity onPress={handleModalOpening}>
-        <View style={styles.location_line}>
-          <View>
-            <Text style={styles.sub_text}>Endereço</Text>
-            <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
-          </View>
-          <View style={{justifyContent: 'center'}}>
-            <Icon name="navigation" size={30} color="#000" />
-          </View>
-        </View>
-      </TouchableOpacity>
-      {state.status === 'fechado'
-        ?
-          (<ClosingReason />)
-        :
-          <></>
-      }
-        
+          isVisible={isVisible}
+          style={{margin: 0}}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
+      </ScrollView>
       {state.status === 'aberto'
         ? 
           (<TouchableOpacity style={styles.close_request_btn}>
@@ -186,39 +223,6 @@ export default function Details({ route, navigation }) {
           </TouchableOpacity>)
         : <></>
       }
-      <View>
-        <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-          <View style={styles.cto_line}>
-            <View>
-              <Text style={styles.sub_text}>Caixa Sugerida</Text>
-              <Text style={styles.main_text}>{state.caixa_hermetica}</Text>
-            </View>
-            <View style={{justifyContent: 'center'}}>
-              <Icon name="map-search" size={30} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
-      </View>
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        isVisible={isVisible}
-        style={{margin: 0}}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
     </View>
   );
 }
