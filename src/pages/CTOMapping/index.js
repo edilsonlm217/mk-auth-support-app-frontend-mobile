@@ -190,7 +190,9 @@ export default function CTOMapping({ route }) {
         </TouchableOpacity>
         
         <Text style={styles.main_title}>Mais opções</Text>
-        <ScrollView>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.sub_cards_container}>
             {
               arrayCTOs.map(cto => (
