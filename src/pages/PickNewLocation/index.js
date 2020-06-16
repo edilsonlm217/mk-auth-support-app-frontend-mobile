@@ -49,14 +49,16 @@ export default function PickNewLocation({ route, navigation }) {
     const client_id = route.params.data.id;
 
     const response = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}/${latitude}/${longitude}`
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+        latitude: latitude,
+        longitude: longitude,
+      }
     );
 
     if (response.status === 200) {
       ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
       navigation.goBack();
     }
-
   }
 
   return  (

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import Modal from 'react-native-modal';
 import axios from 'axios';
@@ -130,6 +130,19 @@ export default function CTOMapping({ route }) {
   function handleModalClosing() {
     setSelectedBtn('');
     setIsVisible(false);
+  }
+
+  async function handleUpdateCTO() {
+    const response_update = await axios.post(
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.client_id}`, {
+        new_cto: suggestedCTO.nome,
+      }
+    );
+    
+    if (response_update.status === 200) {
+      ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
+      handleModalClosing();
+    }
   }
 
   return (
@@ -270,7 +283,7 @@ export default function CTOMapping({ route }) {
               <TouchableOpacity style={styles.modal_cancel_btn}>
                 <Text onPress={handleModalClosing} style={styles.modal_btn_style}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.modal_confirm_btn}>
+              <TouchableOpacity onPress={handleUpdateCTO} style={styles.modal_confirm_btn}>
                 <Text style={styles.modal_btn_style}>Confirmar</Text>
               </TouchableOpacity>
             </View>

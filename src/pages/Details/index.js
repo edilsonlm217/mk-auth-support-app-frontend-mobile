@@ -85,7 +85,8 @@ export default function Details({ route, navigation }) {
       latidude: latidude,
       longitude: longitude,
       client_name: state.nome,
-      suggested_cto: suggested_cto !== null ? suggested_cto : 'Não informada',
+      client_id: state.client_id,
+      suggested_cto: suggested_cto !== null ? suggested_cto : null,
     });
   }
 
