@@ -103,7 +103,7 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function handleNavigateCTOMap(coordinate, suggested_cto) {
+  function handleNavigateCTOMap(coordinate) {
     if (coordinate) {
       const [latidude, longitude] = coordinate.split(',');
       
@@ -112,8 +112,6 @@ export default function Details({ route, navigation }) {
         longitude: longitude,
         client_name: state.nome,
         client_id: state.client_id,
-        suggested_cto: suggested_cto !== null ? suggested_cto : null,
-        checkForUpdate: checkForUpdate,
       });
     } else {
       Alert.alert('Impossível localizar', 'Este cliente não possui coordenadas definidas');
@@ -215,7 +213,7 @@ export default function Details({ route, navigation }) {
         }
           
         <View>
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas, state.caixa_hermetica)}>
+          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
             <View style={styles.cto_line}>
               <View>
                 <Text style={styles.sub_text}>Caixa Sugerida</Text>
