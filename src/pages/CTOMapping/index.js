@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ToastAndroid, RefreshControl } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import Modal from 'react-native-modal';
 import axios from 'axios';
@@ -43,6 +43,9 @@ export default function CTOMapping({ route, navigation }) {
 
   // Estado que controla a visibilidade do modal de confirmação da alteração de CTO
   const [isVisible, setIsVisible] = useState(false);
+
+  // Estado para controlar o refresh controller
+  const [refreshing, setRefreshing] = useState(false);
 
   function reducer(state, action) {
     switch (action.type) {
@@ -110,17 +113,19 @@ export default function CTOMapping({ route, navigation }) {
       );
       
       const { caixa_herm } = client.data;
-
-      const current_client_cto = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`
-      );
-
-      const route_response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude},${current_client_cto.data.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`)
       
-      current_client_cto.data.distance = route_response.data.rows[0].elements[0].distance.text;
-      current_client_cto.data.distance_value = route_response.data.rows[0].elements[0].distance.value;
-      
-      setSuggestedCTO(current_client_cto.data);
+      if (caixa_herm) {
+        const current_client_cto = await axios.get(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`
+        );
+  
+        const route_response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude},${current_client_cto.data.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`)
+        
+        current_client_cto.data.distance = route_response.data.rows[0].elements[0].distance.text;
+        current_client_cto.data.distance_value = route_response.data.rows[0].elements[0].distance.value;
+        
+        setSuggestedCTO(current_client_cto.data);
+      }
     }
 
     loadSuggestedCTOData();
@@ -128,6 +133,7 @@ export default function CTOMapping({ route, navigation }) {
 
   useEffect(() => {
     async function getCTOs() {
+      setRefreshing(true);
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`
       );
@@ -160,6 +166,7 @@ export default function CTOMapping({ route, navigation }) {
       });
 
       setArrayCTOs(array_cto);
+      setRefreshing(false);
     }
 
     getCTOs();
@@ -243,33 +250,46 @@ export default function CTOMapping({ route, navigation }) {
         </MapView>
       </View>
       <View style={styles.bottom_menu}>
-        <Text style={styles.main_title}>Caixa Sugerida</Text>
-        <TouchableOpacity 
-          style={suggestedCTO?.nome === selectedBtn ? styles.suggested_card_selected : styles.suggested_card}
-          onPress={() => handleSelection(suggestedCTO)} 
-        >
-          <View style={styles.card_name}>
-            <View style={styles.icon_container}>
-              <Icon name={"access-point-network"} size={30} color="#000"/>
-            </View>
-            <Text style={styles.card_title}>
-              {suggestedCTO && suggestedCTO.nome }
-            </Text>
-          </View>
-          <View style={styles.distance_container}>
-            <Text style={styles.card_distance}>
-              {suggestedCTO ? suggestedCTO.distance : ''}
-            </Text>
-            <Text style={styles.connection_amount}>
-              {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
-            </Text>
-          </View>
-
-        </TouchableOpacity>
+        { suggestedCTO !== null 
+          ? 
+            <>
+              <Text style={styles.main_title}>Caixa Sugerida</Text>
+              <TouchableOpacity 
+                style={suggestedCTO?.nome === selectedBtn ? styles.suggested_card_selected : styles.suggested_card}
+                onPress={() => handleSelection(suggestedCTO)} 
+              >
+                <View style={styles.card_name}>
+                  <View style={styles.icon_container}>
+                    <Icon name={"access-point-network"} size={30} color="#000"/>
+                  </View>
+                  <Text style={styles.card_title}>
+                    {suggestedCTO && suggestedCTO.nome }
+                  </Text>
+                </View>
+                <View style={styles.distance_container}>
+                  <Text style={styles.card_distance}>
+                    {suggestedCTO ? suggestedCTO.distance : ''}
+                  </Text>
+                  <Text style={styles.connection_amount}>
+                    {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+          </>
+          : 
+            <>
+              <Text style={[styles.main_title, { marginBottom: 10, color: '#AFAFAF'}]}>
+                Nenhuma caixa sugerida
+              </Text>
+            </>
+        }
         
         <Text style={styles.main_title}>Mais opções</Text>
         <ScrollView
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} />
+          }
         >
           <View style={styles.sub_cards_container}>
             {
