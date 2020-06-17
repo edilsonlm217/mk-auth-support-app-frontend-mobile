@@ -104,16 +104,20 @@ export default function Details({ route, navigation }) {
   }
 
   function handleNavigateCTOMap(coordinate, suggested_cto) {
-    const [latidude, longitude] = coordinate.split(',');
-    
-    navigation.navigate('CTOs', {
-      latidude: latidude,
-      longitude: longitude,
-      client_name: state.nome,
-      client_id: state.client_id,
-      suggested_cto: suggested_cto !== null ? suggested_cto : null,
-      checkForUpdate: checkForUpdate,
-    });
+    if (coordinate) {
+      const [latidude, longitude] = coordinate.split(',');
+      
+      navigation.navigate('CTOs', {
+        latidude: latidude,
+        longitude: longitude,
+        client_name: state.nome,
+        client_id: state.client_id,
+        suggested_cto: suggested_cto !== null ? suggested_cto : null,
+        checkForUpdate: checkForUpdate,
+      });
+    } else {
+      Alert.alert('Impossível localizar', 'Este cliente não possui coordenadas definidas');
+    }
   }
 
   function handleNavigateNewLocationPicker() {
@@ -215,7 +219,7 @@ export default function Details({ route, navigation }) {
             <View style={styles.cto_line}>
               <View>
                 <Text style={styles.sub_text}>Caixa Sugerida</Text>
-                <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Não informada'}</Text>
+                <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Nenhuma'}</Text>
               </View>
               <View style={{justifyContent: 'center'}}>
                 <Icon name="map-search" size={30} color="#000" />
@@ -271,7 +275,8 @@ const styles = StyleSheet.create({
   main_text: { 
     fontWeight: "bold",
     fontSize: 20,
-    maxWidth: '95%', 
+    minWidth: '90%',
+    maxWidth: '95%',
   },
   
   sub_text: { 
