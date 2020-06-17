@@ -87,7 +87,7 @@ export default function CTOMapping({ route, navigation }) {
     
     if (response_update.status === 200) {
       ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
-      handleModalClosing();
+      setIsVisible(false);
       navigation.goBack();
     }
   }
