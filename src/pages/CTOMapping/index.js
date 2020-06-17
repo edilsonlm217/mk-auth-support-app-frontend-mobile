@@ -194,7 +194,7 @@ export default function CTOMapping({ route, navigation }) {
             title={client_name}
           />
           { arrayCTOs.map((cto) => ( 
-            cto.id !== suggestedCTO.id &&
+            cto.id !== suggestedCTO?.id &&
               <Marker
                 key={cto.id}
                 coordinate={{
