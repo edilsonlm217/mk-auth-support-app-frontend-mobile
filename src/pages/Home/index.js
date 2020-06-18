@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import { Dimensions, View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, RefreshControl } from 'react-native';
+import { Dimensions, View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, RefreshControl, Image } from 'react-native';
 import {format, subDays, addDays} from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 
 import { store } from '../../store/store';
@@ -12,6 +13,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
 import Card from '../../components/Card/index';
+
+import NoConnection from '../../assets/broken-link.png';
 
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
@@ -32,19 +35,26 @@ export default function Home({ navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  // Hook para verificar se a tela atual está focada
+  const isFocused = useIsFocused(false);
+
+  // Estado que verificar se houve erro no carregamento dos dados da API
+  const [isOutOfConnection, setIsOutOfConnection] = useState(false);
+
   async function onRefresh() {
-    setRefreshing(true);
     loadAPI();
-    setRefreshing(false);
   }
 
   async function loadAPI() {
     try {
+      setRefreshing(true);
       const response = await axios.post(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
         {
           tecnico: globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
+        }, {
+          timeout: 2500,
         }
       );
 
@@ -54,16 +64,28 @@ export default function Home({ navigation }) {
           requests: response.data,
         },
       });
-    } catch {
-      Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
+      setRefreshing(false);
+      setIsOutOfConnection(false);
+    } catch (error) {
+      setRefreshing(false);
+      if (error.message.includes('401')) {
+        Alert.alert('Sessão expirada', 'Sua sessão não é mais válida. Você será direcionado a tela de login');
+      } else {
+        Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
+        setIsOutOfConnection(true);
+      }
     }
   }
 
   useEffect(() => {
-    setRefreshing(true);
     loadAPI();
-    setRefreshing(false);
   }, [date]);
+
+  useEffect(() => {
+    if (isFocused) {
+      loadAPI();
+    }
+  }, [isFocused]);
   
   
   function reducer(state, action) {
@@ -113,66 +135,104 @@ export default function Home({ navigation }) {
   }
 
   function OpenRequestsRoute() {
-    return (
-      <View style={styles.section_container}>
-        { state.open_requests.length !== 0
-          ?
-            <ScrollView 
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-            >
-              { state.open_requests.map(item => (
-                <Card key={item.id} item={item} navigation={navigation}/>
-              ))} 
-            </ScrollView>
-          :
-            <View style={{flex: 1}}>
-              <ScrollView
+    if (isOutOfConnection === false) {
+      return (
+        <View style={styles.section_container}>
+          { state.open_requests.length !== 0
+            ?
+              <ScrollView 
                 refreshControl={
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
               >
-                <View>
-                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
-                </View>
+                { state.open_requests.map(item => (
+                  <Card key={item.id} item={item} navigation={navigation}/>
+                ))} 
               </ScrollView>
+            :
+              <View style={{flex: 1}}>
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                >
+                  { refreshing !== true && 
+                    <View>
+                      <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                    </View>
+                  }
+                </ScrollView>
+              </View>
+          }
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.section_container}>
+          <ScrollView 
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            <View style={{alignItems: 'center', marginTop: 50}}>
+              <Image source={NoConnection}/>
+              <Text style={{fontSize: 18, marginTop: 30}}>Não há conexão com o servidor</Text>
             </View>
-        }
-      </View>
-    );
+          </ScrollView>
+        </View>
+      );
+    }
   }
 
   function CloseRequestsRoute() {
-    return (
-      <View style={styles.section_container}>
-        {
-          state.close_requests.length !== 0
-          ?
-            <ScrollView
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-            >
-              { state.close_requests.map(item => (
-                <Card key={item.id} item={item} navigation={navigation}/>
-              ))} 
-            </ScrollView>
-          :
-            <View style={{flex: 1}}>
+    if (isOutOfConnection === false) {
+      return (
+        <View style={styles.section_container}>
+          {
+            state.close_requests.length !== 0
+            ?
               <ScrollView
                 refreshControl={
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
               >
-                <View>
-                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
-                </View>
+                { state.close_requests.map(item => (
+                  <Card key={item.id} item={item} navigation={navigation}/>
+                ))} 
               </ScrollView>
+            :
+              <View style={{flex: 1}}>
+                <ScrollView
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
+                >
+                  { refreshing !== true && 
+                    <View>
+                      <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                    </View>
+                  }
+                </ScrollView>
+              </View>
+          }
+        </View>
+      );
+    } else {
+      return (
+        <View style={styles.section_container}>
+          <ScrollView 
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+          >
+            <View style={{alignItems: 'center', marginTop: 50}}>
+              <Image source={NoConnection}/>
+              <Text style={{fontSize: 18, marginTop: 30}}>Não há conexão com o servidor</Text>
             </View>
-        }
-      </View>
-    );
+          </ScrollView>
+        </View>
+      );
+    }
   }
 
   const renderScene = SceneMap({
