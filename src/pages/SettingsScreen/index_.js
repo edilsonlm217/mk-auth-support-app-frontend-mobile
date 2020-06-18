@@ -20,12 +20,6 @@ export default function SettingsScreen({ navigation }) {
   const [isPortDialogVisible, setIsPortDialogVisible] = useState(false);
   const [serverPort, setServerPort] = useState(null);
 
-  // Estado para guardar o novo IP informado pelo usuário
-  const [tempIP, setTempIP] = useState(null);
-  
-  // Estado para guardar a nova PORTA informado pelo usuário
-  const [tempPort, setTempPort] = useState(null);
-
   const globalState = useContext(store);
   const { signOut, changeConfig } = globalState.methods;
 
@@ -43,12 +37,12 @@ export default function SettingsScreen({ navigation }) {
 
   function handleIPCancelBtn() {
     setIsIPDialogVisible(false);
-    setTempIP(null);
+    setServerIP(null);
   }
 
   function handlePortCancelBtn() {
     setIsPortDialogVisible(false);
-    setTempPort(null);
+    setServerPort(null);
   }
 
   function SaveButton() {
@@ -78,28 +72,6 @@ export default function SettingsScreen({ navigation }) {
     } catch {
       Alert.alert('Falha ao deslogar. Tente novamente!');
     }
-  }
-
-  function ValidateIPaddress(ipaddress) {  
-    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {  
-      return (true)  
-    }  
-     
-    return (false)  
-  }
-
-  function confirmIPChange() {
-    if (ValidateIPaddress(tempIP)) {
-      setIsIPDialogVisible(false);
-      setServerIP(tempIP);
-    } else {
-      Alert.alert('IP inválido', 'Este não é um endereço IP válido');
-    }
-  }
-
-  function confirmPortChange() {
-    setIsPortDialogVisible(false);
-    setServerPort(tempPort);
   }
 
   return (
@@ -149,13 +121,12 @@ export default function SettingsScreen({ navigation }) {
             Por favor informe o endereço IP de seu servidor
           </Dialog.Description>
           <Dialog.Input
-            keyboardType="number-pad"
-            onChangeText={ip => {setTempIP(ip)}} 
+            onChangeText={ip => {setServerIP(ip)}} 
             label='IP' 
             wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}
           />
           <Dialog.Button onPress={handleIPCancelBtn} label="Cancelar" />
-          <Dialog.Button onPress={() => confirmIPChange()} label="Confirmar" />
+          <Dialog.Button onPress={() => setIsIPDialogVisible(false)} label="Confirmar" />
         </Dialog.Container>
       </View>
 
@@ -166,13 +137,12 @@ export default function SettingsScreen({ navigation }) {
             Por favor informe a porta de acesso do IP informado
           </Dialog.Description>
           <Dialog.Input 
-            keyboardType="number-pad"
-            onChangeText={port => {setTempPort(port)}} 
+            onChangeText={port => {setServerPort(port)}} 
             label='Porta' 
             wrapperStyle={{borderBottomWidth: StyleSheet.hairlineWidth}}
           />
           <Dialog.Button onPress={handlePortCancelBtn} label="Cancelar" />
-          <Dialog.Button onPress={() => confirmPortChange()} label="Confirmar" />
+          <Dialog.Button onPress={() => setIsPortDialogVisible(false)} label="Confirmar" />
         </Dialog.Container>
       </View>
     </>
