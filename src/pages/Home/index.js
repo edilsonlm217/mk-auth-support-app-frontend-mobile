@@ -3,6 +3,7 @@ import { Dimensions, View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView
 import {format, subDays, addDays} from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
 
 import { store } from '../../store/store';
@@ -32,19 +33,23 @@ export default function Home({ navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  // Hook para verificar se a tela atual está focada
+  const isFocused = useIsFocused(false);
+
   async function onRefresh() {
-    setRefreshing(true);
     loadAPI();
-    setRefreshing(false);
   }
 
   async function loadAPI() {
     try {
+      setRefreshing(true);
       const response = await axios.post(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`, 
         {
           tecnico: globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
+        }, {
+          timeout: 2500,
         }
       );
 
@@ -54,16 +59,22 @@ export default function Home({ navigation }) {
           requests: response.data,
         },
       });
-    } catch {
-      Alert.alert('Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
+      setRefreshing(false);
+    } catch (error) {
+      setRefreshing(false);
+      Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
     }
   }
 
   useEffect(() => {
-    setRefreshing(true);
     loadAPI();
-    setRefreshing(false);
   }, [date]);
+
+  useEffect(() => {
+    if (isFocused) {
+      loadAPI();
+    }
+  }, [isFocused]);
   
   
   function reducer(state, action) {
@@ -133,9 +144,11 @@ export default function Home({ navigation }) {
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
               >
-                <View>
-                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
-                </View>
+                { refreshing !== true && 
+                  <View>
+                    <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                  </View>
+                }
               </ScrollView>
             </View>
         }
@@ -165,9 +178,11 @@ export default function Home({ navigation }) {
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
               >
-                <View>
-                  <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
-                </View>
+                { refreshing !== true && 
+                  <View>
+                    <Text style={{alignSelf: 'center', marginTop: 50, fontSize: 18}}>Nenhum chamado</Text>
+                  </View>
+                }
               </ScrollView>
             </View>
         }
