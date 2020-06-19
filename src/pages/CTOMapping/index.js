@@ -80,9 +80,16 @@ export default function CTOMapping({ route, navigation }) {
 
   async function handleUpdateCTO() {
     const response_update = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+      {
         new_cto: selectedBtn,
-      }
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
     );
     
     if (response_update.status === 200) {
@@ -109,14 +116,24 @@ export default function CTOMapping({ route, navigation }) {
   useEffect(() => {
     async function loadSuggestedCTOData() {
       const client = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
       );
       
       const { caixa_herm } = client.data;
       
       if (caixa_herm) {
         const current_client_cto = await axios.get(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`, {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
         );
   
         const route_response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude},${current_client_cto.data.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`)
@@ -135,7 +152,12 @@ export default function CTOMapping({ route, navigation }) {
     async function getCTOs() {
       setRefreshing(true);
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`, {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
       );
       
       var queries_array = [];
