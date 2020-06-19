@@ -56,9 +56,13 @@ export default function Home({ navigation }) {
         {
           tecnico: globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
-        }, {
+        }, 
+        {
           timeout: 2500,
-        }
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
       );
 
       dispatch({
