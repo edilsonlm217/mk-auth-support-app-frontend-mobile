@@ -34,7 +34,13 @@ export default function Details({ route, navigation }) {
   async function checkForUpdate() {
     if (isFocused) {
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.data.client_id}`
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.data.client_id}`,
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
       );
 
       setCaixaHermetica(response.data.caixa_herm);

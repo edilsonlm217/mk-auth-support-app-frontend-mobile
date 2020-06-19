@@ -4,6 +4,7 @@ import {format, subDays, addDays} from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 
 import { store } from '../../store/store';
@@ -21,6 +22,8 @@ export default function Home({ navigation }) {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const globalState = useContext(store);
+
+  const { signOut } = globalState.methods;
 
   const [state, dispatch] = useReducer(reducer, {
     open_requests: [],
@@ -53,9 +56,13 @@ export default function Home({ navigation }) {
         {
           tecnico: globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'")+"00:00:00.000Z",
-        }, {
+        }, 
+        {
           timeout: 2500,
-        }
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
       );
 
       dispatch({
@@ -69,6 +76,7 @@ export default function Home({ navigation }) {
     } catch (error) {
       setRefreshing(false);
       if (error.message.includes('401')) {
+        handleLogout();
         Alert.alert('Sessão expirada', 'Sua sessão não é mais válida. Você será direcionado a tela de login');
       } else {
         Alert.alert('Erro de conexão', 'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.');
@@ -232,6 +240,17 @@ export default function Home({ navigation }) {
           </ScrollView>
         </View>
       );
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port'];
+      await AsyncStorage.multiRemove(keys);
+      
+      signOut();
+    } catch (error) {
+      Alert.alert('Error', 'Não foi possível fazer logout automático');
     }
   }
 
