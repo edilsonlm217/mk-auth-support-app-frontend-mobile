@@ -155,6 +155,10 @@ export default function Details({ route, navigation }) {
   function handleModalClosing() {
     setIsVisible(false);
   }
+
+  function handleCloseRequest() {
+    Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
+  }
   
   return (
     <View style={styles.container}>
@@ -254,7 +258,7 @@ export default function Details({ route, navigation }) {
       </ScrollView>
       {state.status === 'aberto'
         ? 
-          (<TouchableOpacity style={styles.close_request_btn}>
+          (<TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
             <Text style={styles.btn_label}>Fechar Chamado</Text>
           </TouchableOpacity>)
         : <></>
