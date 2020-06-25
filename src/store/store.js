@@ -92,6 +92,8 @@ const StateProvider = ( { children } ) => {
           const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
             login,
             password,
+          }, {
+            timeout: 5000,
           });
 
           const { token, user } = response.data;
@@ -104,7 +106,7 @@ const StateProvider = ( { children } ) => {
           try {
             await AsyncStorage.multiSet([auth_token_key, server_ip_key, server_port_key, employee_id_key]);
           } catch(e) {
-            Alert.alert('Não foi possível salvar dados na Storage');
+            Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
           }
   
           dispatch({ type: 'SIGN_IN', payload: {
@@ -114,12 +116,15 @@ const StateProvider = ( { children } ) => {
             employee_id: user.employee_id,
           } });
 
+          return true;
+
         } catch (err) {
           if (err.message.includes('401')) {
-            Alert.alert('Usuário ou senha inválidos');
+            Alert.alert('Erro', 'Usuário ou senha inválidos');
           } else {
-            Alert.alert('Não foi possível encontrar o servidor');
+            Alert.alert('Erro de conexão', 'Não foi possível encontrar o servidor');
           }
+          return true;
         }
       },
       
