@@ -48,16 +48,26 @@ export default function PickNewLocation({ route, navigation }) {
   async function updateClientCoordinates() {
     const client_id = route.params.data.id;
 
-    const response = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
-        latitude: latitude,
-        longitude: longitude,
+    try {
+      const response = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+          latitude: latitude,
+          longitude: longitude,
+        }, 
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
+        navigation.goBack();
       }
-    );
-
-    if (response.status === 200) {
-      ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
-      navigation.goBack();
+    } catch {
+      Alert.alert('Erro', 'Não foi possível atualizar localização');
     }
   }
 
