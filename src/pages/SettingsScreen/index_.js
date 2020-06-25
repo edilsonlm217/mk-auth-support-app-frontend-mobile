@@ -70,7 +70,7 @@ export default function SettingsScreen({ navigation }) {
       
       signOut();
     } catch {
-      Alert.alert('Falha ao deslogar. Tente novamente!');
+      Alert.alert('Erro', 'Falha ao deslogar. Tente novamente!');
     }
   }
 

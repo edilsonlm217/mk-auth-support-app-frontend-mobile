@@ -66,7 +66,7 @@ export default function CTOMapping({ route, navigation }) {
 
   function handleTraceRoute(dest_lat, dest_lgt) {
     if (dest_lat == null || dest_lgt == null) {
-      Alert.alert('Caixa Hermetica sugerida não está no mapa');
+      Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
     } else {
       dispatch({ 
         type: 'traceroute',

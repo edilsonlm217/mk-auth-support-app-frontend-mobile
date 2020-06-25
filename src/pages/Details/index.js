@@ -67,7 +67,7 @@ export default function Details({ route, navigation }) {
           });
         });
       } else {
-        Alert.alert('Não foi possível recuperar sua Localização');
+        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
     } catch (err) {
       Alert.alert('Erro');
