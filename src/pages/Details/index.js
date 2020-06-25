@@ -222,7 +222,7 @@ export default function Details({ route, navigation }) {
           <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
             <View style={styles.cto_line}>
               <View>
-                <Text style={styles.sub_text}>Caixa Sugerida</Text>
+                <Text style={styles.sub_text}>Caixa Atual</Text>
                 <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Nenhuma'}</Text>
               </View>
               <View style={{justifyContent: 'center'}}>
