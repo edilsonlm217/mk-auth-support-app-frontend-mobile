@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useReducer } from 'react';
+import React, { useState, useEffect, useContext, useReducer, useRef } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ToastAndroid, RefreshControl } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
@@ -11,6 +11,7 @@ import { store } from '../../store/store';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
 export default function CTOMapping({ route, navigation }) {
+  
   // Estes dados do cliente nunca tem seus valores alterados
   const client_latitude = parseFloat(route.params.latidude);
   const client_longitude = parseFloat(route.params.longitude);
@@ -22,10 +23,13 @@ export default function CTOMapping({ route, navigation }) {
   const [longitude, setLongitude] = useState(client_longitude);
   const [latitudeDelta, setLatitudeDelta] = useState(0.01);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
-
+  
   // Estado contendo todas as CTOs existente dentro do raio de busca
   const [arrayCTOs, setArrayCTOs] = useState([]);
-
+  
+  // array de referencias para cada CTO do estado arrayCTOs
+  const ref_arrayCTOs = [];
+  
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
@@ -66,7 +70,7 @@ export default function CTOMapping({ route, navigation }) {
 
   function handleTraceRoute(dest_lat, dest_lgt) {
     if (dest_lat == null || dest_lgt == null) {
-      Alert.alert('Caixa Hermetica sugerida não está no mapa');
+      Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
     } else {
       dispatch({ 
         type: 'traceroute',
@@ -109,7 +113,8 @@ export default function CTOMapping({ route, navigation }) {
       setIsVisible(true);
     } else {
       setSelectedBtn(cto.nome);
-      handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))
+      handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude));
+      ref_arrayCTOs[cto.id].showCallout();
     }
   }
 
@@ -215,7 +220,7 @@ export default function CTOMapping({ route, navigation }) {
             }}
             title={client_name}
           />
-          { arrayCTOs.map((cto) => ( 
+          { arrayCTOs.map(cto => ( 
             cto.id !== suggestedCTO?.id &&
               <Marker
                 key={cto.id}
@@ -224,13 +229,14 @@ export default function CTOMapping({ route, navigation }) {
                   longitude: parseFloat(cto.longitude),
                 }}
                 onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+                ref={(ref) => ref_arrayCTOs[cto.id] = ref}
               >
                 <Icon name={"access-point-network"} size={30} color="#FF0000"/>
                 <Callout tooltip={true}>
-                  <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                    <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
+                  <View style={{width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                    <Text style={{fontWeight: "bold", fontSize: 16, color: '#FFF'}}>{cto.nome}</Text>
+                    <Text style={{color: '#FFF', fontSize: 14}}>Distancia: {cto.distance}</Text>
+                    <Text style={{color: '#FFF', fontSize: 14}}>Conectados: {cto.connection_amount}</Text>
                   </View>
                 </Callout>
               </Marker>
@@ -243,13 +249,14 @@ export default function CTOMapping({ route, navigation }) {
                 longitude: parseFloat(suggestedCTO.longitude),
               }}
               onPress={() => handleTraceRoute(parseFloat(suggestedCTO.latitude), parseFloat(suggestedCTO.longitude))}
+              ref={(ref) => ref_arrayCTOs[suggestedCTO.id] = ref}
             >
               <Icon name={"access-point-network"} size={30} color="#3842D2"/>
               <Callout tooltip={true}>
-                <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                  <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{suggestedCTO.nome}</Text>
-                  <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {suggestedCTO.distance}</Text>
-                  <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {suggestedCTO.connection_amount}</Text>
+              <View style={{width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                  <Text style={{fontWeight: "bold", fontSize: 16, color: '#FFF'}}>{suggestedCTO.nome}</Text>
+                  <Text style={{color: '#FFF', fontSize: 14}}>Distancia: {suggestedCTO.distance}</Text>
+                  <Text style={{color: '#FFF', fontSize: 14}}>Conectados: {suggestedCTO.connection_amount}</Text>
                 </View>
               </Callout>
             </Marker>

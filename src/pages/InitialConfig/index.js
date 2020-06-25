@@ -28,10 +28,10 @@ export default function InitialConfig({ navigation }) {
           server_port: port,
         });
       } else {
-        Alert.alert('Este endereço IP não é válido');  
+        Alert.alert('Erro', 'Este endereço IP não é válido');  
       }
     } else {
-      Alert.alert('Todos os campos são obrigatórios');
+      Alert.alert('Erro', 'Todos os campos são obrigatórios');
     }
   }
 

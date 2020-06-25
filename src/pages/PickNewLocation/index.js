@@ -31,7 +31,7 @@ export default function PickNewLocation({ route, navigation }) {
           setLongitude(current_longitude);
         });
       } else {
-        Alert.alert('Não foi possível recuperar sua Localização');
+        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
     }
 

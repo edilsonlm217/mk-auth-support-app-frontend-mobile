@@ -67,7 +67,7 @@ export default function Details({ route, navigation }) {
           });
         });
       } else {
-        Alert.alert('Não foi possível recuperar sua Localização');
+        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
     } catch (err) {
       Alert.alert('Erro');
@@ -155,6 +155,10 @@ export default function Details({ route, navigation }) {
   function handleModalClosing() {
     setIsVisible(false);
   }
+
+  function handleCloseRequest() {
+    Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
+  }
   
   return (
     <View style={styles.container}>
@@ -196,8 +200,8 @@ export default function Details({ route, navigation }) {
         <View style={styles.line_container}>
           <Text style={styles.sub_text}>Login e senha</Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={styles.main_text}>{state.login}</Text>
-            <Text style={styles.main_text}>{state.senha}</Text>
+            <Text style={styles.main_text_login_senha}>{state.login}</Text>
+            <Text style={styles.main_text_login_senha}>{state.senha}</Text>
           </View>
         </View>
         <TouchableOpacity onPress={handleModalOpening}>
@@ -222,7 +226,7 @@ export default function Details({ route, navigation }) {
           <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
             <View style={styles.cto_line}>
               <View>
-                <Text style={styles.sub_text}>Caixa Sugerida</Text>
+                <Text style={styles.sub_text}>Caixa Atual</Text>
                 <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Nenhuma'}</Text>
               </View>
               <View style={{justifyContent: 'center'}}>
@@ -254,7 +258,7 @@ export default function Details({ route, navigation }) {
       </ScrollView>
       {state.status === 'aberto'
         ? 
-          (<TouchableOpacity style={styles.close_request_btn}>
+          (<TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
             <Text style={styles.btn_label}>Fechar Chamado</Text>
           </TouchableOpacity>)
         : <></>
@@ -275,12 +279,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
   },
+
+  main_text_login_senha: { 
+    fontWeight: "bold",
+    fontSize: 20,
+  },
   
   main_text: { 
     fontWeight: "bold",
     fontSize: 20,
     minWidth: '90%',
-    maxWidth: '95%',
+    maxWidth: '90%',
   },
   
   sub_text: { 

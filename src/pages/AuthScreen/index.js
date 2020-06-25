@@ -7,10 +7,11 @@ import {
   Image, 
   TextInput, 
   TouchableOpacity,
-  Alert } from 'react-native';
+  Alert, ActivityIndicator } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import Modal from 'react-native-modal';
 
 import { store } from '../../store/store';
 
@@ -23,16 +24,25 @@ export default function AuthScreen({ route, navigation }) {
   const globalState = useContext(store);
   const { signIn } = globalState.methods;
 
-  function handleSignIn() {
+  // Estado que controla a visibilidade do modal de confirmação da alteração de CTO
+  const [isVisible, setIsVisible] = useState(false);
+
+  async function handleSignIn() {
     if (login !== '' && password !== '') {
-      signIn({
+      setIsVisible(true);
+      
+      const isDone = await signIn({
         login,
         password, 
         server_ip: route.params.server_ip,
         server_port: route.params.server_port,
       });
+
+      if (isDone) {
+        setIsVisible(false);
+      }
     } else {
-      Alert.alert('Por favor informe todos os campos');
+      Alert.alert('Erro', 'Por favor informe todos os campos');
     }
 
   }
@@ -96,6 +106,22 @@ export default function AuthScreen({ route, navigation }) {
         <Icon name="chevron-left" size={30} color="#FFF" />
         <Text style={styles.navigators_text_style}>Voltar</Text>
       </TouchableOpacity>
+
+      <Modal
+        children={
+          <View style={styles.modal_style}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
+              Carregando...
+            </Text>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{margin: 0}}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
 
     </LinearGradient>
   );
@@ -166,5 +192,15 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 10,
     flexDirection: "row",
+  },
+
+  modal_style: {
+    width: 300,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 5,
+    padding: 20,
+    paddingTop: 10,
   },
 });
