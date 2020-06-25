@@ -227,10 +227,10 @@ export default function CTOMapping({ route, navigation }) {
               >
                 <Icon name={"access-point-network"} size={30} color="#FF0000"/>
                 <Callout tooltip={true}>
-                  <View style={{width: 200, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                    <Text style={{fontWeight: "bold", fontSize: 30, color: '#FFF'}}>{cto.nome}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Distancia: {cto.distance}</Text>
-                    <Text style={{color: '#FFF', fontSize: 20}}>Conectados: {cto.connection_amount}</Text>
+                  <View style={{width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
+                    <Text style={{fontWeight: "bold", fontSize: 16, color: '#FFF'}}>{cto.nome}</Text>
+                    <Text style={{color: '#FFF', fontSize: 14}}>Distancia: {cto.distance}</Text>
+                    <Text style={{color: '#FFF', fontSize: 14}}>Conectados: {cto.connection_amount}</Text>
                   </View>
                 </Callout>
               </Marker>
