@@ -196,8 +196,8 @@ export default function Details({ route, navigation }) {
         <View style={styles.line_container}>
           <Text style={styles.sub_text}>Login e senha</Text>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text style={styles.main_text}>{state.login}</Text>
-            <Text style={styles.main_text}>{state.senha}</Text>
+            <Text style={styles.main_text_login_senha}>{state.login}</Text>
+            <Text style={styles.main_text_login_senha}>{state.senha}</Text>
           </View>
         </View>
         <TouchableOpacity onPress={handleModalOpening}>
@@ -275,12 +275,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
   },
+
+  main_text_login_senha: { 
+    fontWeight: "bold",
+    fontSize: 20,
+  },
   
   main_text: { 
     fontWeight: "bold",
     fontSize: 20,
     minWidth: '90%',
-    maxWidth: '95%',
+    maxWidth: '90%',
   },
   
   sub_text: { 
