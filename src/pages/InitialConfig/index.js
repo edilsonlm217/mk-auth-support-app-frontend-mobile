@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { 
   View, 
-  StyleSheet, 
+  PixelRatio,
   Text, 
-  Dimensions, 
   Image, 
   TextInput,
   Alert, 
@@ -19,6 +18,8 @@ import styles from './styles';
 export default function InitialConfig({ navigation }) {
   const [serverIP, setServerIP] = useState('');
   const [port, setPort] = useState('');
+
+  const device_pixel_ratio = PixelRatio.get();
   
   async function handleNextPage() {
     if (serverIP !== '' && port !== '') {
@@ -65,7 +66,7 @@ export default function InitialConfig({ navigation }) {
           
           <View style={styles.input_container}>
             <View style={{width: '10%', alignItems: 'center'}}>
-              <Icon name="laptop" size={28} color="#002f58" />
+              <Icon name="laptop" size={device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(28): 28} color="#002f58" />
             </View>
             <TextInput
               keyboardType="number-pad"
@@ -77,7 +78,7 @@ export default function InitialConfig({ navigation }) {
 
           <View style={[styles.input_container, {marginTop: 25}]}>
             <View style={{width: '10%', alignItems: 'center'}}>
-              <Icon name="transit-connection-variant" size={28} color="#002f58" />
+              <Icon name="transit-connection-variant" size={device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(28) : 28} color="#002f58" />
             </View>
             <TextInput
               keyboardType="number-pad" 

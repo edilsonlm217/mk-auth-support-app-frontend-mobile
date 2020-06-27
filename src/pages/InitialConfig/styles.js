@@ -1,10 +1,12 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, PixelRatio } from 'react-native';
+
+const device_pixel_ratio = PixelRatio.get();
 
 const styles = StyleSheet.create({
   container: {
     marginLeft: 30,
     marginRight: 30,
-    marginTop: 70,
+    marginTop: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(70) : 70,
     flex: 1,
   },
 
@@ -15,18 +17,20 @@ const styles = StyleSheet.create({
   logo_style: {
     alignSelf: "center",
     marginBottom: 30,
+    width: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(60) : 60,
+    height: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(60) : 60,
   },
 
   main_text: {
-    fontSize: 28,
+    fontSize: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(28) : 28,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
-    marginBottom: 30,
+    marginBottom: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(30) : 30,
   },
 
   sub_text: {
-    fontSize: 18,
+    fontSize: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(18) : 18,
     color: "#FFF",
     textAlign: "center",
     marginBottom: 30,
@@ -37,14 +41,14 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     flexDirection: "row",
     alignItems: "center",
-    height: 60,
+    height: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(60) : 60,
     width: '100%',
     paddingLeft: 10,
     paddingRight: 10,
   },
 
   text_input_style: {
-    fontSize: 18,
+    fontSize: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(18) : 18,
     width: '90%',
   },
 
@@ -56,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   navigators_text_style: {
-    fontSize: 22,
+    fontSize: device_pixel_ratio <= 1 ? PixelRatio.getPixelSizeForLayoutSize(22) : 22,
     color: "#FFF",
   },
 });
