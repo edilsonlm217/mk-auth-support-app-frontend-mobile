@@ -23,6 +23,11 @@ const general = {
     resizeMode: 'contain',
   },
 
+  initial_config_text_input_style: {
+    fontSize: fonts.input,
+    width: '90%',
+  },
+
   initial_config_main_title: {
     fontSize: fonts.huge,
     fontWeight: "bold",
@@ -71,7 +76,7 @@ const general = {
   },
   
   initial_config_navigators_text_style: {
-    fontSize: fonts.large,
+    fontSize: fonts.regular,
     color: "#FFF",
   },
 }
