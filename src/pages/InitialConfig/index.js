@@ -5,7 +5,8 @@ import {
   Image,
   TextInput,
   Alert,
-  TouchableOpacity } from 'react-native';
+  TouchableOpacity
+} from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
@@ -46,7 +47,7 @@ export default function InitialConfig({ navigation }) {
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <LinearGradient
         colors={['#002f58', '#337ab7']}
         style={styles.initial_config_linearGradient}
@@ -54,7 +55,9 @@ export default function InitialConfig({ navigation }) {
         <View style={styles.initial_config_container}>
           <Image source={gear} style={styles.initial_config_logo_style} />
 
-          <Text style={styles.initial_config_main_title} >Configuração inicial</Text>
+          <Text style={styles.initial_config_main_title}>
+            Configuração inicial
+          </Text>
 
           <HideWithKeyboard>
             <Text style={styles.initial_config_sub_title} >
@@ -76,7 +79,11 @@ export default function InitialConfig({ navigation }) {
 
           <View style={[styles.initial_config_input_container]}>
             <View style={styles.initial_config_icon_container}>
-              <Icon name="transit-connection-variant" size={icons.small} color="#002f58" />
+              <Icon
+                name="transit-connection-variant"
+                size={icons.small}
+                color="#002f58"
+              />
             </View>
             <TextInput
               keyboardType="number-pad"
@@ -87,8 +94,13 @@ export default function InitialConfig({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity onPress={handleNextPage} style={styles.initial_config_next_btn_style}>
-          <Text style={styles.initial_config_navigators_text_style}>Próximo</Text>
+        <TouchableOpacity
+          onPress={handleNextPage}
+          style={styles.initial_config_next_btn_style}
+        >
+          <Text style={styles.initial_config_navigators_text_style}>
+            Próximo
+          </Text>
           <Icon name="chevron-right" size={icons.small} color="#FFF" />
         </TouchableOpacity>
       </LinearGradient>

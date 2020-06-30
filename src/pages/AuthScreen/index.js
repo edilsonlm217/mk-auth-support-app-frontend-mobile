@@ -78,7 +78,7 @@ export default function AuthScreen({ route, navigation }) {
               autoCorrect={false}
               autoCapitalize="none"
               placeholder="Login do técnico"
-              style={styles.text_input_style}
+              style={styles.initial_config_text_input_style}
               onChangeText={login => setLogin(login)}
             />
           </View>
@@ -89,20 +89,30 @@ export default function AuthScreen({ route, navigation }) {
             </View>
             <TextInput
               placeholder="Sua senha secreta"
-              style={styles.text_input_style}
+              style={styles.initial_config_text_input_style}
               onChangeText={password => setPassword(password)}
               secureTextEntry={true}
             />
           </View>
         </View>
 
-        <TouchableOpacity onPress={handlePrevScreen} style={styles.initial_config_prev_btn_style}>
+        <TouchableOpacity
+          onPress={handlePrevScreen} 
+          style={styles.initial_config_prev_btn_style}
+        >
           <Icon name="chevron-left" size={icons.small} color="#FFF" />
-          <Text style={styles.initial_config_navigators_text_style}>Voltar</Text>
+          <Text style={styles.initial_config_navigators_text_style}>
+            Voltar
+          </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={handleSignIn} style={styles.initial_config_next_btn_style}>
-          <Text style={styles.initial_config_navigators_text_style}>Conectar</Text>
+        <TouchableOpacity
+          onPress={handleSignIn} 
+          style={styles.initial_config_next_btn_style}
+        >
+          <Text style={styles.initial_config_navigators_text_style}>
+            Conectar
+          </Text>
           <Icon name="chevron-right" size={icons.small} color="#FFF" />
         </TouchableOpacity>
       </LinearGradient>
@@ -110,14 +120,14 @@ export default function AuthScreen({ route, navigation }) {
       <Modal
         children={
           <View style={styles.modal_style}>
-            <ActivityIndicator size="large" color="#0000ff" />
-            <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text style={styles.modal_text_style}>
               Carregando...
             </Text>
           </View>
         }
         isVisible={isVisible}
-        style={{margin: 0}}
+        style={{ margin: 0 }}
         animationInTiming={500}
         animationOutTiming={500}
         useNativeDriver={true}
