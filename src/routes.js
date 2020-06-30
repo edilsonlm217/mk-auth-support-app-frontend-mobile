@@ -11,6 +11,8 @@ import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 
+import { fonts } from './styles/index';
+
 const Stack = createStackNavigator();
 
 export default function RootStack() {
@@ -40,7 +42,8 @@ export default function RootStack() {
               headerTransparent: true,
               headerTitleStyle: {
                 fontWeight: 'bold',
-                fontSize: 24,
+                fontSize: fonts.huge,
+                marginLeft: -20,
               },
             }}
           />
@@ -57,7 +60,8 @@ export default function RootStack() {
               headerTransparent: true,
               headerTitleStyle: {
                 fontWeight: 'bold',
-                fontSize: 24,
+                fontSize: fonts.huge,
+                marginLeft: -20,
               },
             }}
           /> 
@@ -74,7 +78,8 @@ export default function RootStack() {
               headerTransparent: true,
               headerTitleStyle: {
                 fontWeight: 'bold',
-                fontSize: 24,
+                fontSize: fonts.huge,
+                marginLeft: -20,
               },
             }}
           />
@@ -91,7 +96,8 @@ export default function RootStack() {
               headerTransparent: true,
               headerTitleStyle: {
                 fontWeight: 'bold',
-                fontSize: 24,
+                fontSize: fonts.huge,
+                marginLeft: -20,
               },
             }}
           />

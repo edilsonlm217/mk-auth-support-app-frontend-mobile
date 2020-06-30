@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext }  from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, PermissionsAndroid, Alert, ScrollView } from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, PermissionsAndroid, Alert, ScrollView } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
@@ -11,6 +11,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { store } from '../../store/store';
 
 import styles from './styles';
+import { icons } from '../../styles/index';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
@@ -23,7 +24,7 @@ export default function Details({ route, navigation }) {
 
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
-  
+
   useEffect(() => {
     const { data } = route.params;
     setState(data);
@@ -48,20 +49,20 @@ export default function Details({ route, navigation }) {
       setCaixaHermetica(response.data.caixa_herm);
     }
   }
-  
+
   async function OpenCoordinate(coordinate) {
     const [latidude, longitude] = coordinate.split(',');
-    
+
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(geo_success => {      
+        Geolocation.getCurrentPosition(geo_success => {
           const current_longitude = geo_success.coords.longitude;
           const current_latitude = geo_success.coords.latitude;
-    
+
           openMap({
             provider: 'google',
             start: `${current_latitude},${current_longitude}`,
@@ -75,7 +76,7 @@ export default function Details({ route, navigation }) {
       Alert.alert('Erro');
     }
   }
-  
+
   function ClosingReason() {
     if (state.motivo_fechamento === null) {
       return (
@@ -87,8 +88,8 @@ export default function Details({ route, navigation }) {
         </View>
       );
     } else {
-      
-      const [ , closing_reason] = state.motivo_fechamento.split(': ');
+
+      const [, closing_reason] = state.motivo_fechamento.split(': ');
       const [date, hora] = state.fechamento.split(' ');
       const [yyyy, mm, dd] = date.split('-');
 
@@ -114,7 +115,7 @@ export default function Details({ route, navigation }) {
   function handleNavigateCTOMap(coordinate) {
     if (coordinate) {
       const [latidude, longitude] = coordinate.split(',');
-      
+
       navigation.navigate('CTOs', {
         latidude: latidude,
         longitude: longitude,
@@ -141,15 +142,15 @@ export default function Details({ route, navigation }) {
       ok: "SIM",
       cancel: "NÃO",
       enableHighAccuracy: true,
-      showDialog: true, 
-      openLocationServices: true, 
-      preventOutSideTouch: false, 
-      preventBackClick: false, 
-      providerListener: false 
-    }).then(function(success) {
-        setIsVisible(true);
+      showDialog: true,
+      openLocationServices: true,
+      preventOutSideTouch: false,
+      preventBackClick: false,
+      providerListener: false
+    }).then(function (success) {
+      setIsVisible(true);
     }).catch((error) => {
-        // console.log(error.message);
+      // console.log(error.message);
     });
 
   }
@@ -161,15 +162,15 @@ export default function Details({ route, navigation }) {
   function handleCloseRequest() {
     Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
   }
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
-        <Icon name="account" size={25} color="#000" />
-        <View style={{marginLeft: 10}}>
+        <Icon name="account" size={icons.tiny} color="#000" />
+        <View style={{ marginLeft: 10 }}>
           <Text style={styles.main_text}>{state.nome}</Text>
           <Text style={styles.sub_text}>
-            {`${state.plano === 'nenhum' 
+            {`${state.plano === 'nenhum'
               ? 'Nenhum'
               : state.plano} | ${state.tipo ? state.tipo.toUpperCase() : state.tipo} | ${state.ip}`
             }
@@ -201,7 +202,7 @@ export default function Details({ route, navigation }) {
         </View>
         <View style={styles.line_container}>
           <Text style={styles.sub_text}>Login e senha</Text>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
             <Text style={styles.main_text_login_senha}>{state.login}</Text>
             <Text style={styles.main_text_login_senha}>{state.senha}</Text>
           </View>
@@ -212,18 +213,18 @@ export default function Details({ route, navigation }) {
               <Text style={styles.sub_text}>Endereço</Text>
               <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
             </View>
-            <View style={{justifyContent: 'center'}}>
-              <Icon name="navigation" size={30} color="#000" />
+            <View style={{ justifyContent: 'center' }}>
+              <Icon name="navigation" size={icons.tiny} color="#000" />
             </View>
           </View>
         </TouchableOpacity>
         {state.status === 'fechado'
           ?
-            (<ClosingReason />)
+          (<ClosingReason />)
           :
-            <></>
+          <></>
         }
-          
+
         <View>
           <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
             <View style={styles.cto_line}>
@@ -231,40 +232,41 @@ export default function Details({ route, navigation }) {
                 <Text style={styles.sub_text}>Caixa Atual</Text>
                 <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Nenhuma'}</Text>
               </View>
-              <View style={{justifyContent: 'center'}}>
-                <Icon name="map-search" size={30} color="#000" />
+              <View style={{ justifyContent: 'center' }}>
+                <Icon name="map-search" size={icons.tiny} color="#000" />
               </View>
             </View>
           </TouchableOpacity>
         </View>
-        <Modal
-          onBackButtonPress={handleModalClosing}
-          onBackdropPress={handleModalClosing}
-          children={
-            <View style={styles.modal_style}>
-              <Text style={styles.modal_header}>Selecione uma opção...</Text>
-              <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
-                <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
-                <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
-              </TouchableOpacity>
-            </View>
-          }
-          isVisible={isVisible}
-          style={{margin: 0}}
-          animationInTiming={500}
-          animationOutTiming={500}
-          useNativeDriver={true}
-        />
-      </ScrollView>
-      {state.status === 'aberto'
-        ? 
-          (<TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
+
+        {state.status === 'aberto' &&
+          <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
             <Text style={styles.btn_label}>Fechar Chamado</Text>
-          </TouchableOpacity>)
-        : <></>
-      }
+          </TouchableOpacity>
+        }
+
+      </ScrollView>
+
+      <Modal
+        onBackButtonPress={handleModalClosing}
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_style}>
+            <Text style={styles.modal_header}>Selecione uma opção...</Text>
+            <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
+              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
+              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
     </View>
   );
 }

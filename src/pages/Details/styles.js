@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   container: {
@@ -15,18 +16,18 @@ const styles = StyleSheet.create({
 
   main_text_login_senha: { 
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: fonts.regular,
   },
   
   main_text: { 
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: fonts.regular,
     minWidth: '90%',
     maxWidth: '90%',
   },
   
   sub_text: { 
-    fontSize: 16,
+    fontSize: fonts.small,
     color: '#989898',
   },
 
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
   },
   
   secondary_btn_text: {
-    fontSize: 18,
+    fontSize: fonts.medium,
     fontWeight: "bold",
     color: '#337AB7',
   },
@@ -103,18 +104,17 @@ const styles = StyleSheet.create({
   },
 
   main_btn_text: {
-    fontSize: 18,
+    fontSize: fonts.medium,
     fontWeight: "bold",
     color: '#FFF',
   },
 
   close_request_btn: {
-    width: 230,
-    height: 60,
+    width: 200,
+    height: 50,
     backgroundColor: '#337AB7',
     alignSelf: 'center',
-    position: "absolute",
-    bottom: 30,
+    marginTop: 30,
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   btn_label: {
     color: '#FFF',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: fonts.medium,
   },
 
   modal_style: {
@@ -138,15 +138,15 @@ const styles = StyleSheet.create({
 
   modal_header: {
     fontWeight: "bold",
-    fontSize: 18,
+    fontSize: fonts.medium,
     width: '100%',
-    marginBottom: 5,
+    marginBottom: 10,
   },
 
   modal_btn: {
     width: '100%',
-    height: 40,
-    marginTop: 10,
+    height: 35,
+    marginTop: 15,
     display: "flex",
     justifyContent: 'center',
     borderRadius: 4,
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   },
 
   modal_btn_style: {
-    fontSize: 18,
+    fontSize: fonts.medium,
     paddingLeft: 15,
     textAlign: "center",
     
