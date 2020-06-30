@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+import { fonts } from '../../styles/index';
+
 const styles = StyleSheet.create({
   container: {
     height: '100%',
@@ -18,7 +20,7 @@ const styles = StyleSheet.create({
     marginLeft: 25,
     marginRight: 25,
     color: '#FFF',
-    fontSize: 24,
+    fontSize: fonts.large,
   },
 
   section_container: {
@@ -35,14 +37,14 @@ const styles = StyleSheet.create({
   label_style: {
     color: '#000',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: fonts.medium,
   },
 
   tabBar_style: {
     backgroundColor: '#FFF',
     borderTopRightRadius: 20,
     borderTopLeftRadius: 20,
-    height: 50,
+    height: 45,
   },
   card: {
     marginLeft: 20,
@@ -74,14 +76,14 @@ const styles = StyleSheet.create({
   
   client_name: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: fonts.regular,
     maxWidth: 250,
     color: '#808080',
   },
 
   visit_time: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: fonts.regular,
     color: '#808080',
   },
   
