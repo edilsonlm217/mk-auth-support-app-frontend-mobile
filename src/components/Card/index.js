@@ -4,6 +4,8 @@ import Modal from 'react-native-modal';
 
 import RequestDetail from '../../components/RequestDetails/index';
 
+import { fonts } from '../../styles/index';
+
 export default function Card(props) {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -16,7 +18,7 @@ export default function Card(props) {
   }
 
   function UserAdress() {
-    
+
     if (props.item.endereco === null) {
       return <Text>Sem endereço</Text>
     } else {
@@ -25,7 +27,7 @@ export default function Card(props) {
       const bairro = props.item.bairro
 
       return (
-        <Text>{`${endereco}, ${numero} - ${bairro}`}</Text>
+        <Text style={{ fontSize: fonts.small }}>{`${endereco}, ${numero} - ${bairro}`}</Text>
       );
     }
   }
@@ -40,7 +42,7 @@ export default function Card(props) {
               <Text style={styles.visit_time}>{props.item.visita}</Text>
             </View>
             <UserAdress />
-            <Text>{`Serviço: ${props.item.assunto}`}</Text>
+            <Text style={{ fontSize: fonts.small }}>{`Serviço: ${props.item.assunto}`}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -49,14 +51,14 @@ export default function Card(props) {
         onBackButtonPress={handleModalClosing}
         onBackdropPress={handleModalClosing}
         children={
-          <RequestDetail 
-            data={props.item} 
-            navigation={props.navigation} 
-            CloseModal={() => setIsVisible(false)} 
+          <RequestDetail
+            data={props.item}
+            navigation={props.navigation}
+            CloseModal={() => setIsVisible(false)}
           />
         }
         isVisible={isVisible}
-        style={{margin: 0}}
+        style={{ margin: 0 }}
         animationInTiming={500}
         animationOutTiming={500}
         useNativeDriver={true}
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
     marginLeft: 20,
     marginRight: 20,
     marginTop: 10,
-    marginBottom: 10,
+    marginBottom: 5,
     borderRadius: 6,
     backgroundColor: '#FFF',
 
@@ -86,7 +88,7 @@ const styles = StyleSheet.create({
   },
 
   card_header_content_container: {
-    padding: 20,
+    padding: 15,
   },
 
   card_header: {
@@ -96,14 +98,14 @@ const styles = StyleSheet.create({
 
   client_name: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: fonts.regular,
     maxWidth: 250,
     color: '#808080',
   },
 
   visit_time: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: fonts.regular,
     color: '#808080',
   },
 });
