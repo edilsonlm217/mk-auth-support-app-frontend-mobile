@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 import general from '../../styles/general';
+import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   ...general,
@@ -15,6 +16,11 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
 
+  modal_text_style: {
+    fontSize: fonts.regular, 
+    textAlign: "center", 
+    marginBottom: 10,
+  },
 });
 
 export default styles;
