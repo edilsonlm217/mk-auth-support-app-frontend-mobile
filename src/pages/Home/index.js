@@ -82,12 +82,12 @@ export default function Home({ navigation }) {
       if (error.message.includes('401')) {
         handleLogout();
         Alert.alert(
-          'Sessão expirada', 
+          'Sessão expirada',
           'Sua sessão não é mais válida. Você será direcionado a tela de login'
         );
       } else {
         Alert.alert(
-          'Erro de conexão', 
+          'Erro de conexão',
           'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.'
         );
         setIsOutOfConnection(true);
@@ -210,7 +210,7 @@ export default function Home({ navigation }) {
             state.close_requests.length !== 0
               ?
               <ScrollView
-                style={{flex: 1}}
+                style={{ flex: 1 }}
                 refreshControl={
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
