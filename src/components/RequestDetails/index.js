@@ -17,7 +17,7 @@ export default function RequestDetails(props) {
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
-        <Icon name="account" size={25} color="#000" />
+        <Icon name="account" size={20} color="#000" />
         <View style={{marginLeft: 10}}>
           <Text style={styles.main_text}>{props.data.nome}</Text>
           <Text style={styles.sub_text}>
