@@ -18,6 +18,7 @@ import Card from '../../components/Card/index';
 import NoConnection from '../../assets/broken-link.png';
 
 import styles from './styles';
+import { icons } from '../../styles/index';
 
 export default function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
@@ -209,6 +210,7 @@ export default function Home({ navigation }) {
             state.close_requests.length !== 0
               ?
               <ScrollView
+                style={{flex: 1}}
                 refreshControl={
                   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
@@ -274,13 +276,13 @@ export default function Home({ navigation }) {
         <AppHeader navigation={navigation} />
         <View style={styles.date_selector}>
           <TouchableOpacity onPress={handlePrevDay}>
-            <Icon name="chevron-left" size={34} color="#FFF" />
+            <Icon name="chevron-left" size={icons.large} color="#FFF" />
           </TouchableOpacity>
           <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
             <Text style={styles.date}>{dateFormatted}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleNextDay}>
-            <Icon name="chevron-right" size={34} color="#FFF" />
+            <Icon name="chevron-right" size={icons.large} color="#FFF" />
           </TouchableOpacity>
         </View>
 
