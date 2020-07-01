@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     height: '100%',
     textAlignVertical: "center",
-    fontSize: fonts.small,
+    fontSize: fonts.medium,
   }
 });
 

@@ -102,7 +102,7 @@ export default function PickNewLocation({ route, navigation }) {
 
           <View style={styles.confirm_btn_container}>
             <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
-              <Text style={styles.btn_label} >CONFIRMAR</Text>
+              <Text style={styles.btn_label} >Confirmar</Text>
             </TouchableOpacity>
           </View>
         </View>
