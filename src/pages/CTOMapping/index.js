@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useReducer } from 'react';
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert, ToastAndroid, RefreshControl } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert, ToastAndroid, RefreshControl } from 'react-native';
 import MapViewDirections from 'react-native-maps-directions';
 import Modal from 'react-native-modal';
 import axios from 'axios';
@@ -11,27 +11,27 @@ import { store } from '../../store/store';
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
 import styles from './styles';
+import { icons } from '../../styles/index';
 
 export default function CTOMapping({ route, navigation }) {
-  
   // Estes dados do cliente nunca tem seus valores alterados
   const client_latitude = parseFloat(route.params.latidude);
   const client_longitude = parseFloat(route.params.longitude);
   const client_id = route.params.client_id;
   const client_name = route.params.client_name;
-  
+
   // Estados para lidar com iteração do usuário com o mapa
   const [latitude, setLatitude] = useState(client_latitude);
   const [longitude, setLongitude] = useState(client_longitude);
   const [latitudeDelta, setLatitudeDelta] = useState(0.01);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
-  
+
   // Estado contendo todas as CTOs existente dentro do raio de busca
   const [arrayCTOs, setArrayCTOs] = useState([]);
-  
+
   // array de referencias para cada CTO do estado arrayCTOs
   const ref_arrayCTOs = [];
-  
+
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
@@ -63,7 +63,7 @@ export default function CTOMapping({ route, navigation }) {
     }
   }
 
-  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
+  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta }) {
     setLatitude(latitude);
     setLongitude(longitude);
     setLatitudeDelta(latitudeDelta);
@@ -74,7 +74,7 @@ export default function CTOMapping({ route, navigation }) {
     if (dest_lat == null || dest_lgt == null) {
       Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
     } else {
-      dispatch({ 
+      dispatch({
         type: 'traceroute',
         payload: {
           cto_latitude: dest_lat,
@@ -97,7 +97,7 @@ export default function CTOMapping({ route, navigation }) {
         },
       },
     );
-    
+
     if (response_update.status === 200) {
       ToastAndroid.show("CTO alterada com sucesso!", ToastAndroid.SHORT);
       setIsVisible(false);
@@ -124,30 +124,30 @@ export default function CTOMapping({ route, navigation }) {
     async function loadSuggestedCTOData() {
       const client = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
+      );
+
+      const { caixa_herm } = client.data;
+
+      if (caixa_herm) {
+        const current_client_cto = await axios.get(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`, {
           timeout: 2500,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
         },
-      );
-      
-      const { caixa_herm } = client.data;
-      
-      if (caixa_herm) {
-        const current_client_cto = await axios.get(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`, {
-            timeout: 2500,
-            headers: {
-              Authorization: `Bearer ${globalState.state.userToken}`,
-            },
-          },
         );
-  
+
         const route_response = await axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude},${current_client_cto.data.longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`)
-        
+
         current_client_cto.data.distance = route_response.data.rows[0].elements[0].distance.text;
         current_client_cto.data.distance_value = route_response.data.rows[0].elements[0].distance.value;
-        
+
         setSuggestedCTO(current_client_cto.data);
       }
     }
@@ -160,13 +160,13 @@ export default function CTOMapping({ route, navigation }) {
       setRefreshing(true);
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`, {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
-          },
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
         },
+      },
       );
-      
+
       var queries_array = [];
       var array_cto = [];
       response.data.map(item => {
@@ -185,10 +185,10 @@ export default function CTOMapping({ route, navigation }) {
       });
 
       // Ordenação do array com mais próximos primeiro
-      array_cto.sort(function(a, b) {
+      array_cto.sort(function (a, b) {
         var keyA = a.distance_value,
           keyB = b.distance_value;
-  
+
         if (keyA < keyB) return -1;
         if (keyA > keyB) return 1;
         return 0;
@@ -200,7 +200,7 @@ export default function CTOMapping({ route, navigation }) {
 
     getCTOs();
   }, [suggestedCTO]);
-  
+
   return (
     <View style={styles.container}>
       <View style={styles.map_container}>
@@ -215,35 +215,35 @@ export default function CTOMapping({ route, navigation }) {
             longitudeDelta: longitudeDelta,
           }}
         >
-          <Marker 
+          <Marker
             coordinate={{
               latitude: client_latitude,
               longitude: client_longitude,
             }}
             title={client_name}
           />
-          { arrayCTOs.map(cto => ( 
+          {arrayCTOs.map(cto => (
             cto.id !== suggestedCTO?.id &&
-              <Marker
-                key={cto.id}
-                coordinate={{
-                  latitude: parseFloat(cto.latitude),
-                  longitude: parseFloat(cto.longitude),
-                }}
-                onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
-                ref={(ref) => ref_arrayCTOs[cto.id] = ref}
-              >
-                <Icon name={"access-point-network"} size={30} color="#FF0000"/>
-                <Callout tooltip={true}>
-                  <View style={{width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                    <Text style={{fontWeight: "bold", fontSize: 16, color: '#FFF'}}>{cto.nome}</Text>
-                    <Text style={{color: '#FFF', fontSize: 14}}>Distancia: {cto.distance}</Text>
-                    <Text style={{color: '#FFF', fontSize: 14}}>Conectados: {cto.connection_amount}</Text>
-                  </View>
-                </Callout>
-              </Marker>
+            <Marker
+              key={cto.id}
+              coordinate={{
+                latitude: parseFloat(cto.latitude),
+                longitude: parseFloat(cto.longitude),
+              }}
+              onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+              ref={(ref) => ref_arrayCTOs[cto.id] = ref}
+            >
+              <Icon name={"access-point-network"} size={icons.small} color="#FF0000" />
+              <Callout tooltip={true}>
+                <View style={{ width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center' }}>
+                  <Text style={{ fontWeight: "bold", fontSize: 16, color: '#FFF' }}>{cto.nome}</Text>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>Distancia: {cto.distance}</Text>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>Conectados: {cto.connection_amount}</Text>
+                </View>
+              </Callout>
+            </Marker>
           ))}
-          { suggestedCTO !== null &&
+          {suggestedCTO !== null &&
             <Marker
               key={suggestedCTO.id}
               coordinate={{
@@ -253,17 +253,17 @@ export default function CTOMapping({ route, navigation }) {
               onPress={() => handleTraceRoute(parseFloat(suggestedCTO.latitude), parseFloat(suggestedCTO.longitude))}
               ref={(ref) => ref_arrayCTOs[suggestedCTO.id] = ref}
             >
-              <Icon name={"access-point-network"} size={30} color="#3842D2"/>
+              <Icon name={"access-point-network"} size={icons.small} color="#3842D2" />
               <Callout tooltip={true}>
-              <View style={{width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center'}}>
-                  <Text style={{fontWeight: "bold", fontSize: 16, color: '#FFF'}}>{suggestedCTO.nome}</Text>
-                  <Text style={{color: '#FFF', fontSize: 14}}>Distancia: {suggestedCTO.distance}</Text>
-                  <Text style={{color: '#FFF', fontSize: 14}}>Conectados: {suggestedCTO.connection_amount}</Text>
+                <View style={{ width: 150, padding: 15, backgroundColor: '#000', borderRadius: 10, alignItems: 'center' }}>
+                  <Text style={{ fontWeight: "bold", fontSize: 16, color: '#FFF' }}>{suggestedCTO.nome}</Text>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>Distancia: {suggestedCTO.distance}</Text>
+                  <Text style={{ color: '#FFF', fontSize: 14 }}>Conectados: {suggestedCTO.connection_amount}</Text>
                 </View>
               </Callout>
             </Marker>
           }
-          { state.dest_latitude !== null && 
+          {state.dest_latitude !== null &&
             <MapViewDirections
               apikey={GOOGLE_MAPS_APIKEY}
               strokeWidth={8}
@@ -275,47 +275,47 @@ export default function CTOMapping({ route, navigation }) {
               }}
               destination={{
                 latitude: state.dest_latitude,
-                longitude: state.dest_longitude, 
+                longitude: state.dest_longitude,
               }}
             />
           }
         </MapView>
       </View>
       <View style={styles.bottom_menu}>
-        { suggestedCTO !== null 
-          ? 
-            <>
-              <Text style={styles.main_title}>Caixa Sugerida</Text>
-              <TouchableOpacity 
-                style={suggestedCTO?.nome === selectedBtn ? styles.suggested_card_selected : styles.suggested_card}
-                onPress={() => handleSelection(suggestedCTO)} 
-              >
-                <View style={styles.card_name}>
-                  <View style={styles.icon_container}>
-                    <Icon name={"access-point-network"} size={30} color="#000"/>
-                  </View>
-                  <Text style={styles.card_title}>
-                    {suggestedCTO && suggestedCTO.nome }
-                  </Text>
+        {suggestedCTO !== null
+          ?
+          <>
+            <Text style={styles.main_title}>Caixa Sugerida</Text>
+            <TouchableOpacity
+              style={suggestedCTO?.nome === selectedBtn ? styles.suggested_card_selected : styles.suggested_card}
+              onPress={() => handleSelection(suggestedCTO)}
+            >
+              <View style={styles.card_name}>
+                <View style={styles.icon_container}>
+                  <Icon name={"access-point-network"} size={icons.small} color="#000" />
                 </View>
-                <View style={styles.distance_container}>
-                  <Text style={styles.card_distance}>
-                    {suggestedCTO ? suggestedCTO.distance : ''}
-                  </Text>
-                  <Text style={styles.connection_amount}>
-                    {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
-                  </Text>
-                </View>
-              </TouchableOpacity>
+                <Text style={styles.card_title}>
+                  {suggestedCTO && suggestedCTO.nome}
+                </Text>
+              </View>
+              <View style={styles.distance_container}>
+                <Text style={styles.card_distance}>
+                  {suggestedCTO ? suggestedCTO.distance : ''}
+                </Text>
+                <Text style={styles.connection_amount}>
+                  {suggestedCTO ? `${suggestedCTO.connection_amount} conectados` : ''}
+                </Text>
+              </View>
+            </TouchableOpacity>
           </>
-          : 
-            <>
-              <Text style={[styles.main_title, { marginBottom: 10, color: '#AFAFAF'}]}>
-                Nenhuma caixa sugerida
+          :
+          <>
+            <Text style={[styles.main_title, { marginBottom: 10, color: '#AFAFAF' }]}>
+              Nenhuma caixa sugerida
               </Text>
-            </>
+          </>
         }
-        
+
         <Text style={styles.main_title}>Mais opções</Text>
         <ScrollView
           showsVerticalScrollIndicator={false}
@@ -327,31 +327,31 @@ export default function CTOMapping({ route, navigation }) {
             {
               arrayCTOs.map(cto => (
                 cto.nome === suggestedCTO?.nome ? <></> :
-                selectedBtn !== cto.nome 
-                ?
-                  <TouchableOpacity 
-                    key={cto.nome} 
-                    onPress={() => handleSelection(cto)} 
-                    style={styles.sub_cards}
-                  >
-                    <View style={styles.main_line}>
-                      <Text style={styles.sub_card_title}>{cto.nome}</Text>
-                      <Text style={styles.sub_card_title}>{cto.distance}</Text>
-                    </View>
-                    <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
-                  </TouchableOpacity>
-                :
-                  <TouchableOpacity 
-                    key={cto.nome} 
-                    onPress={() => handleSelection(cto)} 
-                    style={styles.sub_cards_selected}
-                  >
-                    <View style={styles.main_line_selected}>
-                      <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
-                      <Icon name={"checkbox-marked-circle"} size={30} color="#FFF"/>
-                    </View>
-                  </TouchableOpacity>
-                )
+                  selectedBtn !== cto.nome
+                    ?
+                    <TouchableOpacity
+                      key={cto.nome}
+                      onPress={() => handleSelection(cto)}
+                      style={styles.sub_cards}
+                    >
+                      <View style={styles.main_line}>
+                        <Text style={styles.sub_card_title}>{cto.nome}</Text>
+                        <Text style={[styles.sub_card_title_distance]}>{cto.distance}</Text>
+                      </View>
+                      <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity
+                      key={cto.nome}
+                      onPress={() => handleSelection(cto)}
+                      style={styles.sub_cards_selected}
+                    >
+                      <View style={styles.main_line_selected}>
+                        <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
+                        <Icon name={"checkbox-marked-circle"} size={icons.small} color="#FFF" />
+                      </View>
+                    </TouchableOpacity>
+              )
               )
             }
           </View>
@@ -362,7 +362,7 @@ export default function CTOMapping({ route, navigation }) {
         onBackdropPress={handleModalClosing}
         children={
           <View style={styles.modal_style}>
-            <Text style={{fontSize: 18, textAlign: "center", marginBottom: 10}}>
+            <Text style={{ fontSize: 18, textAlign: "center", marginBottom: 10 }}>
               Você está prestes a alterar a caixa hermética sugerida pelo administrador. Deseja continuar?
             </Text>
             <TouchableOpacity style={styles.modal_cancel_btn}>
@@ -374,7 +374,7 @@ export default function CTOMapping({ route, navigation }) {
           </View>
         }
         isVisible={isVisible}
-        style={{margin: 0}}
+        style={{ margin: 0 }}
         animationInTiming={500}
         animationOutTiming={500}
         useNativeDriver={true}

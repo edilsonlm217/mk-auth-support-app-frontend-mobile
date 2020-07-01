@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+import { fonts } from '../../styles/index';
+
 const styles = StyleSheet.create({
   container: {
     flex: 1
@@ -24,24 +26,28 @@ const styles = StyleSheet.create({
 
     borderTopWidth: 1,
     borderTopColor: 'red',
+    
+  },
+
+  confirm_btn_container: {
+    margin: 20,
+    marginTop: 30,
+    alignItems: 'center',
   },
   
   option_label: {
-    fontSize: 16,
+    fontSize: fonts.medium,
     fontWeight: "bold",
     marginTop: 20,
     marginLeft: 20,
   },
 
   confirm_btn: {
-    margin: 20,
-    marginTop: 30,
-    marginLeft: 110,
-    marginRight: 110,
-    alignItems: 'center',
-    height: 50,
+    width: '100%',
+    maxWidth: 200,
     backgroundColor: '#337AB7',
     borderRadius: 25,
+    height: 40,
   },
 
   btn_label: {
@@ -49,7 +55,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'center',
     justifyContent: 'center',
-    margin: 15,
+    height: '100%',
+    textAlignVertical: "center",
+    fontSize: fonts.medium,
   }
 });
 

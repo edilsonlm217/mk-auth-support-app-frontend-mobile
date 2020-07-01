@@ -31,6 +31,12 @@ export default function PickNewLocation({ route, navigation }) {
           
           setLatitude(current_latitude);
           setLongitude(current_longitude);
+        }, geo_error => {
+          console.log(geo_error)
+          Alert.alert('Erro', 'Não é possível navegar até o cliente');
+        }, {
+          timeout: 5000,
+          enableHighAccuracy: true,
         });
       } else {
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
@@ -94,9 +100,11 @@ export default function PickNewLocation({ route, navigation }) {
         <View style={styles.bottom_option}>
           <Text style={styles.option_label}>MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO</Text>
 
-          <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
-            <Text style={styles.btn_label} >CONFIRMAR</Text>
-          </TouchableOpacity>
+          <View style={styles.confirm_btn_container}>
+            <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
+              <Text style={styles.btn_label} >Confirmar</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
