@@ -100,9 +100,11 @@ export default function PickNewLocation({ route, navigation }) {
         <View style={styles.bottom_option}>
           <Text style={styles.option_label}>MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO</Text>
 
-          <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
-            <Text style={styles.btn_label} >CONFIRMAR</Text>
-          </TouchableOpacity>
+          <View style={styles.confirm_btn_container}>
+            <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
+              <Text style={styles.btn_label} >CONFIRMAR</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </View>
