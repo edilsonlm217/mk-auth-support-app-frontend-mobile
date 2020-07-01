@@ -59,7 +59,7 @@ export default function Details({ route, navigation }) {
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(geo_success => {
+        const {} = Geolocation.getCurrentPosition(geo_success => {
           const current_longitude = geo_success.coords.longitude;
           const current_latitude = geo_success.coords.latitude;
 
@@ -68,13 +68,20 @@ export default function Details({ route, navigation }) {
             start: `${current_latitude},${current_longitude}`,
             end: `${latidude},${longitude}`
           });
+        }, geo_error => {
+          console.log(geo_error)
+          Alert.alert('Erro', 'Não é possível navegar até o cliente');
+        }, {
+          timeout: 5000,
+          enableHighAccuracy: true,
         });
       } else {
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
     } catch (err) {
-      Alert.alert('Erro');
-    }
+      console.log(err);
+      Alert.alert('Erro', 'Não é possível navegar até o cliente');
+    }1
   }
 
   function ClosingReason() {
