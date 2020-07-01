@@ -127,13 +127,16 @@ const styles = StyleSheet.create({
   },
 
   modal_style: {
-    width: 300,
+    width: '100%',
+    maxWidth: 275,
     backgroundColor: "#FFF",
     alignSelf: "center",
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
     paddingTop: 10,
+    marginLeft: 30,
+    marginRight: 30,
   },
 
   modal_header: {
