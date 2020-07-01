@@ -31,6 +31,12 @@ export default function PickNewLocation({ route, navigation }) {
           
           setLatitude(current_latitude);
           setLongitude(current_longitude);
+        }, geo_error => {
+          console.log(geo_error)
+          Alert.alert('Erro', 'Não é possível navegar até o cliente');
+        }, {
+          timeout: 5000,
+          enableHighAccuracy: true,
         });
       } else {
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
