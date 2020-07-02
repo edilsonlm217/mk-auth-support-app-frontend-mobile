@@ -88,19 +88,26 @@ const styles = StyleSheet.create({
   sub_card_title: {
     fontWeight: "bold",
     fontSize: fonts.regular,
+    minWidth: 70,
   },
 
   sub_card_title_distance: {
     fontWeight: "bold",
     fontSize: fonts.regular,
     textAlign: "right",
-    minWidth: 60,
+    minWidth: 70,
+  },
+
+  sub_card_icon_container: {
+    minWidth: 70, 
+    alignItems: "flex-end"
   },
 
   sub_card_title_selected: {
     fontWeight: "bold",
     fontSize: fonts.regular,
     color: "#FFF",
+    minWidth: 70,
   },
 
   card_distance: {
@@ -139,7 +146,7 @@ const styles = StyleSheet.create({
   },
 
   sub_cards_selected: {
-    flexGrow: 3,
+    flexGrow: 1,
     height: 55,
 
     borderWidth: 0.5,
