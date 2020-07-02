@@ -31,13 +31,17 @@ const styles = StyleSheet.create({
   },
   btns_contaier: {
     flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: 'space-around',
     marginTop: 20,
-    backgroundColor: '#FFF'
-  },
-  secondary_btn: {
     backgroundColor: '#FFF',
-    width: 130,
+  },
+
+  secondary_btn: {
+    margin: 5,
+
+    flexGrow: 1,
+    backgroundColor: '#FFF',
     height: 40,
     borderRadius: 15,
     alignItems: 'center',
@@ -58,11 +62,18 @@ const styles = StyleSheet.create({
     fontSize: fonts.regular,
     fontWeight: "bold",
     color: '#337AB7',
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlign: "center",
+    minWidth: 150,
   },
   
   main_btn: {
+    margin: 5,
+
+    flexGrow: 1,
     backgroundColor: '#337AB7',
-    width: 130,
+    minWidth: 130,
     height: 40,
     borderRadius: 15,
     alignItems: 'center',
@@ -83,6 +94,10 @@ const styles = StyleSheet.create({
     fontSize: fonts.regular,
     fontWeight: "bold",
     color: '#FFF',
+    paddingLeft: 10,
+    paddingRight: 10,
+    textAlign: "center",
+    minWidth: 150,
   },
 });
 
