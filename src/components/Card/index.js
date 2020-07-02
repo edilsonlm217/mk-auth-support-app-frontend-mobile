@@ -38,7 +38,7 @@ export default function Card(props) {
         <View style={styles.card}>
           <View style={styles.card_header_content_container}>
             <View style={styles.card_header}>
-              <Text style={styles.client_name}>{props.item.nome}</Text>
+              <Text numberOfLines={1} style={styles.client_name}>{props.item.nome}</Text>
               <Text style={styles.visit_time}>{props.item.visita}</Text>
             </View>
             <UserAdress />

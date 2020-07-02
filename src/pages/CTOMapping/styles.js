@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: fonts.regular,
     textAlign: "right",
-    width: 60,
+    minWidth: 60,
   },
 
   sub_card_title_selected: {
