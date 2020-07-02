@@ -336,7 +336,7 @@ export default function CTOMapping({ route, navigation }) {
                     >
                       <View style={styles.main_line}>
                         <Text style={styles.sub_card_title}>{cto.nome}</Text>
-                        <Text style={[styles.sub_card_title_distance]}>{cto.distance}</Text>
+                        <Text numberOfLines={1} style={[styles.sub_card_title_distance]}>{cto.distance}</Text>
                       </View>
                       <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
                     </TouchableOpacity>
