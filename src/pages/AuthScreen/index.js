@@ -97,23 +97,27 @@ export default function AuthScreen({ route, navigation }) {
         </View>
 
         <TouchableOpacity
-          onPress={handlePrevScreen} 
+          onPress={handlePrevScreen}
           style={styles.initial_config_prev_btn_style}
         >
-          <Icon name="chevron-left" size={icons.small} color="#FFF" />
-          <Text style={styles.initial_config_navigators_text_style}>
-            Voltar
+          <HideWithKeyboard style={{ flexDirection: 'row' }}>
+            <Icon name="chevron-left" size={icons.small} color="#FFF" />
+            <Text style={styles.initial_config_navigators_text_style}>
+              Voltar
           </Text>
+          </HideWithKeyboard>
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleSignIn} 
+          onPress={handleSignIn}
           style={styles.initial_config_next_btn_style}
         >
-          <Text style={styles.initial_config_navigators_text_style}>
-            Conectar
-          </Text>
-          <Icon name="chevron-right" size={icons.small} color="#FFF" />
+          <HideWithKeyboard style={{ flexDirection: 'row' }}>
+            <Text style={styles.initial_config_navigators_text_style}>
+              Conectar
+            </Text>
+            <Icon name="chevron-right" size={icons.small} color="#FFF" />
+          </HideWithKeyboard>
         </TouchableOpacity>
       </LinearGradient>
 

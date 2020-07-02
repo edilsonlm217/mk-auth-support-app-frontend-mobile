@@ -93,17 +93,18 @@ export default function InitialConfig({ navigation }) {
             />
           </View>
         </View>
-
-        <TouchableOpacity
-          onPress={handleNextPage}
-          style={styles.initial_config_next_btn_style}
-        >
+      </LinearGradient>
+      <TouchableOpacity
+        onPress={handleNextPage}
+        style={styles.initial_config_next_btn_style}
+      >
+        <HideWithKeyboard style={{ flexDirection: 'row' }}>
           <Text style={styles.initial_config_navigators_text_style}>
             Próximo
           </Text>
           <Icon name="chevron-right" size={icons.small} color="#FFF" />
-        </TouchableOpacity>
-      </LinearGradient>
+        </HideWithKeyboard>
+      </TouchableOpacity>
     </View>
   );
 }

@@ -348,7 +348,9 @@ export default function CTOMapping({ route, navigation }) {
                     >
                       <View style={styles.main_line_selected}>
                         <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
-                        <Icon name={"checkbox-marked-circle"} size={icons.small} color="#FFF" />
+                        <View style={styles.sub_card_icon_container}>
+                          <Icon name={"checkbox-marked-circle"} size={icons.small} color="#FFF" />
+                        </View>
                       </View>
                     </TouchableOpacity>
               )
