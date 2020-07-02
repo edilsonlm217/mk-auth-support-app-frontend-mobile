@@ -1,5 +1,7 @@
 import { StyleSheet } from 'react-native';
 
+import { fonts } from '../../styles/index';
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF",
@@ -15,12 +17,12 @@ const styles = StyleSheet.create({
   
   main_text: { 
     fontWeight: "bold",
-    fontSize: 20,
+    fontSize: fonts.regular,
     maxWidth: '95%', 
   },
   
   sub_text: { 
-    fontSize: 16,
+    fontSize: fonts.small,
     color: '#989898',
   },
 
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   },
   
   secondary_btn_text: {
-    fontSize: 18,
+    fontSize: fonts.regular,
     fontWeight: "bold",
     color: '#337AB7',
   },
@@ -90,7 +92,7 @@ const styles = StyleSheet.create({
   },
 
   main_btn_text: {
-    fontSize: 18,
+    fontSize: fonts.regular,
     fontWeight: "bold",
     color: '#FFF',
   },
@@ -110,7 +112,7 @@ const styles = StyleSheet.create({
   btn_label: {
     color: '#FFF',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: fonts.regular,
   },
 });
 
