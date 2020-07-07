@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Modal from 'react-native-modal';
 
 import RequestDetail from '../../components/RequestDetails/index';
 
+import { store } from '../../store/store';
 import { fonts } from '../../styles/index';
 
 export default function Card(props) {
   const [isVisible, setIsVisible] = useState(false);
 
+  const globalState = useContext(store);
+  
   function handleModalOpening() {
     setIsVisible(true);
   }
@@ -43,6 +46,14 @@ export default function Card(props) {
             </View>
             <UserAdress />
             <Text style={{ fontSize: fonts.small }}>{`Serviço: ${props.item.assunto}`}</Text>
+            {globalState.state.isAdmin &&
+              <Text style={{ fontSize: fonts.small }}>
+                {props.item.employee_name === null
+                  ? 'Técnico: Não assinalado'
+                  : `Técnico: ${props.item.employee_name}`
+                }
+              </Text>
+            }
           </View>
         </View>
       </TouchableOpacity>
