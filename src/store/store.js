@@ -10,6 +10,7 @@ const initialState = {
   server_ip: null,
   server_port: null,
   employee_id: null,
+  isAdmin: false,
 };
 
 const store = createContext(initialState);
@@ -26,6 +27,7 @@ const StateProvider = ( { children } ) => {
           server_ip: action.payload.server_ip,
           server_port: action.payload.server_port,
           employee_id: action.payload.employee_id,
+          isAdmin: action.payload.isAdmin,
         };
 
       case 'RESTORE_TOKEN':
@@ -36,6 +38,7 @@ const StateProvider = ( { children } ) => {
             server_port: action.payload.server_port,
             employee_id: action.payload.employee_id,
             isLoading: false,
+            isAdmin: action.payload.isAdmin,
         };
 
       case 'SIGN_OUT':
@@ -43,6 +46,7 @@ const StateProvider = ( { children } ) => {
           ...prevState,
           isSignout: true,
           userToken: null,
+          isAdmin: null,
         };
 
       case 'CHANGE_SERVER_CONFIG':
@@ -68,6 +72,7 @@ const StateProvider = ( { children } ) => {
         server_ip = await AsyncStorage.getItem('@server_ip');
         server_port = await AsyncStorage.getItem('@server_port');
         employee_id = await AsyncStorage.getItem('@employee_id');
+        isAdmin = await AsyncStorage.getItem('@isAdmin');
       } catch (e) {
         // Restoring token failed
       }
@@ -77,6 +82,7 @@ const StateProvider = ( { children } ) => {
         server_ip,
         server_port,
         employee_id,
+        isAdmin,
       }});
     };
 
@@ -102,9 +108,17 @@ const StateProvider = ( { children } ) => {
           const server_ip_key = ['@server_ip', server_ip];
           const server_port_key = ['@server_port', server_port];
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
+          const isAdmin = ['@isAdmin', user.isAdmin.toString()];
   
           try {
-            await AsyncStorage.multiSet([auth_token_key, server_ip_key, server_port_key, employee_id_key]);
+            await AsyncStorage.multiSet([
+              auth_token_key, 
+              server_ip_key, 
+              server_port_key, 
+              employee_id_key, 
+              isAdmin,
+            ]);
+
           } catch(e) {
             Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
           }
@@ -114,6 +128,7 @@ const StateProvider = ( { children } ) => {
             server_ip,
             server_port,
             employee_id: user.employee_id,
+            isAdmin: user.isAdmin,
           } });
 
           return true;
