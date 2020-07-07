@@ -53,20 +53,40 @@ export default function Home({ navigation }) {
 
   async function loadAPI() {
     try {
-      setRefreshing(true);
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
-        {
-          tecnico: globalState.state.employee_id,
-          date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+      let response = null;
+
+      if (globalState.state.isAdmin) {
+        setRefreshing(true);
+        
+        response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request`,
+          {
+            date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
           },
-        },
-      );
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      } else {
+        setRefreshing(true);
+
+        response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
+          {
+            tecnico: globalState.state.employee_id,
+            date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      }
 
       dispatch({
         type: 'save_requests',
