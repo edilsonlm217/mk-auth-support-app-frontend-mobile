@@ -1,5 +1,14 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, PermissionsAndroid, Alert, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  PermissionsAndroid,
+  Alert,
+  ScrollView,
+  RefreshControl,
+  ToastAndroid
+} from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
@@ -17,7 +26,7 @@ export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
   const [isVisible, setIsVisible] = useState(false);
 
-  const [caixaHermetica, setCaixaHermetica] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   // Hook para verificar se a tela atual está focada
   const isFocused = useIsFocused(false);
@@ -25,19 +34,13 @@ export default function Details({ route, navigation }) {
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
-  useEffect(() => {
-    const { data } = route.params;
-    setState(data);
-  }, []);
+  async function loadAPI() {
+    setRefreshing(true);
+    const { id: request_id } = route.params;
 
-  useEffect(() => {
-    checkForUpdate();
-  }, [isFocused]);
-
-  async function checkForUpdate() {
-    if (isFocused) {
+    try {
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${route.params.data.client_id}`,
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
         {
           timeout: 2500,
           headers: {
@@ -46,8 +49,24 @@ export default function Details({ route, navigation }) {
         },
       );
 
-      setCaixaHermetica(response.data.caixa_herm);
+      setState(response.data);
+      setRefreshing(false);
+    } catch {
+      ToastAndroid.show("Não foi possível atualizar", ToastAndroid.SHORT);
+      setRefreshing(false);
     }
+  }
+
+  useEffect(() => {
+    loadAPI();
+  }, []);
+
+  useEffect(() => {
+    loadAPI();
+  }, [isFocused]);
+
+  async function onRefresh() {
+    loadAPI();
   }
 
   async function OpenCoordinate(coordinate) {
@@ -186,6 +205,9 @@ export default function Details({ route, navigation }) {
       </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <View style={styles.line_container}>
           <Text style={styles.sub_text}>Horário de visita</Text>
@@ -255,7 +277,7 @@ export default function Details({ route, navigation }) {
             <View style={styles.cto_line}>
               <View>
                 <Text style={styles.sub_text}>Caixa Atual</Text>
-                <Text style={styles.main_text}>{caixaHermetica !== null ? caixaHermetica : 'Nenhuma'}</Text>
+                <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
               </View>
               <View style={{ justifyContent: 'center' }}>
                 <Icon name="map-search" size={icons.tiny} color="#000" />
