@@ -59,7 +59,7 @@ export default function Details({ route, navigation }) {
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        const {} = Geolocation.getCurrentPosition(geo_success => {
+        const { } = Geolocation.getCurrentPosition(geo_success => {
           const current_longitude = geo_success.coords.longitude;
           const current_latitude = geo_success.coords.latitude;
 
@@ -81,7 +81,7 @@ export default function Details({ route, navigation }) {
     } catch (err) {
       console.log(err);
       Alert.alert('Erro', 'Não é possível navegar até o cliente');
-    }1
+    }
   }
 
   function ClosingReason() {
@@ -193,6 +193,24 @@ export default function Details({ route, navigation }) {
             {state.visita}
           </Text>
         </View>
+        {globalState.state.isAdmin &&
+          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+            <View style={styles.cto_line}>
+              <View>
+                <Text style={styles.sub_text}>Técnico responsável</Text>
+                <Text style={styles.main_text}>
+                  {state.employee_name === null
+                    ? 'Não assinalado'
+                    : state.employee_name
+                  }
+                </Text>
+              </View>
+              <View style={{ justifyContent: 'center' }}>
+                <Icon name="account-edit" size={icons.tiny} color="#000" />
+              </View>
+            </View>
+          </TouchableOpacity>
+        }
         <View style={styles.line_container}>
           <Text style={styles.sub_text}>Serviço</Text>
           <Text style={styles.main_text}>{state.assunto}</Text>
