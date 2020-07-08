@@ -10,7 +10,7 @@ export default function RequestDetails(props) {
     props.CloseModal();
 
     props.navigation.navigate('Details', {
-      data: props.data,
+      id: props.data.id,
     });
   }
 

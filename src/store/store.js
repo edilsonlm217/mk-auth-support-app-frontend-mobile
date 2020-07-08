@@ -128,7 +128,7 @@ const StateProvider = ( { children } ) => {
             server_ip,
             server_port,
             employee_id: user.employee_id,
-            isAdmin: user.isAdmin,
+            isAdmin: user.isAdmin.toString(),
           } });
 
           return true;

@@ -26,6 +26,8 @@ export default function Home({ navigation }) {
 
   const globalState = useContext(store);
 
+  console.log(globalState.state.isAdmin);
+
   const { signOut } = globalState.methods;
 
   const [state, dispatch] = useReducer(reducer, {
@@ -53,40 +55,21 @@ export default function Home({ navigation }) {
 
   async function loadAPI() {
     try {
-      let response = null;
+      setRefreshing(true);
 
-      if (globalState.state.isAdmin) {
-        setRefreshing(true);
-        
-        response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request`,
-          {
-            date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
+      const response = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
+        {
+          tecnico: globalState.state.isAdmin === 'true' ? null : globalState.state.employee_id,
+          date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
           },
-          {
-            timeout: 2500,
-            headers: {
-              Authorization: `Bearer ${globalState.state.userToken}`,
-            },
-          },
-        );
-      } else {
-        setRefreshing(true);
-
-        response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
-          {
-            tecnico: globalState.state.employee_id,
-            date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
-          },
-          {
-            timeout: 2500,
-            headers: {
-              Authorization: `Bearer ${globalState.state.userToken}`,
-            },
-          },
-        );
-      }
+        },
+      );
 
       dispatch({
         type: 'save_requests',
