@@ -237,109 +237,113 @@ export default function Details({ route, navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
-          <View style={styles.cto_line}>
-            <View>
-              <Text style={styles.sub_text}>Horário de visita</Text>
-              <Text style={styles.main_text}>
-                {state.visita}
-              </Text>
-            </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Icon name="clock-outline" size={icons.tiny} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
-          <View style={styles.cto_line}>
-            <View>
-              <Text style={styles.sub_text}>Dia da visita</Text>
-              <Text style={styles.main_text}>
-                {state.data_visita}
-              </Text>
-            </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Icon name="calendar" size={icons.tiny} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
-
-        {globalState.state.isAdmin &&
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-            <View style={styles.cto_line}>
-              <View>
-                <Text style={styles.sub_text}>Técnico responsável</Text>
-                <Text style={styles.main_text}>
-                  {state.employee_name === null
-                    ? 'Não assinalado'
-                    : state.employee_name
-                  }
-                </Text>
+        {refreshing !== true &&
+          <>
+            <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
+              <View style={styles.cto_line}>
+                <View>
+                  <Text style={styles.sub_text}>Horário de visita</Text>
+                  <Text style={styles.main_text}>
+                    {state.visita}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="clock-outline" size={icons.tiny} color="#000" />
+                </View>
               </View>
-              <View style={{ justifyContent: 'center' }}>
-                <Icon name="account-edit" size={icons.tiny} color="#000" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+              <View style={styles.cto_line}>
+                <View>
+                  <Text style={styles.sub_text}>Dia da visita</Text>
+                  <Text style={styles.main_text}>
+                    {state.data_visita}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="calendar" size={icons.tiny} color="#000" />
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        }
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Serviço</Text>
-          <Text style={styles.main_text}>{state.assunto}</Text>
-        </View>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Relato do cliente</Text>
-          <Text style={styles.main_text}>
-            {
-              state.mensagem
-                ? state.mensagem
-                : 'Sem comentários'
+            </TouchableOpacity>
+
+            {globalState.state.isAdmin &&
+              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+                <View style={styles.cto_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Técnico responsável</Text>
+                    <Text style={styles.main_text}>
+                      {state.employee_name === null
+                        ? 'Não assinalado'
+                        : state.employee_name
+                      }
+                    </Text>
+                  </View>
+                  <View style={{ justifyContent: 'center' }}>
+                    <Icon name="account-edit" size={icons.tiny} color="#000" />
+                  </View>
+                </View>
+              </TouchableOpacity>
             }
-          </Text>
-        </View>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Login e senha</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.main_text_login_senha}>{state.login}</Text>
-            <Text style={styles.main_text_login_senha}>{state.senha}</Text>
-          </View>
-        </View>
-        <TouchableOpacity onPress={handleModalOpening}>
-          <View style={styles.location_line}>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Serviço</Text>
+              <Text style={styles.main_text}>{state.assunto}</Text>
+            </View>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Relato do cliente</Text>
+              <Text style={styles.main_text}>
+                {
+                  state.mensagem
+                    ? state.mensagem
+                    : 'Sem comentários'
+                }
+              </Text>
+            </View>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Login e senha</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>{state.login}</Text>
+                <Text style={styles.main_text_login_senha}>{state.senha}</Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={handleModalOpening}>
+              <View style={styles.location_line}>
+                <View>
+                  <Text style={styles.sub_text}>Endereço</Text>
+                  <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="navigation" size={icons.tiny} color="#000" />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {state.status === 'fechado'
+              ?
+              (<ClosingReason />)
+              :
+              <></>
+            }
+
             <View>
-              <Text style={styles.sub_text}>Endereço</Text>
-              <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+                <View style={styles.cto_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Caixa Atual</Text>
+                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
+                  </View>
+                  <View style={{ justifyContent: 'center' }}>
+                    <Icon name="map-search" size={icons.tiny} color="#000" />
+                  </View>
+                </View>
+              </TouchableOpacity>
             </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Icon name="navigation" size={icons.tiny} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
-        {state.status === 'fechado'
-          ?
-          (<ClosingReason />)
-          :
-          <></>
-        }
 
-        <View>
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-            <View style={styles.cto_line}>
-              <View>
-                <Text style={styles.sub_text}>Caixa Atual</Text>
-                <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-              </View>
-              <View style={{ justifyContent: 'center' }}>
-                <Icon name="map-search" size={icons.tiny} color="#000" />
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {state.status === 'aberto' &&
-          <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
-            <Text style={styles.btn_label}>Fechar Chamado</Text>
-          </TouchableOpacity>
+            {state.status === 'aberto' &&
+              <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
+                <Text style={styles.btn_label}>Fechar Chamado</Text>
+              </TouchableOpacity>
+            }
+          </>
         }
 
       </ScrollView>
