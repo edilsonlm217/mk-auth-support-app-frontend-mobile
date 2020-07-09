@@ -32,11 +32,7 @@ export default function Details({ route, navigation }) {
   // Estado para controlar visibilidade do datepicker
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
-  const [date, setDate] = useState(new Date());
-
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
-
-  const [time, setTime] = useState(new Date());
 
   // Hook para verificar se a tela atual está focada
   const isFocused = useIsFocused(false);
