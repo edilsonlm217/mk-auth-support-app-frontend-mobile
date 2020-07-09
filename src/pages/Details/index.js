@@ -52,7 +52,7 @@ export default function Details({ route, navigation }) {
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
         {
-          timeout: 10000,
+          timeout: 3000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -84,10 +84,30 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function handleNewTime(event, time) {
+  async function handleNewTime(event, time) {
     if (event.type === 'set') {
       setIsTimePickerVisible(false);
-      setTime(time);
+
+      try {
+        const { id: request_id } = route.params;
+
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_visita_time",
+            new_visita_time: time,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+      } catch {
+        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+      }
     } else if (event.type === 'dismissed') {
       setIsTimePickerVisible(false);
     }
