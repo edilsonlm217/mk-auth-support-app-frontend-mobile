@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import { useIsFocused } from '@react-navigation/native';
@@ -28,6 +29,15 @@ export default function Details({ route, navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  // Estado para controlar visibilidade do datepicker
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  const [date, setDate] = useState(new Date());
+
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
+  const [time, setTime] = useState(new Date());
+
   // Hook para verificar se a tela atual está focada
   const isFocused = useIsFocused(false);
 
@@ -42,7 +52,7 @@ export default function Details({ route, navigation }) {
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -64,6 +74,24 @@ export default function Details({ route, navigation }) {
   useEffect(() => {
     loadAPI();
   }, [isFocused]);
+
+  function handleNewDate(event, selectedDate) {
+    if (event.type === 'set') {
+      setIsDatePickerVisible(false);
+      setDate(selectedDate);
+    } else if (event.type === 'dismissed') {
+      setIsDatePickerVisible(false);
+    }
+  }
+
+  function handleNewTime(event, time) {
+    if (event.type === 'set') {
+      setIsTimePickerVisible(false);
+      setTime(time);
+    } else if (event.type === 'dismissed') {
+      setIsTimePickerVisible(false);
+    }
+  }
 
   async function onRefresh() {
     loadAPI();
@@ -194,11 +222,11 @@ export default function Details({ route, navigation }) {
       <View style={styles.header_container}>
         <Icon name="account" size={icons.tiny} color="#000" />
         <View style={{ marginLeft: 10 }}>
-          <Text style={styles.main_text}>{state.nome}</Text>
+          <Text style={styles.main_text}>{route.params.nome}</Text>
           <Text style={styles.sub_text}>
-            {`${state.plano === 'nenhum'
+            {`${route.params.plano === 'nenhum'
               ? 'Nenhum'
-              : state.plano} | ${state.tipo ? state.tipo.toUpperCase() : state.tipo} | ${state.ip}`
+              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip}`
             }
           </Text>
         </View>
@@ -209,12 +237,34 @@ export default function Details({ route, navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Horário de visita</Text>
-          <Text style={styles.main_text}>
-            {state.visita}
-          </Text>
-        </View>
+        <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
+          <View style={styles.cto_line}>
+            <View>
+              <Text style={styles.sub_text}>Horário de visita</Text>
+              <Text style={styles.main_text}>
+                {state.visita}
+              </Text>
+            </View>
+            <View style={{ justifyContent: 'center' }}>
+              <Icon name="clock-outline" size={icons.tiny} color="#000" />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+          <View style={styles.cto_line}>
+            <View>
+              <Text style={styles.sub_text}>Dia da visita</Text>
+              <Text style={styles.main_text}>
+                {state.data_visita}
+              </Text>
+            </View>
+            <View style={{ justifyContent: 'center' }}>
+              <Icon name="calendar" size={icons.tiny} color="#000" />
+            </View>
+          </View>
+        </TouchableOpacity>
+
         {globalState.state.isAdmin &&
           <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
             <View style={styles.cto_line}>
@@ -314,6 +364,24 @@ export default function Details({ route, navigation }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
+
+      {
+        isDatePickerVisible &&
+        <DateTimePicker
+          mode="datetime"
+          display="calendar"
+          value={date}
+          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+        />
+      }
+      {
+        isTimePickerVisible &&
+        <DateTimePicker
+          mode="time"
+          value={time}
+          onChange={(event, date) => { handleNewTime(event, date) }}
+        />
+      }
     </View>
   );
 }
