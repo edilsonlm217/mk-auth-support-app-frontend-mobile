@@ -96,6 +96,7 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        onRefresh();
       } catch {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
@@ -125,6 +126,7 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        onRefresh();
       } catch {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
