@@ -75,10 +75,30 @@ export default function Details({ route, navigation }) {
     loadAPI();
   }, [isFocused]);
 
-  function handleNewDate(event, selectedDate) {
+  async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
       setIsDatePickerVisible(false);
-      setDate(selectedDate);
+      
+      try {
+        const { id: request_id } = route.params;
+
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_visita_date",
+            new_visita_date: selectedDate,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+      } catch {
+        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+      }
     } else if (event.type === 'dismissed') {
       setIsDatePickerVisible(false);
     }
