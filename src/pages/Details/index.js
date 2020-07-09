@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import { useIsFocused } from '@react-navigation/native';
@@ -28,6 +29,11 @@ export default function Details({ route, navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  // Estado para controlar visibilidade do datepicker
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
   // Hook para verificar se a tela atual está focada
   const isFocused = useIsFocused(false);
 
@@ -42,7 +48,7 @@ export default function Details({ route, navigation }) {
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
         {
-          timeout: 2500,
+          timeout: 3000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -64,6 +70,66 @@ export default function Details({ route, navigation }) {
   useEffect(() => {
     loadAPI();
   }, [isFocused]);
+
+  async function handleNewDate(event, selectedDate) {
+    if (event.type === 'set') {
+      setIsDatePickerVisible(false);
+      
+      try {
+        const { id: request_id } = route.params;
+
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_visita_date",
+            new_visita_date: selectedDate,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+        onRefresh();
+      } catch {
+        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+      }
+    } else if (event.type === 'dismissed') {
+      setIsDatePickerVisible(false);
+    }
+  }
+
+  async function handleNewTime(event, time) {
+    if (event.type === 'set') {
+      setIsTimePickerVisible(false);
+
+      try {
+        const { id: request_id } = route.params;
+
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_visita_time",
+            new_visita_time: time,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+        onRefresh();
+      } catch {
+        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+      }
+    } else if (event.type === 'dismissed') {
+      setIsTimePickerVisible(false);
+    }
+  }
 
   async function onRefresh() {
     loadAPI();
@@ -194,11 +260,11 @@ export default function Details({ route, navigation }) {
       <View style={styles.header_container}>
         <Icon name="account" size={icons.tiny} color="#000" />
         <View style={{ marginLeft: 10 }}>
-          <Text style={styles.main_text}>{state.nome}</Text>
+          <Text style={styles.main_text}>{route.params.nome}</Text>
           <Text style={styles.sub_text}>
-            {`${state.plano === 'nenhum'
+            {`${route.params.plano === 'nenhum'
               ? 'Nenhum'
-              : state.plano} | ${state.tipo ? state.tipo.toUpperCase() : state.tipo} | ${state.ip}`
+              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip}`
             }
           </Text>
         </View>
@@ -209,87 +275,113 @@ export default function Details({ route, navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Horário de visita</Text>
-          <Text style={styles.main_text}>
-            {state.visita}
-          </Text>
-        </View>
-        {globalState.state.isAdmin &&
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-            <View style={styles.cto_line}>
-              <View>
-                <Text style={styles.sub_text}>Técnico responsável</Text>
-                <Text style={styles.main_text}>
-                  {state.employee_name === null
-                    ? 'Não assinalado'
-                    : state.employee_name
-                  }
-                </Text>
+        {refreshing !== true &&
+          <>
+            <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
+              <View style={styles.cto_line}>
+                <View>
+                  <Text style={styles.sub_text}>Horário de visita</Text>
+                  <Text style={styles.main_text}>
+                    {state.visita}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="clock-outline" size={icons.tiny} color="#000" />
+                </View>
               </View>
-              <View style={{ justifyContent: 'center' }}>
-                <Icon name="account-edit" size={icons.tiny} color="#000" />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+              <View style={styles.cto_line}>
+                <View>
+                  <Text style={styles.sub_text}>Dia da visita</Text>
+                  <Text style={styles.main_text}>
+                    {state.data_visita}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="calendar" size={icons.tiny} color="#000" />
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        }
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Serviço</Text>
-          <Text style={styles.main_text}>{state.assunto}</Text>
-        </View>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Relato do cliente</Text>
-          <Text style={styles.main_text}>
-            {
-              state.mensagem
-                ? state.mensagem
-                : 'Sem comentários'
+            </TouchableOpacity>
+
+            {globalState.state.isAdmin &&
+              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+                <View style={styles.cto_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Técnico responsável</Text>
+                    <Text style={styles.main_text}>
+                      {state.employee_name === null
+                        ? 'Não assinalado'
+                        : state.employee_name
+                      }
+                    </Text>
+                  </View>
+                  <View style={{ justifyContent: 'center' }}>
+                    <Icon name="account-edit" size={icons.tiny} color="#000" />
+                  </View>
+                </View>
+              </TouchableOpacity>
             }
-          </Text>
-        </View>
-        <View style={styles.line_container}>
-          <Text style={styles.sub_text}>Login e senha</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Text style={styles.main_text_login_senha}>{state.login}</Text>
-            <Text style={styles.main_text_login_senha}>{state.senha}</Text>
-          </View>
-        </View>
-        <TouchableOpacity onPress={handleModalOpening}>
-          <View style={styles.location_line}>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Serviço</Text>
+              <Text style={styles.main_text}>{state.assunto}</Text>
+            </View>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Relato do cliente</Text>
+              <Text style={styles.main_text}>
+                {
+                  state.mensagem
+                    ? state.mensagem
+                    : 'Sem comentários'
+                }
+              </Text>
+            </View>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Login e senha</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>{state.login}</Text>
+                <Text style={styles.main_text_login_senha}>{state.senha}</Text>
+              </View>
+            </View>
+            <TouchableOpacity onPress={handleModalOpening}>
+              <View style={styles.location_line}>
+                <View>
+                  <Text style={styles.sub_text}>Endereço</Text>
+                  <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="navigation" size={icons.tiny} color="#000" />
+                </View>
+              </View>
+            </TouchableOpacity>
+            {state.status === 'fechado'
+              ?
+              (<ClosingReason />)
+              :
+              <></>
+            }
+
             <View>
-              <Text style={styles.sub_text}>Endereço</Text>
-              <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+                <View style={styles.cto_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Caixa Atual</Text>
+                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
+                  </View>
+                  <View style={{ justifyContent: 'center' }}>
+                    <Icon name="map-search" size={icons.tiny} color="#000" />
+                  </View>
+                </View>
+              </TouchableOpacity>
             </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Icon name="navigation" size={icons.tiny} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
-        {state.status === 'fechado'
-          ?
-          (<ClosingReason />)
-          :
-          <></>
-        }
 
-        <View>
-          <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-            <View style={styles.cto_line}>
-              <View>
-                <Text style={styles.sub_text}>Caixa Atual</Text>
-                <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-              </View>
-              <View style={{ justifyContent: 'center' }}>
-                <Icon name="map-search" size={icons.tiny} color="#000" />
-              </View>
-            </View>
-          </TouchableOpacity>
-        </View>
-
-        {state.status === 'aberto' &&
-          <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
-            <Text style={styles.btn_label}>Fechar Chamado</Text>
-          </TouchableOpacity>
+            {state.status === 'aberto' &&
+              <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
+                <Text style={styles.btn_label}>Fechar Chamado</Text>
+              </TouchableOpacity>
+            }
+          </>
         }
 
       </ScrollView>
@@ -314,6 +406,24 @@ export default function Details({ route, navigation }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
+
+      {
+        isDatePickerVisible &&
+        <DateTimePicker
+          mode="datetime"
+          display="calendar"
+          value={date}
+          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+        />
+      }
+      {
+        isTimePickerVisible &&
+        <DateTimePicker
+          mode="time"
+          value={time}
+          onChange={(event, date) => { handleNewTime(event, date) }}
+        />
+      }
     </View>
   );
 }

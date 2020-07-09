@@ -26,8 +26,6 @@ export default function Home({ navigation }) {
 
   const globalState = useContext(store);
 
-  console.log(globalState.state.isAdmin);
-
   const { signOut } = globalState.methods;
 
   const [state, dispatch] = useReducer(reducer, {
