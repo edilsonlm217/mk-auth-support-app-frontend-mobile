@@ -11,6 +11,10 @@ export default function RequestDetails(props) {
 
     props.navigation.navigate('Details', {
       id: props.data.id,
+      nome: props.data.nome,
+      tipo: props.data.tipo,
+      ip: props.data.ip,
+      plano: props.data.plano,
     });
   }
 
