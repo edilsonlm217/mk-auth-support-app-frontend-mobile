@@ -40,6 +40,11 @@ export default function Details({ route, navigation }) {
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
+  var radio_props = [
+    { label: 'param1', value: 0 },
+    { label: 'param2', value: 1 }
+  ];
+
   async function loadAPI() {
     setRefreshing(true);
     const { id: request_id } = route.params;
@@ -280,6 +285,31 @@ export default function Details({ route, navigation }) {
     }
   }
 
+  function RadioButton(props) {
+    return (
+      <View style={[{
+        height: 15,
+        width: 15,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#000',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }, props.style]}>
+        {
+          props.selected ?
+            <View style={{
+              height: 10,
+              width: 10,
+              borderRadius: 6,
+              backgroundColor: '#000',
+            }} />
+            : null
+        }
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
@@ -302,8 +332,8 @@ export default function Details({ route, navigation }) {
       >
         {refreshing !== true &&
           <>
-            {globalState.state.isAdmin 
-            ?
+            {globalState.state.isAdmin
+              ?
               <>
                 <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
                   <View style={styles.cto_line}>
@@ -461,8 +491,7 @@ export default function Details({ route, navigation }) {
         useNativeDriver={true}
       />
 
-      {
-        isDatePickerVisible &&
+      {isDatePickerVisible &&
         <DateTimePicker
           mode="datetime"
           display="calendar"
@@ -470,14 +499,59 @@ export default function Details({ route, navigation }) {
           onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
         />
       }
-      {
-        isTimePickerVisible &&
+      {isTimePickerVisible &&
         <DateTimePicker
           mode="time"
           value={time}
           onChange={(event, date) => { handleNewTime(event, date) }}
         />
       }
+
+      <Modal
+        // onBackButtonPress={handleModalClosing}
+        // onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_for_employees}>
+
+            <View style={styles.mfe_current_employee_section}>
+              <Text style={styles.mfe_main_text}>Técnico Atual</Text>
+              <Text>Edilson Rocha Lima</Text>
+            </View>
+
+            <View style={styles.mfe_employees_section}>
+              <Text style={styles.mfe_main_text}>
+                Selecione um novo técnico...
+              </Text>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                <RadioButton />
+                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                <RadioButton />
+                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                <RadioButton />
+                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
+              </View>
+            
+            </View>
+
+            <TouchableOpacity style={styles.mfe_confirm_btn}>
+              <Text style={styles.mfe_confirm_btn_label}>Confirmar</Text>
+            </TouchableOpacity>
+
+          </View>
+        }
+        isVisible={true}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
     </View>
   );
 }
