@@ -302,8 +302,8 @@ export default function Details({ route, navigation }) {
         {
           props.selected ?
             <View style={{
-              height: 10,
-              width: 10,
+              height: 11,
+              width: 11,
               borderRadius: 6,
               backgroundColor: '#000',
             }} />
@@ -327,6 +327,33 @@ export default function Details({ route, navigation }) {
       );
 
       setEmployees(response.data);
+    } catch {
+      ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+    }
+  }
+
+  async function handleChangeEmployee() {
+    try {
+      const { id: request_id } = route.params;
+
+      const response = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+        {
+          action: "update_employee",
+          employee_id: newEmployee.id,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      setEmployeesModal(false)
+      onRefresh();
+      ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+
     } catch {
       ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
     }
@@ -537,7 +564,7 @@ export default function Details({ route, navigation }) {
 
             <View style={styles.mfe_current_employee_section}>
               <Text style={styles.mfe_main_text}>Técnico Atual</Text>
-              <Text>Edilson Rocha Lima</Text>
+              <Text>{state.employee_name}</Text>
             </View>
 
             <View style={styles.mfe_employees_section}>
@@ -546,14 +573,17 @@ export default function Details({ route, navigation }) {
               </Text>
 
               {employees.map(employee =>
-                <View key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                  <RadioButton />
+                <TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                  {employee.id === newEmployee.id
+                    ? <RadioButton selected />
+                    : <RadioButton />
+                  }
                   <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
-                </View>
+                </TouchableOpacity>
               )}
             </View>
 
-            <TouchableOpacity style={styles.mfe_confirm_btn}>
+            <TouchableOpacity onPress={() => handleChangeEmployee()} style={styles.mfe_confirm_btn}>
               <Text style={styles.mfe_confirm_btn_label}>Confirmar</Text>
             </TouchableOpacity>
 
