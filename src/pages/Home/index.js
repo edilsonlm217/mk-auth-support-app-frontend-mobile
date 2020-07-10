@@ -58,7 +58,7 @@ export default function Home({ navigation }) {
       const response = await axios.post(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
         {
-          tecnico: globalState.state.isAdmin === 'true' ? null : globalState.state.employee_id,
+          tecnico: globalState.state.isAdmin === true ? null : globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
         },
         {
