@@ -251,8 +251,33 @@ export default function Details({ route, navigation }) {
     setIsVisible(false);
   }
 
-  function handleCloseRequest() {
-    Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
+  async function handleCloseRequest() {
+    if (globalState.state.isAdmin) {
+      try {
+        const { id: request_id } = route.params;
+
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "close_request",
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+        onRefresh();
+      } catch (error) {
+        console.log(error);
+        Alert.alert('Erro', 'Não foi possível fechar chamado');
+      }
+
+    } else {
+      Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
+    }
   }
 
   return (
