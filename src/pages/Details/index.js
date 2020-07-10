@@ -74,7 +74,7 @@ export default function Details({ route, navigation }) {
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
       setIsDatePickerVisible(false);
-      
+
       try {
         const { id: request_id } = route.params;
 
@@ -277,33 +277,62 @@ export default function Details({ route, navigation }) {
       >
         {refreshing !== true &&
           <>
-            <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
-              <View style={styles.cto_line}>
-                <View>
-                  <Text style={styles.sub_text}>Horário de visita</Text>
-                  <Text style={styles.main_text}>
-                    {state.visita}
-                  </Text>
-                </View>
-                <View style={{ justifyContent: 'center' }}>
-                  <Icon name="clock-outline" size={icons.tiny} color="#000" />
-                </View>
-              </View>
-            </TouchableOpacity>
+            {globalState.state.isAdmin 
+            ?
+              <>
+                <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Horário de visita</Text>
+                      <Text style={styles.main_text}>
+                        {state.visita}
+                      </Text>
+                    </View>
+                    <View style={{ justifyContent: 'center' }}>
+                      <Icon name="clock-outline" size={icons.tiny} color="#000" />
+                    </View>
+                  </View>
+                </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
-              <View style={styles.cto_line}>
+                <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.main_text}>
+                        {state.data_visita}
+                      </Text>
+                    </View>
+                    <View style={{ justifyContent: 'center' }}>
+                      <Icon name="calendar" size={icons.tiny} color="#000" />
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              </>
+              :
+              <>
                 <View>
-                  <Text style={styles.sub_text}>Dia da visita</Text>
-                  <Text style={styles.main_text}>
-                    {state.data_visita}
-                  </Text>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Horário de visita</Text>
+                      <Text style={styles.main_text}>
+                        {state.visita}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-                <View style={{ justifyContent: 'center' }}>
-                  <Icon name="calendar" size={icons.tiny} color="#000" />
+
+                <View>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.main_text}>
+                        {state.data_visita}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
-            </TouchableOpacity>
+              </>
+            }
 
             {globalState.state.isAdmin &&
               <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
