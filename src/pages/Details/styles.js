@@ -170,9 +170,52 @@ const styles = StyleSheet.create({
     fontSize: fonts.medium,
     paddingLeft: 15,
     textAlign: "center",
-    
+  },
 
-  }
+  modal_for_employees: {
+    width: '100%',
+    maxWidth: 275,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 10,
+    padding: 20,
+    paddingTop: 10,
+    marginLeft: 30,
+    marginRight: 30,
+  },
+
+  mfe_current_employee_section: {
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  mfe_employees_section: {
+    marginBottom: 10,
+    marginTop: 10,
+  },
+
+  mfe_main_text: {
+    fontWeight: "bold",
+    marginBottom: 10,
+    fontSize: fonts.regular,
+  },
+
+  mfe_confirm_btn: {
+    backgroundColor: '#337AB7',
+    marginTop: 15,
+    borderRadius: 20,
+    marginBottom: 10,
+  },
+  
+  mfe_confirm_btn_label: {
+    color: '#FFF',
+    alignSelf: 'center',
+    fontWeight: 'bold',
+    fontSize: fonts.regular,
+    margin: 5,
+    
+  },
 });
 
 export default styles;
