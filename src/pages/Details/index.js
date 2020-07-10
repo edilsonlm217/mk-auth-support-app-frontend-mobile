@@ -40,10 +40,13 @@ export default function Details({ route, navigation }) {
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
-  var radio_props = [
-    { label: 'param1', value: 0 },
-    { label: 'param2', value: 1 }
-  ];
+  // Estado que armazena a lista mais recente de técnicos disponíveis  
+  const [employees, setEmployees] = useState([]);
+
+  // Estado que controla a visibilidade do modal de alteração de técnico
+  const [employeesModal, setEmployeesModal] = useState(false);
+
+  const [newEmployee, setNewEmployee] = useState({});
 
   async function loadAPI() {
     setRefreshing(true);
@@ -310,6 +313,25 @@ export default function Details({ route, navigation }) {
     );
   }
 
+  async function openChangeEmployeeModal() {
+    setEmployeesModal(true);
+    try {
+      const response = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/employees`,
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      setEmployees(response.data);
+    } catch {
+      ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.header_container}>
@@ -390,7 +412,7 @@ export default function Details({ route, navigation }) {
             }
 
             {globalState.state.isAdmin &&
-              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
+              <TouchableOpacity onPress={() => openChangeEmployeeModal()}>
                 <View style={styles.cto_line}>
                   <View>
                     <Text style={styles.sub_text}>Técnico responsável</Text>
@@ -508,8 +530,8 @@ export default function Details({ route, navigation }) {
       }
 
       <Modal
-        // onBackButtonPress={handleModalClosing}
-        // onBackdropPress={handleModalClosing}
+        onBackButtonPress={() => setEmployeesModal(false)}
+        onBackdropPress={() => setEmployeesModal(false)}
         children={
           <View style={styles.modal_for_employees}>
 
@@ -523,21 +545,12 @@ export default function Details({ route, navigation }) {
                 Selecione um novo técnico...
               </Text>
 
-              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                <RadioButton />
-                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                <RadioButton />
-                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
-              </View>
-
-              <View style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                <RadioButton />
-                <Text style={{ marginLeft: 10, alignSelf: 'center' }}>Antonio Brito Lima</Text>
-              </View>
-            
+              {employees.map(employee =>
+                <View key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                  <RadioButton />
+                  <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
+                </View>
+              )}
             </View>
 
             <TouchableOpacity style={styles.mfe_confirm_btn}>
@@ -546,7 +559,7 @@ export default function Details({ route, navigation }) {
 
           </View>
         }
-        isVisible={true}
+        isVisible={employeesModal}
         style={{ margin: 0 }}
         animationInTiming={500}
         animationOutTiming={500}
