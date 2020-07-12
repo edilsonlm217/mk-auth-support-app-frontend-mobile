@@ -7,7 +7,8 @@ import {
   Alert,
   ScrollView,
   RefreshControl,
-  ToastAndroid
+  ToastAndroid,
+  Dimensions,
 } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -29,10 +30,16 @@ export default function Details({ route, navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const [employeeRefreshing, setEmployeeRefreshing] = useState(false);
+
   // Estado para controlar visibilidade do datepicker
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
+  const [date] = useState(new Date());
+
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
+  const [time] = useState(new Date());
 
   // Hook para verificar se a tela atual está focada
   const isFocused = useIsFocused(false);
@@ -47,6 +54,8 @@ export default function Details({ route, navigation }) {
   const [employeesModal, setEmployeesModal] = useState(false);
 
   const [newEmployee, setNewEmployee] = useState({});
+
+  const modalHeight = (Dimensions.get('window').width * 80) / 100;
 
   async function loadAPI() {
     setRefreshing(true);
@@ -182,7 +191,7 @@ export default function Details({ route, navigation }) {
       return (
         <View style={styles.line_container}>
           <View>
-            <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+            <Text style={styles.sub_text}>Motivo de fechamento</Text>
             <Text style={styles.main_text}>Não informado</Text>
           </View>
         </View>
@@ -197,13 +206,13 @@ export default function Details({ route, navigation }) {
         <>
           <View style={styles.line_container}>
             <View>
-              <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+              <Text style={styles.sub_text}>Motivo de fechamento</Text>
               <Text style={styles.main_text}>{closing_reason}</Text>
             </View>
           </View>
           <View style={styles.line_container}>
             <View>
-              <Text style={styles.sub_text}>Data de Fechamento</Text>
+              <Text style={styles.sub_text}>Data de fechamento</Text>
               <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
             </View>
           </View>
@@ -313,9 +322,9 @@ export default function Details({ route, navigation }) {
     );
   }
 
-  async function openChangeEmployeeModal() {
-    setEmployeesModal(true);
+  async function getEmployees() {
     try {
+      setEmployeeRefreshing(true);
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/employees`,
         {
@@ -327,35 +336,46 @@ export default function Details({ route, navigation }) {
       );
 
       setEmployees(response.data);
+      setEmployeeRefreshing(false);
     } catch {
+      setRefreshing(false);
       ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
     }
   }
 
+  async function openChangeEmployeeModal() {
+    setEmployeesModal(true);
+    getEmployees();
+  }
+
   async function handleChangeEmployee() {
-    try {
-      const { id: request_id } = route.params;
+    if (Object.keys(newEmployee).length === 0) {
+      ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
+    } else {
+      try {
+        const { id: request_id } = route.params;
 
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
-        {
-          action: "update_employee",
-          employee_id: newEmployee.id,
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_employee",
+            employee_id: newEmployee.id,
           },
-        },
-      );
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
 
-      setEmployeesModal(false)
-      onRefresh();
-      ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+        setEmployeesModal(false)
+        onRefresh();
+        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
-    } catch {
-      ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+      } catch {
+        ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+      }
     }
   }
 
@@ -368,7 +388,7 @@ export default function Details({ route, navigation }) {
           <Text style={styles.sub_text}>
             {`${route.params.plano === 'nenhum'
               ? 'Nenhum'
-              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip}`
+              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
             }
           </Text>
         </View>
@@ -401,7 +421,7 @@ export default function Details({ route, navigation }) {
                 <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
                   <View style={styles.cto_line}>
                     <View>
-                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.sub_text}>Data de visita</Text>
                       <Text style={styles.main_text}>
                         {state.data_visita}
                       </Text>
@@ -428,7 +448,7 @@ export default function Details({ route, navigation }) {
                 <View>
                   <View style={styles.cto_line}>
                     <View>
-                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.sub_text}>Data de visita</Text>
                       <Text style={styles.main_text}>
                         {state.data_visita}
                       </Text>
@@ -461,7 +481,7 @@ export default function Details({ route, navigation }) {
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
             <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Relato do cliente</Text>
+              <Text style={styles.sub_text}>Mensagem</Text>
               <Text style={styles.main_text}>
                 {
                   state.mensagem
@@ -499,7 +519,7 @@ export default function Details({ route, navigation }) {
               <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
                 <View style={styles.cto_line}>
                   <View>
-                    <Text style={styles.sub_text}>Caixa Atual</Text>
+                    <Text style={styles.sub_text}>Caixa atual</Text>
                     <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
                   </View>
                   <View style={{ justifyContent: 'center' }}>
@@ -571,16 +591,27 @@ export default function Details({ route, navigation }) {
               <Text style={styles.mfe_main_text}>
                 Selecione um novo técnico...
               </Text>
-
-              {employees.map(employee =>
-                <TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                  {employee.id === newEmployee.id
-                    ? <RadioButton selected />
-                    : <RadioButton />
+              <ScrollView
+                showsVerticalScrollIndicator={true}
+                refreshControl={
+                  <RefreshControl refreshing={employeeRefreshing} onRefresh={() => getEmployees()} />
+                }
+                style={{minHeight: 100, maxHeight: modalHeight}}
+              >
+                {employeeRefreshing === false && employees.map(employee => {
+                  if (employee.nome !== state.employee_name) {
+                    return (
+                      < TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                        {(employee.id === newEmployee.id)
+                          ? <RadioButton selected />
+                          : <RadioButton />
+                        }
+                        <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
+                      </TouchableOpacity>
+                    );
                   }
-                  <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
-                </TouchableOpacity>
-              )}
+                })}
+              </ScrollView>
             </View>
 
             <TouchableOpacity onPress={() => handleChangeEmployee()} style={styles.mfe_confirm_btn}>

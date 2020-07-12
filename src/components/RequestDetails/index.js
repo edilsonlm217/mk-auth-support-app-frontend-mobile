@@ -29,7 +29,7 @@ export default function RequestDetails(props) {
               {
               `${props.data.plano === 'nenhum' 
                 ? 'Nenhum'
-                : props.data.plano} | ${props.data.tipo.toUpperCase()} | ${props.data.ip}`
+                : props.data.plano} | ${props.data.tipo.toUpperCase()} | ${props.data.ip === null ? 'Nenhum' : props.data.ip}`
               }
             </Text>
           </Text>
