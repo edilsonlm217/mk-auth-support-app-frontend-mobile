@@ -337,29 +337,33 @@ export default function Details({ route, navigation }) {
   }
 
   async function handleChangeEmployee() {
-    try {
-      const { id: request_id } = route.params;
+    if (Object.keys(newEmployee).length === 0) {
+      ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
+    } else {
+      try {
+        const { id: request_id } = route.params;
 
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
-        {
-          action: "update_employee",
-          employee_id: newEmployee.id,
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+        const response = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+          {
+            action: "update_employee",
+            employee_id: newEmployee.id,
           },
-        },
-      );
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
 
-      setEmployeesModal(false)
-      onRefresh();
-      ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+        setEmployeesModal(false)
+        onRefresh();
+        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
-    } catch {
-      ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+      } catch {
+        ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+      }
     }
   }
 
