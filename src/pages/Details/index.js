@@ -372,7 +372,7 @@ export default function Details({ route, navigation }) {
           <Text style={styles.sub_text}>
             {`${route.params.plano === 'nenhum'
               ? 'Nenhum'
-              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip}`
+              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
             }
           </Text>
         </View>
