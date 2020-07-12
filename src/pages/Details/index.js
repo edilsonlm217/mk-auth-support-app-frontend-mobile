@@ -29,6 +29,8 @@ export default function Details({ route, navigation }) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const [employeeRefreshing, setEmployeeRefreshing] = useState(false);
+
   // Estado para controlar visibilidade do datepicker
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
@@ -317,9 +319,9 @@ export default function Details({ route, navigation }) {
     );
   }
 
-  async function openChangeEmployeeModal() {
-    setEmployeesModal(true);
+  async function getEmployees() {
     try {
+      setEmployeeRefreshing(true);
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/employees`,
         {
@@ -331,9 +333,16 @@ export default function Details({ route, navigation }) {
       );
 
       setEmployees(response.data);
+      setEmployeeRefreshing(false);
     } catch {
+      setRefreshing(false);
       ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
     }
+  }
+
+  async function openChangeEmployeeModal() {
+    setEmployeesModal(true);
+    getEmployees();
   }
 
   async function handleChangeEmployee() {
@@ -579,20 +588,27 @@ export default function Details({ route, navigation }) {
               <Text style={styles.mfe_main_text}>
                 Selecione um novo técnico...
               </Text>
-
-              {employees.map(employee => {
-                if (employee.nome !== state.employee_name) {
-                  return (
-                    < TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                      {(employee.id === newEmployee.id)
-                        ? <RadioButton selected />
-                        : <RadioButton />
-                      }
-                      <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
-                    </TouchableOpacity>
-                  );
+              <ScrollView
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                  <RefreshControl refreshing={employeeRefreshing} onRefresh={() => getEmployees()} />
                 }
-              })}
+                style={{minHeight: 100}}
+              >
+                {employeeRefreshing === false && employees.map(employee => {
+                  if (employee.nome !== state.employee_name) {
+                    return (
+                      < TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                        {(employee.id === newEmployee.id)
+                          ? <RadioButton selected />
+                          : <RadioButton />
+                        }
+                        <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
+                      </TouchableOpacity>
+                    );
+                  }
+                })}
+              </ScrollView>
             </View>
 
             <TouchableOpacity onPress={() => handleChangeEmployee()} style={styles.mfe_confirm_btn}>
