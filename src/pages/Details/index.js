@@ -580,15 +580,19 @@ export default function Details({ route, navigation }) {
                 Selecione um novo técnico...
               </Text>
 
-              {employees.map(employee =>
-                <TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                  {employee.id === newEmployee.id
-                    ? <RadioButton selected />
-                    : <RadioButton />
-                  }
-                  <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
-                </TouchableOpacity>
-              )}
+              {employees.map(employee => {
+                if (employee.nome !== state.employee_name) {
+                  return (
+                    < TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
+                      {(employee.id === newEmployee.id)
+                        ? <RadioButton selected />
+                        : <RadioButton />
+                      }
+                      <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
+                    </TouchableOpacity>
+                  );
+                }
+              })}
             </View>
 
             <TouchableOpacity onPress={() => handleChangeEmployee()} style={styles.mfe_confirm_btn}>
