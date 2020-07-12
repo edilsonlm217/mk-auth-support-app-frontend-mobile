@@ -186,7 +186,7 @@ export default function Details({ route, navigation }) {
       return (
         <View style={styles.line_container}>
           <View>
-            <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+            <Text style={styles.sub_text}>Motivo de fechamento</Text>
             <Text style={styles.main_text}>Não informado</Text>
           </View>
         </View>
@@ -201,13 +201,13 @@ export default function Details({ route, navigation }) {
         <>
           <View style={styles.line_container}>
             <View>
-              <Text style={styles.sub_text}>Motivo de Fechamento</Text>
+              <Text style={styles.sub_text}>Motivo de fechamento</Text>
               <Text style={styles.main_text}>{closing_reason}</Text>
             </View>
           </View>
           <View style={styles.line_container}>
             <View>
-              <Text style={styles.sub_text}>Data de Fechamento</Text>
+              <Text style={styles.sub_text}>Data de fechamento</Text>
               <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
             </View>
           </View>
@@ -405,7 +405,7 @@ export default function Details({ route, navigation }) {
                 <TouchableOpacity onPress={() => setIsDatePickerVisible(true)}>
                   <View style={styles.cto_line}>
                     <View>
-                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.sub_text}>Data de visita</Text>
                       <Text style={styles.main_text}>
                         {state.data_visita}
                       </Text>
@@ -432,7 +432,7 @@ export default function Details({ route, navigation }) {
                 <View>
                   <View style={styles.cto_line}>
                     <View>
-                      <Text style={styles.sub_text}>Dia da visita</Text>
+                      <Text style={styles.sub_text}>Data de visita</Text>
                       <Text style={styles.main_text}>
                         {state.data_visita}
                       </Text>
@@ -465,7 +465,7 @@ export default function Details({ route, navigation }) {
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
             <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Relato do cliente</Text>
+              <Text style={styles.sub_text}>Mensagem</Text>
               <Text style={styles.main_text}>
                 {
                   state.mensagem
@@ -503,7 +503,7 @@ export default function Details({ route, navigation }) {
               <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
                 <View style={styles.cto_line}>
                   <View>
-                    <Text style={styles.sub_text}>Caixa Atual</Text>
+                    <Text style={styles.sub_text}>Caixa atual</Text>
                     <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
                   </View>
                   <View style={{ justifyContent: 'center' }}>
