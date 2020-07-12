@@ -30,7 +30,7 @@ export default function Card(props) {
       const bairro = props.item.bairro
 
       return (
-        <Text style={{ fontSize: fonts.small }}>{`${endereco}, ${numero} - ${bairro}`}</Text>
+        <Text numberOfLines={1}style={{ fontSize: fonts.small }}>{`${endereco}, ${numero} - ${bairro}`}</Text>
       );
     }
   }
