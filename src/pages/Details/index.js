@@ -7,7 +7,8 @@ import {
   Alert,
   ScrollView,
   RefreshControl,
-  ToastAndroid
+  ToastAndroid,
+  Dimensions,
 } from 'react-native';
 import openMap from 'react-native-open-maps';
 import Geolocation from '@react-native-community/geolocation';
@@ -53,6 +54,8 @@ export default function Details({ route, navigation }) {
   const [employeesModal, setEmployeesModal] = useState(false);
 
   const [newEmployee, setNewEmployee] = useState({});
+
+  const modalHeight = (Dimensions.get('window').width * 80) / 100;
 
   async function loadAPI() {
     setRefreshing(true);
@@ -589,11 +592,11 @@ export default function Details({ route, navigation }) {
                 Selecione um novo técnico...
               </Text>
               <ScrollView
-                showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={true}
                 refreshControl={
                   <RefreshControl refreshing={employeeRefreshing} onRefresh={() => getEmployees()} />
                 }
-                style={{minHeight: 100}}
+                style={{minHeight: 100, maxHeight: modalHeight}}
               >
                 {employeeRefreshing === false && employees.map(employee => {
                   if (employee.nome !== state.employee_name) {
