@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 import { icons, fonts } from '../../styles/index';
 
@@ -10,8 +10,8 @@ export default function AppHeader( props ) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header_title}>Chamados</Text>
+    <View style={[styles.container, { height: props.altura}]}>
+      <Text style={styles.header_title}>{props.label}</Text>
       <TouchableOpacity onPress={handleNavigateToSettings}>
         <Icon style={styles.settings_icon} name="settings-outline" size={icons.tiny} color="#FFF" />
       </TouchableOpacity>
@@ -22,7 +22,6 @@ export default function AppHeader( props ) {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#337AB7',
-    height: '15%',
     flexDirection: 'row',
     justifyContent: "space-between",
   },

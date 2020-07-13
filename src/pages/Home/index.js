@@ -274,7 +274,7 @@ export default function Home({ navigation }) {
   return (
     <>
       <View style={styles.container}>
-        <AppHeader navigation={navigation} />
+      <AppHeader navigation={navigation} label="Chamados" altura="15%"/>
         <View style={styles.date_selector}>
           <TouchableOpacity onPress={handlePrevDay}>
             <Icon name="chevron-left" size={icons.large} color="#FFF" />
