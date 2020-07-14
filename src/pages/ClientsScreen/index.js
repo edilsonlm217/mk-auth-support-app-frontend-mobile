@@ -3,6 +3,7 @@ import { View, Text, Alert, ScrollView, StyleSheet, TouchableOpacity } from 'rea
 import axios from 'axios';
 
 import { store } from '../../store/store';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import AppHeader from '../../components/AppHeader/index';
 
@@ -36,7 +37,7 @@ export default function ClientsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <AppHeader navigation={navigation} label="Clientes" altura="21%" />
+      <AppHeader navigation={navigation} label="Clientes" altura="21%" iconFor="search" />
       <View style={styles.screen_container}>
         <ScrollView>
           {data.map(item => (
@@ -46,7 +47,8 @@ export default function ClientsScreen({ navigation }) {
                 <View>
                   {item.children.map(client => (
                     <TouchableOpacity key={client.id} style={styles.client_btn}>
-                      <Text numberOfLines={1}>{client.nome}</Text>
+                      <Text numberOfLines={1} style={styles.client_name}>{client.nome}</Text>
+                      <Icon name="chevron-right" size={20} color="#000" />
                     </TouchableOpacity>
                   ))}
                 </View>
@@ -103,8 +105,17 @@ const styles = StyleSheet.create({
 
   client_btn: {
     borderBottomWidth: 0.5,
+    borderColor: '#bdbdbd',
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: 'space-between',
     padding: 10,
+    paddingLeft: 5,
+    paddingRight: 0,
+  },
+
+  client_name: {
+    fontSize: 14,
+    width: '90%',
   },
 });
