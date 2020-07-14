@@ -4,17 +4,29 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 import { icons, fonts } from '../../styles/index';
 
-export default function AppHeader( props ) {
+export default function AppHeader(props) {
   function handleNavigateToSettings() {
     props.navigation.navigate('Settings');
   }
 
+  function handleNavigateToSearch() {
+    props.navigation.navigate('Search');
+  }
+
   return (
-    <View style={[styles.container, { height: props.altura}]}>
+    <View style={[styles.container, { height: props.altura }]}>
       <Text style={styles.header_title}>{props.label}</Text>
-      <TouchableOpacity onPress={handleNavigateToSettings}>
-        <Icon style={styles.settings_icon} name="settings-outline" size={icons.tiny} color="#FFF" />
-      </TouchableOpacity>
+
+      {props.iconFor === 'settings'
+        ?
+        <TouchableOpacity onPress={handleNavigateToSettings}>
+          <Icon style={styles.settings_icon} name="settings-outline" size={icons.tiny} color="#FFF" />
+        </TouchableOpacity>
+        :
+        <TouchableOpacity onPress={handleNavigateToSearch}>
+          <Icon style={styles.settings_icon} name="search" size={icons.tiny} color="#FFF" />
+        </TouchableOpacity>
+      }
     </View>
   );
 }
