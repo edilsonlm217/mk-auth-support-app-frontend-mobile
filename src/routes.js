@@ -16,7 +16,6 @@ import AuthScreen from './pages/AuthScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
-import ClientsScreen from './pages/ClientsScreen/index';
 import SearchScreen from './pages/SearchScreen/index';
 
 import { fonts } from './styles/index';
@@ -43,7 +42,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Search"
-        component={ClientsScreen}
+        component={SearchScreen}
         options={{
           tabBarLabel: 'Buscar cliente',
           tabBarIcon: ({ color }) => (
