@@ -3,7 +3,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import UserIcon from 'react-native-vector-icons/AntDesign';
 import SettingsIcon from 'react-native-vector-icons/Ionicons';
 
 import { store } from './store/store';
