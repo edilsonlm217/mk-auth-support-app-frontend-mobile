@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import UserIcon from 'react-native-vector-icons/AntDesign';
+import SettingsIcon from 'react-native-vector-icons/Ionicons';
 
 import { store } from './store/store';
 import { icons } from './styles/index';
@@ -25,7 +26,12 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator tabBarOptions={{
+      keyboardHidesTabBar: true,
+      labelStyle: {
+        fontSize: fonts.small,
+      }
+    }}>
       <Tab.Screen
         name="Chamados"
         component={Home}
@@ -36,11 +42,22 @@ function HomeTabs() {
         }}
       />
       <Tab.Screen
-        name="Clientes"
+        name="Search"
         component={ClientsScreen}
         options={{
+          tabBarLabel: 'Buscar cliente',
           tabBarIcon: ({ color }) => (
-            <UserIcon name="user" size={icons.tiny} color={color} />
+            <Icon name="account-search" size={icons.tiny} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Ajustes',
+          tabBarIcon: ({ color }) => (
+            <SettingsIcon name="settings-outline" size={icons.tiny} color={color} />
           ),
         }}
       />
@@ -125,24 +142,6 @@ export default function RootTab() {
             component={PickNewLocation}
             options={{
               title: 'Atualizar endereço',
-              headerStyle: {
-                backgroundColor: '#FFF',
-              },
-              headerTintColor: '#337AB7',
-              headerTransparent: true,
-              headerTitleStyle: {
-                fontWeight: 'bold',
-                fontSize: fonts.huge,
-                marginLeft: -20,
-              },
-            }}
-          />
-
-          <Stack.Screen
-            name="Settings"
-            component={SettingsScreen}
-            options={{
-              title: 'Configurações',
               headerStyle: {
                 backgroundColor: '#FFF',
               },
