@@ -8,7 +8,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     padding: 20,
-    paddingTop: 80,
+    paddingTop: 20,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20, 
   },
   header_container: {
     flexDirection: 'row',
@@ -44,7 +46,6 @@ const styles = StyleSheet.create({
   btns_contaier: {
     flexDirection: "row",
     justifyContent: 'space-around',
-    marginTop: 20,
     backgroundColor: '#FFF'
   },
   secondary_btn: {
