@@ -96,14 +96,16 @@ export default function ClientsScreen({ navigation }) {
     }
   }
 
-  function navigateToClient() {
-    navigation.navigate('ClientDetails');
+  function navigateToClient(client_id) {
+    navigation.navigate('ClientDetails', {
+      client_id,
+    });
   }
 
   function renderItem({ item }) {
     return (
-      <TouchableOpacity onPress={navigateToClient} style={styles.client_btn}>
-        <Text style={styles.search_result_label}>{item}</Text>
+      <TouchableOpacity onPress={() => navigateToClient(item.id)} style={styles.client_btn}>
+        <Text style={styles.search_result_label}>{item.nome}</Text>
         <Icon name={'chevron-right'} size={icons.super_tiny} color={'#000'} />
       </TouchableOpacity>
     );
@@ -151,7 +153,7 @@ export default function ClientsScreen({ navigation }) {
         <FlatList
           data={state.clients}
           renderItem={renderItem}
-          keyExtractor={item => item.id}
+          keyExtractor={item => item.id.toString()}
           ItemSeparatorComponent={FlatListItemSeparator}
           refreshControl={
             <RefreshControl refreshing={state.loading} />
