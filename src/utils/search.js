@@ -12,6 +12,7 @@ const makeRequestCreator = () => {
     }
     // Create a new CancelToken
     cancel = axios.CancelToken.source();
+
     try {
       if (resources[query]) {
         // Return result if it exists
@@ -21,12 +22,7 @@ const makeRequestCreator = () => {
         authorization,
         { cancelToken: cancel.token });
 
-      let clients = [];
-      res.data.map(client => {
-        clients.push(client.nome)
-      });
-
-      const result = clients;
+      const result = res.data;
       // Store response
       resources[query] = result;
 
