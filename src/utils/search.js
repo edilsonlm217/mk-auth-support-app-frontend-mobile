@@ -1,13 +1,9 @@
-import React, { useContext } from 'react';
-import { store } from '../store/store';
 import axios from "axios";
 
 const resources = {};
 
 const makeRequestCreator = () => {
   let cancel;
-
-  const globalState = useContext(store);
 
   return async (query, authorization) => {
     if (cancel) {

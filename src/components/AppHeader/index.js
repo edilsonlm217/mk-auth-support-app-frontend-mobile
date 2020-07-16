@@ -1,12 +1,20 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fonts } from '../../styles/index';
 
 export default function AppHeader(props) {
   return (
     <View style={[styles.container, { height: props.altura }]}>
-      <Text style={styles.header_title}>{props.label}</Text>
+      <View style={styles.header_container}>
+        {props.backButton === true &&
+          <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginRight: 10 }}>
+            <Icon name="chevron-left" size={26} color="#FFF" />
+          </TouchableOpacity>
+        }
+        <Text style={styles.header_title}>{props.label}</Text>
+      </View>
     </View>
   );
 }
@@ -17,11 +25,19 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between",
   },
+
   header_title: {
     fontSize: fonts.huge,
     fontWeight: 'bold',
-    marginTop: 15,
-    marginLeft: 20,
     color: '#FFF',
+  },
+
+  header_container: {
+    flexDirection: "row",
+    marginTop: 15,
+    marginLeft: 15,
+    alignItems: "center",
+    height: '30%',
+    width: '100%',
   },
 });

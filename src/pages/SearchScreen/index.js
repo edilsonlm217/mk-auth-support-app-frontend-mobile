@@ -11,12 +11,12 @@ import {
 
 import { searchUtil } from '../../utils/search';
 import { store } from '../../store/store';
-import { fonts } from '../../styles/index';
+import { fonts, icons } from '../../styles/index';
 
 import SearchIcon from 'react-native-vector-icons/Ionicons';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-export default function ClientsScreen() {
+export default function ClientsScreen({ navigation }) {
   const globalState = useContext(store);
 
   const refInput = useRef(null);
@@ -96,11 +96,15 @@ export default function ClientsScreen() {
     }
   }
 
+  function navigateToClient() {
+    navigation.navigate('ClientDetails');
+  }
+
   function renderItem({ item }) {
     return (
-      <TouchableOpacity style={{ backgroundColor: '#FFF', padding: 5, margin: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text>{item}</Text>
-        <Icon name={'chevron-right'} size={20} color={'#000'} />
+      <TouchableOpacity onPress={navigateToClient} style={styles.client_btn}>
+        <Text style={styles.search_result_label}>{item}</Text>
+        <Icon name={'chevron-right'} size={icons.super_tiny} color={'#000'} />
       </TouchableOpacity>
     );
   }
@@ -108,11 +112,7 @@ export default function ClientsScreen() {
   function FlatListItemSeparator() {
     return (
       <View
-        style={{
-          height: 0.5,
-          width: "100%",
-          backgroundColor: "#000",
-        }}
+        style={styles.separator}
       />
     );
   }
@@ -128,17 +128,26 @@ export default function ClientsScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.search_area} >
-        <View style={{ paddingLeft: 10, paddingRight: 10 }}>
+        <View style={styles.icon_container}>
           <SearchIcon name='search' size={18} color='#b0b0b0' />
         </View>
-        <View style={{ width: '80%' }}>
-          <TextInput ref={refInput} onChangeText={text => onChangeHandler(text)} style={styles.input_style} placeholder="Ex: João Carlos" />
+        <View style={{ flex: 1 }}>
+          <TextInput
+            ref={refInput}
+            onChangeText={text => onChangeHandler(text)}
+            style={styles.input_style}
+            placeholder="Ex: João Carlos"
+          />
         </View>
-        <TouchableOpacity onPress={() => handleClearInputText()}>
+        <TouchableOpacity
+          style={styles.icon_container}
+          onPress={() => handleClearInputText()}
+        >
           <Icon name="close" size={18} color={'#b0b0b0'} />
         </TouchableOpacity>
       </View>
-      <View style={{ backgroundColor: '#FFF', margin: 20, borderRadius: 6 }}>
+
+      <View style={styles.flatlist_container}>
         <FlatList
           data={state.clients}
           renderItem={renderItem}
@@ -170,7 +179,37 @@ const styles = StyleSheet.create({
 
   input_style: {
     fontSize: fonts.medium,
-    paddingTop: 2,
+    paddingTop: 1,
     paddingBottom: 1,
+    width: '100%',
+  },
+
+  icon_container: {
+    paddingLeft: 10,
+    paddingRight: 10
+  },
+
+  client_btn: {
+    backgroundColor: '#FFF',
+    padding: 5,
+    margin: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+  separator: {
+    height: 0.5,
+    width: "100%",
+    backgroundColor: "#000",
+  },
+
+  flatlist_container: {
+    backgroundColor: '#FFF',
+    margin: 20,
+    borderRadius: 6
+  },
+
+  search_result_label: {
+    fontSize: fonts.medium,
   },
 });
