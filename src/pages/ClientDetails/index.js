@@ -7,9 +7,12 @@ import {
   Alert,
   RefreshControl,
   ScrollView,
-  PermissionsAndroid
+  PermissionsAndroid,
+  Platform,
+  Linking
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import CallIcon from 'react-native-vector-icons/Zocial';
 import Geolocation from '@react-native-community/geolocation';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import openMap from 'react-native-open-maps';
@@ -104,6 +107,23 @@ export default function ClientDetails({ navigation, route }) {
     }
   }
 
+  function dialCall(number) {
+    if (number === null) {
+      return Alert.alert('Errp', 'Número não informado');
+    }
+
+    let phoneNumber;
+
+    if (Platform.OS === 'android') {
+      phoneNumber = `tel:${number}`;
+    }
+    else {
+      phoneNumber = `telprompt:${number}`;
+    }
+
+    Linking.openURL(phoneNumber);
+  };
+
   return (
     <View style={styles.container}>
       <AppHeader
@@ -118,9 +138,7 @@ export default function ClientDetails({ navigation, route }) {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI} />
         }
-
       >
-
         <View>
           <View style={styles.clickable_line}>
             <View>
@@ -132,7 +150,7 @@ export default function ClientDetails({ navigation, route }) {
           </View>
         </View>
 
-        <View>
+        <TouchableOpacity onPress={() => dialCall(client.fone)}>
           <View style={styles.clickable_line}>
             <View>
               <Text style={styles.sub_text}>Telefone</Text>
@@ -140,10 +158,15 @@ export default function ClientDetails({ navigation, route }) {
                 {client.fone ? client.fone : 'Não informado'}
               </Text>
             </View>
+            {client.fone &&
+              <View style={{ justifyContent: 'center' }}>
+                <CallIcon name="call" size={icons.tiny} color="#000" />
+              </View>
+            }
           </View>
-        </View>
+        </TouchableOpacity>
 
-        <View>
+        <TouchableOpacity onPress={() => dialCall(client.celular)}>
           <View style={styles.clickable_line}>
             <View>
               <Text style={styles.sub_text}>Celular</Text>
@@ -151,8 +174,13 @@ export default function ClientDetails({ navigation, route }) {
                 {client.celular ? client.celular : 'Não informado'}
               </Text>
             </View>
+            {client.celular &&
+              <View style={{ justifyContent: 'center' }}>
+                <CallIcon name="call" size={icons.tiny} color="#000" />
+              </View>
+            }
           </View>
-        </View>
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={handleModalOpening}>
           <View style={styles.clickable_line}>
@@ -206,5 +234,4 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: "space-between"
   },
-
 });
