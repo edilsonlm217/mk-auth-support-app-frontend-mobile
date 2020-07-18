@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Dialog from "react-native-dialog";
+import axios from 'axios';
 
 import { store } from '../../store/store';
 import AppHeader from '../../components/AppHeader/index';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IonicIcon from 'react-native-vector-icons/Ionicons';
 
 import styles from './styles';
 
@@ -32,6 +34,30 @@ export default function SettingsScreen({ navigation }) {
 
   const globalState = useContext(store);
   const { signOut, changeConfig } = globalState.methods;
+
+  const [loggedUser, setLoggedUser] = useState({});
+
+  async function loadAPI() {
+    try {
+      const response = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/employee/${globalState.state.employee_id}`,
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      setLoggedUser(response.data);
+    } catch (error) {
+      Alert.alert('Erro', error.message);
+    }
+  }
+
+  useEffect(() => {
+    loadAPI();
+  }, []);
 
   function handleSaving() {
     ToastAndroid.show("Alteração salva com sucesso!", ToastAndroid.SHORT);
@@ -109,7 +135,7 @@ export default function SettingsScreen({ navigation }) {
   return (
     <>
       <AppHeader navigation={navigation} label="Ajustes" altura="21%" />
-      <View style={{backgroundColor: '#337AB7'}}>
+      <View style={{ backgroundColor: '#337AB7' }}>
         <View style={styles.container}>
           <TouchableOpacity onPress={() => setIsIPDialogVisible(true)}>
             <View style={styles.line_container}>
@@ -136,10 +162,10 @@ export default function SettingsScreen({ navigation }) {
 
           <TouchableOpacity onPress={handleLogout}>
             <View style={styles.line_container}>
-              <Text style={styles.sub_text}></Text>
+              <Text style={styles.sub_text}>Usuário logado</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text}>Sair do Sistema</Text>
-                <Icon name="chevron-right" size={25} color="#000" />
+                <Text style={styles.main_text}>{loggedUser.nome}</Text>
+                <IonicIcon name="exit-outline" size={25} color="red" />
               </View>
             </View>
           </TouchableOpacity>
