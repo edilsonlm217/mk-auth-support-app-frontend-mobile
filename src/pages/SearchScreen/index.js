@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
 
   separator: {
-    height: 0.5,
+    height: StyleSheet.hairlineWidth,
     width: "100%",
     backgroundColor: "#000",
   },
