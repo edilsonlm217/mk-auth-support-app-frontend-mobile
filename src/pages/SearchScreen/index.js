@@ -87,6 +87,10 @@ export default function ClientsScreen({ navigation }) {
     );
 
     if (response) {
+      response.map(item => {
+        item.nome = capitalize(item.nome);
+      });
+
       dispatch({
         type: 'setSearchResult',
         payload: {
@@ -94,6 +98,10 @@ export default function ClientsScreen({ navigation }) {
         },
       });
     }
+  }
+
+  function capitalize(input) {
+    return input.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
   }
 
   function navigateToClient(client_id) {
@@ -151,6 +159,7 @@ export default function ClientsScreen({ navigation }) {
 
       <View style={styles.flatlist_container}>
         <FlatList
+          keyboardShouldPersistTaps={true}
           data={state.clients}
           renderItem={renderItem}
           keyExtractor={item => item.id.toString()}
@@ -174,7 +183,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     margin: 20,
     borderRadius: 20,
-    height: 35,
+    height: 40,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -200,7 +209,7 @@ const styles = StyleSheet.create({
   },
 
   separator: {
-    height: 0.5,
+    height: StyleSheet.hairlineWidth,
     width: "100%",
     backgroundColor: "#000",
   },

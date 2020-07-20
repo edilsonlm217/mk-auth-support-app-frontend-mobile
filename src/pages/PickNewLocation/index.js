@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import MapView from 'react-native-maps';
-import { View, PermissionsAndroid, StyleSheet, Alert, Text, TouchableOpacity, ToastAndroid } from 'react-native';
+import { View, PermissionsAndroid, ActivityIndicator, Alert, Text, TouchableOpacity, ToastAndroid } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
+import Modal from 'react-native-modal';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -18,27 +19,32 @@ export default function PickNewLocation({ route, navigation }) {
   const [latitudeDelta, setLatitudeDelta] = useState(0.001);
   const [longitudeDelta, setLongitudeDelta] = useState(0.001);
 
+  const [isVisible, setIsVisible] = useState(false);
+
   useEffect(() => {
     async function getUserLocation() {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
       );
-    
+
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        Geolocation.getCurrentPosition(geo_success => {      
+        setIsVisible(true);
+        Geolocation.getCurrentPosition(geo_success => {
           const current_longitude = geo_success.coords.longitude;
           const current_latitude = geo_success.coords.latitude;
-          
+
           setLatitude(current_latitude);
           setLongitude(current_longitude);
+          setIsVisible(false);
         }, geo_error => {
-          console.log(geo_error)
-          Alert.alert('Erro', 'Não é possível navegar até o cliente');
+          setIsVisible(false);
+          Alert.alert('Erro', "Falha ao obter localização");
         }, {
-          timeout: 5000,
+          timeout: 10000,
           enableHighAccuracy: true,
         });
       } else {
+        setIsVisible(false);
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
     }
@@ -46,7 +52,7 @@ export default function PickNewLocation({ route, navigation }) {
     getUserLocation();
   }, []);
 
-  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta}) {
+  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta }) {
     setLatitude(latitude);
     setLongitude(longitude);
     setLatitudeDelta(latitudeDelta);
@@ -59,17 +65,17 @@ export default function PickNewLocation({ route, navigation }) {
     try {
       const response = await axios.post(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
-          latitude: latitude,
-          longitude: longitude,
-        }, 
+        latitude: latitude,
+        longitude: longitude,
+      },
         {
-          timeout: 2500,
+          timeout: 3000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`
           },
         }
       );
-  
+
       if (response.status === 200) {
         ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
         navigation.goBack();
@@ -79,7 +85,7 @@ export default function PickNewLocation({ route, navigation }) {
     }
   }
 
-  return  (
+  return (
     <View style={styles.container}>
       <MapView
         onRegionChangeComplete={handleRegionChange}
@@ -87,6 +93,7 @@ export default function PickNewLocation({ route, navigation }) {
         style={styles.map}
         provider="google"
         showsMyLocationButton={true}
+        loadingEnabled={true}
         region={{
           latitude: latitude,
           longitude: longitude,
@@ -95,8 +102,8 @@ export default function PickNewLocation({ route, navigation }) {
         }}
       />
       <View style={styles.mapMarkerContainer}>
-        <Icon style={{alignSelf: "center"}} name="location-on" size={40} color="#ad1f1f" />
-      
+        <Icon style={{ alignSelf: "center" }} name="location-on" size={40} color="#ad1f1f" />
+
         <View style={styles.bottom_option}>
           <Text style={styles.option_label}>MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO</Text>
 
@@ -107,6 +114,21 @@ export default function PickNewLocation({ route, navigation }) {
           </View>
         </View>
       </View>
+      <Modal
+        children={
+          <View style={styles.modal_style}>
+            <ActivityIndicator size="small" color="#0000ff" />
+            <Text style={styles.modal_text_style}>
+              Obtendo localização...
+            </Text>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
     </View>
   );
 }
