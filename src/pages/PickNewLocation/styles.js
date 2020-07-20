@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
 
     borderTopWidth: 1,
     borderTopColor: 'red',
-    
+
   },
 
   confirm_btn_container: {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     marginTop: 30,
     alignItems: 'center',
   },
-  
+
   option_label: {
     fontSize: fonts.medium,
     fontWeight: "bold",
@@ -58,7 +58,26 @@ const styles = StyleSheet.create({
     height: '100%',
     textAlignVertical: "center",
     fontSize: fonts.medium,
-  }
+  },
+
+  modal_style: {
+    width: '100%',
+    maxWidth: 275,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 10,
+    padding: 20,
+    paddingTop: 10,
+    marginLeft: 30,
+    marginRight: 30,
+  },
+
+  modal_text_style: {
+    fontSize: fonts.regular,
+    textAlign: "center",
+    marginBottom: 10,
+  },
 });
 
 export default styles;
