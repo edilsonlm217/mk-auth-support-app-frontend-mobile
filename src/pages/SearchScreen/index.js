@@ -87,6 +87,10 @@ export default function ClientsScreen({ navigation }) {
     );
 
     if (response) {
+      response.map(item => {
+        item.nome = capitalize(item.nome);
+      });
+
       dispatch({
         type: 'setSearchResult',
         payload: {
@@ -94,6 +98,10 @@ export default function ClientsScreen({ navigation }) {
         },
       });
     }
+  }
+
+  function capitalize(input) {
+    return input.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
   }
 
   function navigateToClient(client_id) {
