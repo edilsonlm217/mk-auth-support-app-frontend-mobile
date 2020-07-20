@@ -32,6 +32,8 @@ export default function SettingsScreen({ navigation }) {
   // Estado para guardar a nova PORTA informado pelo usuário
   const [tempPort, setTempPort] = useState(null);
 
+  const [isConfirmLogoutVisible, setIsConfirmLogoutVisible] = useState(false);
+
   const globalState = useContext(store);
   const { signOut, changeConfig } = globalState.methods;
 
@@ -160,7 +162,7 @@ export default function SettingsScreen({ navigation }) {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleLogout}>
+          <TouchableOpacity onPress={() => setIsConfirmLogoutVisible(true)}>
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Usuário logado</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -205,6 +207,17 @@ export default function SettingsScreen({ navigation }) {
             />
             <Dialog.Button onPress={handlePortCancelBtn} label="Cancelar" />
             <Dialog.Button onPress={() => confirmPortChange()} label="Confirmar" />
+          </Dialog.Container>
+        </View>
+
+        <View>
+          <Dialog.Container visible={isConfirmLogoutVisible}>
+            <Dialog.Title>Sair do sistema</Dialog.Title>
+            <Dialog.Description>
+              Você realmente deseja deslogar do sistema?
+            </Dialog.Description>
+            <Dialog.Button onPress={() => setIsConfirmLogoutVisible(false)} label="Cancelar" />
+            <Dialog.Button onPress={() => handleLogout()} label="Deslogar" />
           </Dialog.Container>
         </View>
       </View>
