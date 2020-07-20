@@ -109,6 +109,8 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+        
         onRefresh();
       } catch {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
@@ -138,6 +140,8 @@ export default function Details({ route, navigation }) {
             },
           },
         );
+
+        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
         onRefresh();
       } catch {
@@ -596,7 +600,7 @@ export default function Details({ route, navigation }) {
                 refreshControl={
                   <RefreshControl refreshing={employeeRefreshing} onRefresh={() => getEmployees()} />
                 }
-                style={{minHeight: 100, maxHeight: modalHeight}}
+                style={{ minHeight: 100, maxHeight: modalHeight }}
               >
                 {employeeRefreshing === false && employees.map(employee => {
                   if (employee.nome !== state.employee_name) {
