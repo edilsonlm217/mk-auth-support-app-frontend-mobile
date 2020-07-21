@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
   header_container: {
     flexDirection: 'row',
     marginBottom: 15,
+    justifyContent: "space-between",
   },
 
   main_text_login_senha: { 
