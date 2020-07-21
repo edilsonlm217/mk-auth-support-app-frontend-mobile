@@ -127,52 +127,6 @@ const styles = StyleSheet.create({
     fontSize: fonts.medium,
   },
 
-  modal_style: {
-    width: '100%',
-    maxWidth: 275,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
-    borderWidth: 0,
-    borderRadius: 10,
-    padding: 20,
-    paddingTop: 10,
-    marginLeft: 30,
-    marginRight: 30,
-  },
-
-  modal_header: {
-    fontWeight: "bold",
-    fontSize: fonts.medium,
-    width: '100%',
-    marginBottom: 10,
-  },
-
-  modal_btn: {
-    width: '100%',
-    height: 35,
-    marginTop: 15,
-    display: "flex",
-    justifyContent: 'center',
-    borderRadius: 4,
-    backgroundColor: '#FFF',
-    
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 4,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-
-    elevation: 4,
-  },
-
-  modal_btn_style: {
-    fontSize: fonts.medium,
-    paddingLeft: 15,
-    textAlign: "center",
-  },
-
   modal_for_employees: {
     width: '100%',
     maxWidth: 275,
