@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
   client_name: {
     fontWeight: 'bold',
     fontSize: fonts.regular,
-    maxWidth: 250,
+    flex: 1,
+    paddingRight: 10,
     color: '#808080',
   },
 
