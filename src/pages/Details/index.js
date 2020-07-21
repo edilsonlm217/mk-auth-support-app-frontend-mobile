@@ -26,7 +26,6 @@ import { icons } from '../../styles/index';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
-  const [isVisible, setIsVisible] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -246,15 +245,6 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function handleNavigateNewLocationPicker() {
-    setIsVisible(false);
-    navigation.navigate('UpdateClienteLocation', {
-      data: {
-        id: state.client_id,
-      }
-    });
-  }
-
   function handleModalOpening() {
     LocationServicesDialogBox.checkLocationServicesIsEnabled({
       message: "<h2 style='color: #0af13e'>Usar Localização ?</h2>Este app quer alterar as configurações do seu dispositivo:<br/><br/>Usar GPS, Wi-Fi e rede do celular para localização<br/><br/><a href='#'>Saiba mais</a>",
@@ -267,15 +257,10 @@ export default function Details({ route, navigation }) {
       preventBackClick: false,
       providerListener: false
     }).then(function (success) {
-      setIsVisible(true);
+      OpenCoordinate(state.coordenadas);
     }).catch((error) => {
       // console.log(error.message);
     });
-
-  }
-
-  function handleModalClosing() {
-    setIsVisible(false);
   }
 
   async function handleCloseRequest() {
@@ -553,27 +538,6 @@ export default function Details({ route, navigation }) {
         }
 
       </ScrollView>
-
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
 
       {isDatePickerVisible &&
         <DateTimePicker
