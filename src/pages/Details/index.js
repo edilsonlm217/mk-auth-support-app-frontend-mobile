@@ -26,7 +26,6 @@ import { icons } from '../../styles/index';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
-  const [isVisible, setIsVisible] = useState(false);
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -110,7 +109,7 @@ export default function Details({ route, navigation }) {
         );
 
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-        
+
         onRefresh();
       } catch {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
@@ -225,6 +224,12 @@ export default function Details({ route, navigation }) {
     }
   }
 
+  function navigateToClient(client_id) {
+    navigation.navigate('ClientDetails', {
+      client_id,
+    });
+  }
+
   function handleNavigateCTOMap(coordinate) {
     if (coordinate) {
       const [latidude, longitude] = coordinate.split(',');
@@ -240,15 +245,6 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function handleNavigateNewLocationPicker() {
-    setIsVisible(false);
-    navigation.navigate('UpdateClienteLocation', {
-      data: {
-        id: state.client_id,
-      }
-    });
-  }
-
   function handleModalOpening() {
     LocationServicesDialogBox.checkLocationServicesIsEnabled({
       message: "<h2 style='color: #0af13e'>Usar Localização ?</h2>Este app quer alterar as configurações do seu dispositivo:<br/><br/>Usar GPS, Wi-Fi e rede do celular para localização<br/><br/><a href='#'>Saiba mais</a>",
@@ -261,15 +257,10 @@ export default function Details({ route, navigation }) {
       preventBackClick: false,
       providerListener: false
     }).then(function (success) {
-      setIsVisible(true);
+      OpenCoordinate(state.coordenadas);
     }).catch((error) => {
       // console.log(error.message);
     });
-
-  }
-
-  function handleModalClosing() {
-    setIsVisible(false);
   }
 
   async function handleCloseRequest() {
@@ -385,9 +376,11 @@ export default function Details({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header_container}>
-        <Icon name="account" size={icons.tiny} color="#000" />
-        <View style={{ marginLeft: 10 }}>
+      <TouchableOpacity onPress={() => navigateToClient(state.client_id)} style={styles.header_container}>
+        <View>
+          <Icon name="account" size={icons.tiny} color="#000" />
+        </View>
+        <View style={{ flex: 1, paddingLeft: 10 }}>
           <Text style={styles.main_text}>{route.params.nome}</Text>
           <Text style={styles.sub_text}>
             {`${route.params.plano === 'nenhum'
@@ -396,7 +389,10 @@ export default function Details({ route, navigation }) {
             }
           </Text>
         </View>
-      </View>
+        <View style={{ alignSelf: "center" }}>
+          <Icon name="chevron-right" size={icons.tiny} color="#000" />
+        </View>
+      </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -542,27 +538,6 @@ export default function Details({ route, navigation }) {
         }
 
       </ScrollView>
-
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => OpenCoordinate(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(state.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
 
       {isDatePickerVisible &&
         <DateTimePicker
