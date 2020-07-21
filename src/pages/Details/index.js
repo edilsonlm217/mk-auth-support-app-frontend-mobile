@@ -110,7 +110,7 @@ export default function Details({ route, navigation }) {
         );
 
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-        
+
         onRefresh();
       } catch {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
@@ -223,6 +223,12 @@ export default function Details({ route, navigation }) {
         </>
       );
     }
+  }
+
+  function navigateToClient(client_id) {
+    navigation.navigate('ClientDetails', {
+      client_id,
+    });
   }
 
   function handleNavigateCTOMap(coordinate) {
@@ -385,9 +391,11 @@ export default function Details({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header_container}>
-        <Icon name="account" size={icons.tiny} color="#000" />
-        <View style={{ marginLeft: 10 }}>
+      <TouchableOpacity onPress={() => navigateToClient(state.client_id)} style={styles.header_container}>
+        <View>
+          <Icon name="account" size={icons.tiny} color="#000" />
+        </View>
+        <View style={{ flex: 1, paddingLeft: 10 }}>
           <Text style={styles.main_text}>{route.params.nome}</Text>
           <Text style={styles.sub_text}>
             {`${route.params.plano === 'nenhum'
@@ -396,7 +404,10 @@ export default function Details({ route, navigation }) {
             }
           </Text>
         </View>
-      </View>
+        <View style={{ alignSelf: "center" }}>
+          <Icon name="chevron-right" size={icons.tiny} color="#000" />
+        </View>
+      </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
