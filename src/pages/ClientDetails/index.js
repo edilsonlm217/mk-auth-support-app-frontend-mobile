@@ -48,8 +48,6 @@ export default function ClientDetails({ navigation, route }) {
         },
       );
 
-      console.log(response.data);
-
       setClient(response.data);
       setRefreshing(false);
     } catch {
