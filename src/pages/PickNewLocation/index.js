@@ -64,10 +64,12 @@ export default function PickNewLocation({ route, navigation }) {
 
     try {
       const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
-        latitude: latitude,
-        longitude: longitude,
-      },
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        {
+          action: "update_client_location",
+          latitude: latitude,
+          longitude: longitude,
+        },
         {
           timeout: 3000,
           headers: {
