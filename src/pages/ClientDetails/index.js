@@ -182,71 +182,85 @@ export default function ClientDetails({ navigation, route }) {
         altura="21%"
         backButton={true}
       />
-      <ScrollView
+      <View
         style={styles.section_container}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI} />
-        }
       >
-        <View>
-          <View style={styles.clickable_line}>
-            <View>
-              <Text style={styles.sub_text}>Cliente</Text>
-              <Text style={styles.main_text}>
-                {client.nome}
-              </Text>
-            </View>
+        <View style={styles.section_header}>
+          <Text style={styles.header_title}>{client.nome}</Text>
+          <Text style={[styles.sub_text, { textAlign: 'center' }]}>{client.plano}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Text
+              style={[
+                styles.client_status,
+                {
+                  color: client.equipment_status === 'Online' ? 'green' : 'red'
+                }
+              ]}
+            >
+              {client.equipment_status}
+            </Text>
+            <Icon
+              name="circle"
+              size={10}
+              color={client.equipment_status === 'Online' ? 'green' : 'red'}
+              style={{ marginTop: 2 }}
+            />
           </View>
         </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI} />
+          }
+        >
 
-        <TouchableOpacity onPress={() => dialCall(client.fone)}>
-          <View style={styles.clickable_line}>
-            <View>
-              <Text style={styles.sub_text}>Telefone</Text>
-              <Text style={styles.main_text}>
-                {client.fone ? client.fone : 'Não informado'}
-              </Text>
-            </View>
-            {client.fone &&
-              <View style={{ justifyContent: 'center' }}>
-                <CallIcon name="call" size={icons.tiny} color="#000" />
+          <TouchableOpacity onPress={() => dialCall(client.fone)}>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Telefone</Text>
+                <Text style={styles.main_text}>
+                  {client.fone ? client.fone : 'Não informado'}
+                </Text>
               </View>
-            }
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => dialCall(client.celular)}>
-          <View style={styles.clickable_line}>
-            <View>
-              <Text style={styles.sub_text}>Celular</Text>
-              <Text style={styles.main_text}>
-                {client.celular ? client.celular : 'Não informado'}
-              </Text>
+              {client.fone &&
+                <View style={{ justifyContent: 'center' }}>
+                  <CallIcon name="call" size={icons.tiny} color="#000" />
+                </View>
+              }
             </View>
-            {client.celular &&
-              <View style={{ justifyContent: 'center' }}>
-                <CallIcon name="call" size={icons.tiny} color="#000" />
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => dialCall(client.celular)}>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Celular</Text>
+                <Text style={styles.main_text}>
+                  {client.celular ? client.celular : 'Não informado'}
+                </Text>
               </View>
-            }
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleModalOpening}>
-          <View style={styles.clickable_line}>
-            <View>
-              <Text style={styles.sub_text}>Endereço</Text>
-              <Text style={styles.main_text}>
-                {`${client.endereco_res}, ${client.numero_res} - ${client.bairro_res}`}
-              </Text>
+              {client.celular &&
+                <View style={{ justifyContent: 'center' }}>
+                  <CallIcon name="call" size={icons.tiny} color="#000" />
+                </View>
+              }
             </View>
-            <View style={{ justifyContent: 'center' }}>
-              <Icon name="navigation" size={icons.tiny} color="#000" />
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
 
-      </ScrollView>
+          <TouchableOpacity onPress={handleModalOpening}>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Endereço</Text>
+                <Text style={styles.main_text}>
+                  {`${client.endereco_res}, ${client.numero_res} - ${client.bairro_res}`}
+                </Text>
+              </View>
+              <View style={{ justifyContent: 'center' }}>
+                <Icon name="navigation" size={icons.tiny} color="#000" />
+              </View>
+            </View>
+          </TouchableOpacity>
+        </ScrollView>
+      </View>
 
       <Modal
         onBackButtonPress={handleModalClosing}
@@ -350,5 +364,21 @@ const styles = StyleSheet.create({
     fontSize: fonts.medium,
     paddingLeft: 15,
     textAlign: "center",
+  },
+
+  header_title: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  client_status: {
+    fontSize: fonts.small,
+    textAlign: 'center',
+    marginRight: 5
+  },
+
+  section_header: {
+    margin: 10,
+    marginTop: 0,
   },
 });
