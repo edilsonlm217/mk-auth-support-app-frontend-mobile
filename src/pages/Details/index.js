@@ -481,12 +481,20 @@ export default function Details({ route, navigation }) {
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
             <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Equipamento</Text>
+              <Text style={styles.main_text}>
+                {state.equipamento !== "nenhum"
+                  ? state.equipamento
+                  : 'Nenhum'
+                }
+              </Text>
+            </View>
+            <View style={styles.line_container}>
               <Text style={styles.sub_text}>Mensagem</Text>
               <Text style={styles.main_text}>
-                {
-                  state.mensagem
-                    ? state.mensagem
-                    : 'Sem comentários'
+                {state.mensagem
+                  ? state.mensagem
+                  : 'Sem comentários'
                 }
               </Text>
             </View>
