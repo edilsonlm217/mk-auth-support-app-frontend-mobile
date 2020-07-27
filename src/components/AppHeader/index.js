@@ -10,7 +10,7 @@ export default function AppHeader(props) {
       <View style={styles.header_container}>
         {props.backButton === true &&
           <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginRight: 10 }}>
-            <Icon name="chevron-left" size={26} color="#FFF" />
+            <Icon name="arrow-left" size={24} color="#FFF" />
           </TouchableOpacity>
         }
         <Text style={styles.header_title}>{props.label}</Text>

@@ -88,6 +88,7 @@ export default function CTOMapping({ route, navigation }) {
     const response_update = await axios.post(
       `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
       {
+        action: "update_client_location",
         new_cto: selectedBtn,
       },
       {
