@@ -9,7 +9,8 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
-  Linking
+  Linking,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -20,6 +21,7 @@ import openMap from 'react-native-open-maps';
 import AppHeader from '../../components/AppHeader/index';
 import axios from 'axios';
 import Modal from 'react-native-modal';
+import { BarChart } from "react-native-chart-kit";
 
 import { icons, fonts } from '../../styles/index';
 import { store } from '../../store/store';
@@ -331,6 +333,32 @@ export default function ClientDetails({ navigation, route }) {
               <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
             </View>
 
+            <View style={styles.graph_container}>
+              
+              {Object.keys(client).length !== 0 &&
+                <BarChart
+                  data={client.graph_obj}
+                  width={Dimensions.get("window").width * 85 / 100}
+                  height={200}
+                  withInnerLines={false}
+                  withHorizontalLabels={true}
+                  chartConfig={{
+                    backgroundGradientFrom: "#FFF",
+                    backgroundGradientFromOpacity: 1,
+                    backgroundGradientTo: "#FFF",
+                    backgroundGradientToOpacity: 1,
+                    barPercentage: 0.7,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  style={{
+                    borderRadius: 16,
+                    alignSelf: 'center',
+                  }}
+                  fromZero={true}
+                />
+              }
+            </View>
+
           </View>
         </ScrollView>
       </View>
@@ -467,7 +495,7 @@ const styles = StyleSheet.create({
   },
 
   consumption_section: {
-    marginTop: 25,
+    marginTop: 15,
   },
 
   icon_frame: {
@@ -476,5 +504,26 @@ const styles = StyleSheet.create({
     marginRight: 15,
 
     borderRadius: 5,
+  },
+
+  graph_container: {
+    marginTop: 20,
+    marginBottom: 20,
+
+    backgroundColor: '#FFF',
+    width: '98%',
+    alignSelf: 'center',
+
+    borderRadius: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 4,
   },
 });
