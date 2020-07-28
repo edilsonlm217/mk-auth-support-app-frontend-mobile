@@ -259,6 +259,30 @@ export default function ClientDetails({ navigation, route }) {
               </View>
             </View>
           </TouchableOpacity>
+
+          <View>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Status Financeiro</Text>
+                <Text
+                  style={[styles.main_text, {
+                    color: client.bloqueado === 'sim' ? 'red' : '',
+                  }]}
+                >
+                  {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.line_container}>
+            <Text style={styles.sub_text}>Login e senha</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={styles.main_text_login_senha}>{client.login}</Text>
+              <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+            </View>
+          </View>
+
         </ScrollView>
       </View>
 
@@ -311,6 +335,16 @@ const styles = StyleSheet.create({
   sub_text: {
     fontSize: fonts.small,
     color: '#989898',
+  },
+
+  main_text_login_senha: {
+    fontWeight: "bold",
+    fontSize: fonts.regular,
+  },
+
+  line_container: {
+    padding: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   clickable_line: {
