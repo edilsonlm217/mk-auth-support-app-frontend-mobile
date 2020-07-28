@@ -12,6 +12,7 @@ import {
   Linking
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import CallIcon from 'react-native-vector-icons/Zocial';
 import Geolocation from '@react-native-community/geolocation';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
@@ -294,6 +295,43 @@ export default function ClientDetails({ navigation, route }) {
             </View>
           </View>
 
+          <View style={styles.consumption_section}>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#337AB7' }]}>
+                  <MaterialIcon name="data-usage" size={icons.tiny} color="#337AB7" />
+                </View>
+                <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>Trafego Atual</Text>
+              </View>
+              <Text
+                style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
+              >
+                {`${client.current_data_usage} Gb`}
+              </Text>
+            </View>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
+                  <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
+                </View>
+                <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diárial</Text>
+              </View>
+              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
+            </View>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
+                  <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
+                </View>
+                <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
+              </View>
+              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
+            </View>
+
+          </View>
         </ScrollView>
       </View>
 
@@ -426,5 +464,17 @@ const styles = StyleSheet.create({
   section_header: {
     margin: 10,
     marginTop: 0,
+  },
+
+  consumption_section: {
+    marginTop: 25,
+  },
+
+  icon_frame: {
+    borderWidth: 1.5,
+    padding: 5,
+    marginRight: 15,
+
+    borderRadius: 5,
   },
 });
