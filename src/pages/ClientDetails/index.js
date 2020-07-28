@@ -9,9 +9,11 @@ import {
   ScrollView,
   PermissionsAndroid,
   Platform,
-  Linking
+  Linking,
+  Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import CallIcon from 'react-native-vector-icons/Zocial';
 import Geolocation from '@react-native-community/geolocation';
 import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
@@ -19,6 +21,7 @@ import openMap from 'react-native-open-maps';
 import AppHeader from '../../components/AppHeader/index';
 import axios from 'axios';
 import Modal from 'react-native-modal';
+import { BarChart } from "react-native-chart-kit";
 
 import { icons, fonts } from '../../styles/index';
 import { store } from '../../store/store';
@@ -259,6 +262,104 @@ export default function ClientDetails({ navigation, route }) {
               </View>
             </View>
           </TouchableOpacity>
+
+          <View>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Status Financeiro</Text>
+                <Text
+                  style={[styles.main_text, {
+                    color: client.bloqueado === 'sim' ? 'red' : '',
+                  }]}
+                >
+                  {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.line_container}>
+            <Text style={styles.sub_text}>Login e senha</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={styles.main_text_login_senha}>{client.login}</Text>
+              <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+            </View>
+          </View>
+
+          <View>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Última conexão</Text>
+                <Text style={styles.main_text} >
+                  {client.current_user_connection}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.consumption_section}>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#337AB7' }]}>
+                  <MaterialIcon name="data-usage" size={icons.tiny} color="#337AB7" />
+                </View>
+                <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>Trafego Atual</Text>
+              </View>
+              <Text
+                style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
+              >
+                {`${client.current_data_usage} Gb`}
+              </Text>
+            </View>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
+                  <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
+                </View>
+                <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diárial</Text>
+              </View>
+              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
+            </View>
+
+            <View style={[styles.clickable_line]}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
+                  <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
+                </View>
+                <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
+              </View>
+              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
+            </View>
+
+            <View style={styles.graph_container}>
+              
+              {Object.keys(client).length !== 0 &&
+                <BarChart
+                  data={client.graph_obj}
+                  width={Dimensions.get("window").width * 85 / 100}
+                  height={200}
+                  withInnerLines={false}
+                  withHorizontalLabels={true}
+                  chartConfig={{
+                    backgroundGradientFrom: "#FFF",
+                    backgroundGradientFromOpacity: 1,
+                    backgroundGradientTo: "#FFF",
+                    backgroundGradientToOpacity: 1,
+                    barPercentage: 0.7,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                  }}
+                  style={{
+                    borderRadius: 16,
+                    alignSelf: 'center',
+                  }}
+                  fromZero={true}
+                />
+              }
+            </View>
+
+          </View>
         </ScrollView>
       </View>
 
@@ -311,6 +412,16 @@ const styles = StyleSheet.create({
   sub_text: {
     fontSize: fonts.small,
     color: '#989898',
+  },
+
+  main_text_login_senha: {
+    fontWeight: "bold",
+    fontSize: fonts.regular,
+  },
+
+  line_container: {
+    padding: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   clickable_line: {
@@ -369,6 +480,7 @@ const styles = StyleSheet.create({
   header_title: {
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: fonts.regular,
   },
 
   client_status: {
@@ -380,5 +492,38 @@ const styles = StyleSheet.create({
   section_header: {
     margin: 10,
     marginTop: 0,
+  },
+
+  consumption_section: {
+    marginTop: 15,
+  },
+
+  icon_frame: {
+    borderWidth: 1.5,
+    padding: 5,
+    marginRight: 15,
+
+    borderRadius: 5,
+  },
+
+  graph_container: {
+    marginTop: 20,
+    marginBottom: 20,
+
+    backgroundColor: '#FFF',
+    width: '98%',
+    alignSelf: 'center',
+
+    borderRadius: 10,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 4,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 4,
   },
 });
