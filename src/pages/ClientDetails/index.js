@@ -283,6 +283,17 @@ export default function ClientDetails({ navigation, route }) {
             </View>
           </View>
 
+          <View>
+            <View style={styles.clickable_line}>
+              <View>
+                <Text style={styles.sub_text}>Última conexão</Text>
+                <Text style={styles.main_text} >
+                  {client.current_user_connection}
+                </Text>
+              </View>
+            </View>
+          </View>
+
         </ScrollView>
       </View>
 
@@ -403,6 +414,7 @@ const styles = StyleSheet.create({
   header_title: {
     fontWeight: 'bold',
     textAlign: 'center',
+    fontSize: fonts.regular,
   },
 
   client_status: {
