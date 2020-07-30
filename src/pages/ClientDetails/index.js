@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,6 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import CallIcon from 'react-native-vector-icons/Zocial';
-import AppHeader from '../../components/AppHeader/index';
 import axios from 'axios';
 import Modal from 'react-native-modal';
 import { BarChart } from "react-native-chart-kit";
@@ -22,12 +21,10 @@ import { BarChart } from "react-native-chart-kit";
 import LocationService from '../../services/location';
 
 import { icons, fonts } from '../../styles/index';
-import { store } from '../../store/store';
 
-export default function ClientDetails({ navigation, route }) {
-  const { client_id } = route.params;
-
-  const globalState = useContext(store);
+export default function ClientDetails(props, { navigation }) {
+  const client_id = props.data;
+  const globalState = props.state;
 
   const [client, setClient] = useState({});
 
@@ -96,190 +93,180 @@ export default function ClientDetails({ navigation, route }) {
   }
 
   return (
-    <View style={styles.container}>
-      <AppHeader
-        navigation={navigation}
-        label="Detalhes"
-        altura="21%"
-        backButton={true}
-      />
-      <View
-        style={styles.section_container}
-      >
-        <View style={styles.section_header}>
-          <Text style={styles.header_title}>{client.nome}</Text>
-          <Text style={[styles.sub_text, { textAlign: 'center' }]}>{client.plano}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-            <Text
-              style={[
-                styles.client_status,
-                {
-                  color: client.equipment_status === 'Online' ? 'green' : 'red'
-                }
-              ]}
-            >
-              {client.equipment_status}
-            </Text>
-            <Icon
-              name="circle"
-              size={10}
-              color={client.equipment_status === 'Online' ? 'green' : 'red'}
-              style={{ marginTop: 2 }}
-            />
-          </View>
+    <>
+      <View style={styles.section_header}>
+        <Text style={styles.header_title}>{client.nome}</Text>
+        <Text style={[styles.sub_text, { textAlign: 'center' }]}>{client.plano}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+          <Text
+            style={[
+              styles.client_status,
+              {
+                color: client.equipment_status === 'Online' ? 'green' : 'red'
+              }
+            ]}
+          >
+            {client.equipment_status}
+          </Text>
+          <Icon
+            name="circle"
+            size={10}
+            color={client.equipment_status === 'Online' ? 'green' : 'red'}
+            style={{ marginTop: 2 }}
+          />
         </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI} />
-          }
-        >
+      </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+        }
+      >
 
-          <TouchableOpacity onPress={() => dialCall(client.fone)}>
-            <View style={styles.clickable_line}>
-              <View>
-                <Text style={styles.sub_text}>Telefone</Text>
-                <Text style={styles.main_text}>
-                  {client.fone ? client.fone : 'Não informado'}
-                </Text>
-              </View>
-              {client.fone &&
-                <View style={{ justifyContent: 'center' }}>
-                  <CallIcon name="call" size={icons.tiny} color="#000" />
-                </View>
-              }
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => dialCall(client.celular)}>
-            <View style={styles.clickable_line}>
-              <View>
-                <Text style={styles.sub_text}>Celular</Text>
-                <Text style={styles.main_text}>
-                  {client.celular ? client.celular : 'Não informado'}
-                </Text>
-              </View>
-              {client.celular &&
-                <View style={{ justifyContent: 'center' }}>
-                  <CallIcon name="call" size={icons.tiny} color="#000" />
-                </View>
-              }
-            </View>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={handleModalOpening}>
-            <View style={styles.clickable_line}>
-              <View>
-                <Text style={styles.sub_text}>Endereço</Text>
-                <Text style={styles.main_text}>
-                  {`${client.endereco_res}, ${client.numero_res} - ${client.bairro_res}`}
-                </Text>
-              </View>
-              <View style={{ justifyContent: 'center' }}>
-                <Icon name="navigation" size={icons.tiny} color="#000" />
-              </View>
-            </View>
-          </TouchableOpacity>
-
-          <View>
-            <View style={styles.clickable_line}>
-              <View>
-                <Text style={styles.sub_text}>Status Financeiro</Text>
-                <Text
-                  style={[styles.main_text, {
-                    color: client.bloqueado === 'sim' ? 'red' : '',
-                  }]}
-                >
-                  {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.line_container}>
-            <Text style={styles.sub_text}>Login e senha</Text>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={styles.main_text_login_senha}>{client.login}</Text>
-              <Text style={styles.main_text_login_senha}>{client.senha}</Text>
-            </View>
-          </View>
-
-          <View>
-            <View style={styles.clickable_line}>
-              <View>
-                <Text style={styles.sub_text}>Última conexão</Text>
-                <Text style={styles.main_text} >
-                  {client.current_user_connection}
-                </Text>
-              </View>
-            </View>
-          </View>
-
-          <View style={styles.consumption_section}>
-
-            <View style={[styles.clickable_line]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={[styles.icon_frame, { borderColor: '#337AB7' }]}>
-                  <MaterialIcon name="data-usage" size={icons.tiny} color="#337AB7" />
-                </View>
-                <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>Trafego Atual</Text>
-              </View>
-              <Text
-                style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
-              >
-                {`${client.current_data_usage} Gb`}
+        <TouchableOpacity onPress={() => dialCall(client.fone)}>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Telefone</Text>
+              <Text style={styles.main_text}>
+                {client.fone ? client.fone : 'Não informado'}
               </Text>
             </View>
-
-            <View style={[styles.clickable_line]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
-                  <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
-                </View>
-                <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diárial</Text>
+            {client.fone &&
+              <View style={{ justifyContent: 'center' }}>
+                <CallIcon name="call" size={icons.tiny} color="#000" />
               </View>
-              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
-            </View>
-
-            <View style={[styles.clickable_line]}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
-                  <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
-                </View>
-                <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
-              </View>
-              <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
-            </View>
-
-            <View style={styles.graph_container}>
-
-              {Object.keys(client).length !== 0 &&
-                <BarChart
-                  data={client.graph_obj}
-                  width={Dimensions.get("window").width * 85 / 100}
-                  height={200}
-                  withInnerLines={false}
-                  withHorizontalLabels={true}
-                  chartConfig={{
-                    backgroundGradientFrom: "#FFF",
-                    backgroundGradientFromOpacity: 1,
-                    backgroundGradientTo: "#FFF",
-                    backgroundGradientToOpacity: 1,
-                    barPercentage: 0.7,
-                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                  }}
-                  style={{
-                    borderRadius: 16,
-                    alignSelf: 'center',
-                  }}
-                  fromZero={true}
-                />
-              }
-            </View>
-
+            }
           </View>
-        </ScrollView>
-      </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => dialCall(client.celular)}>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Celular</Text>
+              <Text style={styles.main_text}>
+                {client.celular ? client.celular : 'Não informado'}
+              </Text>
+            </View>
+            {client.celular &&
+              <View style={{ justifyContent: 'center' }}>
+                <CallIcon name="call" size={icons.tiny} color="#000" />
+              </View>
+            }
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={handleModalOpening}>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Endereço</Text>
+              <Text style={styles.main_text}>
+                {`${client.endereco_res}, ${client.numero_res} - ${client.bairro_res}`}
+              </Text>
+            </View>
+            <View style={{ justifyContent: 'center' }}>
+              <Icon name="navigation" size={icons.tiny} color="#000" />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+        <View>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Status Financeiro</Text>
+              <Text
+                style={[styles.main_text, {
+                  color: client.bloqueado === 'sim' ? 'red' : '',
+                }]}
+              >
+                {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.line_container}>
+          <Text style={styles.sub_text}>Login e senha</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+            <Text style={styles.main_text_login_senha}>{client.login}</Text>
+            <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+          </View>
+        </View>
+
+        <View>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Última conexão</Text>
+              <Text style={styles.main_text} >
+                {client.current_user_connection}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.consumption_section}>
+
+          <View style={[styles.clickable_line]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.icon_frame, { borderColor: '#337AB7' }]}>
+                <MaterialIcon name="data-usage" size={icons.tiny} color="#337AB7" />
+              </View>
+              <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>Trafego Atual</Text>
+            </View>
+            <Text
+              style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
+            >
+              {`${client.current_data_usage} Gb`}
+            </Text>
+          </View>
+
+          <View style={[styles.clickable_line]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
+                <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
+              </View>
+              <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diária</Text>
+            </View>
+            <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
+          </View>
+
+          <View style={[styles.clickable_line]}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
+                <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
+              </View>
+              <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
+            </View>
+            <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
+          </View>
+
+          <View style={styles.graph_container}>
+
+            {Object.keys(client).length !== 0 &&
+              <BarChart
+                data={client.graph_obj}
+                width={Dimensions.get("window").width * 85 / 100}
+                height={200}
+                withInnerLines={false}
+                showValuesOnTopOfBars={true}
+                withHorizontalLabels={true}
+                chartConfig={{
+                  backgroundGradientFrom: "#FFF",
+                  backgroundGradientFromOpacity: 1,
+                  backgroundGradientTo: "#FFF",
+                  backgroundGradientToOpacity: 1,
+                  barPercentage: 0.7,
+                  color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                }}
+                style={{
+                  borderRadius: 16,
+                  alignSelf: 'center',
+                }}
+                fromZero={true}
+              />
+            }
+          </View>
+        </View>
+      </ScrollView>
 
       <Modal
         onBackButtonPress={handleModalClosing}
@@ -301,7 +288,7 @@ export default function ClientDetails({ navigation, route }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
-    </View>
+    </>
   );
 }
 
@@ -413,15 +400,19 @@ const styles = StyleSheet.create({
   },
 
   consumption_section: {
-    marginTop: 15,
   },
 
   icon_frame: {
+    width: 36,
+    height: 36,
     borderWidth: 1.5,
     padding: 5,
     marginRight: 15,
 
     borderRadius: 5,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   graph_container: {

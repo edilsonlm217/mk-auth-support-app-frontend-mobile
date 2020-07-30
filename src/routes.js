@@ -16,7 +16,7 @@ import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 import SearchScreen from './pages/SearchScreen/index';
-import ClientDetails from './pages/ClientDetails/index';
+import ClientScreen from './pages/ClientScreen/index';
 
 import { fonts } from './styles/index';
 
@@ -119,8 +119,8 @@ export default function RootTab() {
           />
           
           <Stack.Screen
-            name="ClientDetails"
-            component={ClientDetails}
+            name="ClientScreen"
+            component={ClientScreen}
             options={{
               headerShown: false,
             }}
