@@ -189,7 +189,7 @@ export default function Details({ route, navigation }) {
   }
 
   function navigateToClient(client_id) {
-    navigation.navigate('ClientDetails', {
+    navigation.navigate('ClientScreen', {
       client_id,
     });
   }
