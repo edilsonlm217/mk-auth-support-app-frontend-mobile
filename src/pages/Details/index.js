@@ -3,20 +3,18 @@ import {
   View,
   Text,
   TouchableOpacity,
-  PermissionsAndroid,
   Alert,
   ScrollView,
   RefreshControl,
   ToastAndroid,
   Dimensions,
 } from 'react-native';
-import openMap from 'react-native-open-maps';
-import Geolocation from '@react-native-community/geolocation';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
-import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
 import { useIsFocused } from '@react-navigation/native';
 import axios from 'axios';
+
+import LocationService from '../../services/location';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { store } from '../../store/store';
@@ -155,40 +153,6 @@ export default function Details({ route, navigation }) {
     loadAPI();
   }
 
-  async function OpenCoordinate(coordinate) {
-    const [latidude, longitude] = coordinate.split(',');
-
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        const { } = Geolocation.getCurrentPosition(geo_success => {
-          const current_longitude = geo_success.coords.longitude;
-          const current_latitude = geo_success.coords.latitude;
-
-          openMap({
-            provider: 'google',
-            start: `${current_latitude},${current_longitude}`,
-            end: `${latidude},${longitude}`
-          });
-        }, geo_error => {
-          console.log(geo_error)
-          Alert.alert('Erro', 'Não é possível navegar até o cliente');
-        }, {
-          timeout: 5000,
-          enableHighAccuracy: true,
-        });
-      } else {
-        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
-      }
-    } catch (err) {
-      console.log(err);
-      Alert.alert('Erro', 'Não é possível navegar até o cliente');
-    }
-  }
-
   function ClosingReason() {
     if (state.motivo_fechamento === null) {
       return (
@@ -243,24 +207,6 @@ export default function Details({ route, navigation }) {
     } else {
       Alert.alert('Impossível localizar', 'Este cliente não possui coordenadas definidas');
     }
-  }
-
-  function handleModalOpening() {
-    LocationServicesDialogBox.checkLocationServicesIsEnabled({
-      message: "<h2 style='color: #0af13e'>Usar Localização ?</h2>Este app quer alterar as configurações do seu dispositivo:<br/><br/>Usar GPS, Wi-Fi e rede do celular para localização<br/><br/><a href='#'>Saiba mais</a>",
-      ok: "SIM",
-      cancel: "NÃO",
-      enableHighAccuracy: true,
-      showDialog: true,
-      openLocationServices: true,
-      preventOutSideTouch: false,
-      preventBackClick: false,
-      providerListener: false
-    }).then(function (success) {
-      OpenCoordinate(state.coordenadas);
-    }).catch((error) => {
-      // console.log(error.message);
-    });
   }
 
   async function handleCloseRequest() {
@@ -505,7 +451,7 @@ export default function Details({ route, navigation }) {
                 <Text style={styles.main_text_login_senha}>{state.senha}</Text>
               </View>
             </View>
-            <TouchableOpacity onPress={handleModalOpening}>
+            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(state.coordenadas)}>
               <View style={styles.location_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
