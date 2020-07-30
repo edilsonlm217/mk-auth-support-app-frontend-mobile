@@ -7,7 +7,6 @@ import {
   Alert,
   RefreshControl,
   ScrollView,
-  PermissionsAndroid,
   Platform,
   Linking,
   Dimensions
@@ -15,13 +14,12 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import CallIcon from 'react-native-vector-icons/Zocial';
-import Geolocation from '@react-native-community/geolocation';
-import LocationServicesDialogBox from "react-native-android-location-services-dialog-box";
-import openMap from 'react-native-open-maps';
 import AppHeader from '../../components/AppHeader/index';
 import axios from 'axios';
 import Modal from 'react-native-modal';
 import { BarChart } from "react-native-chart-kit";
+
+import LocationService from '../../services/location';
 
 import { icons, fonts } from '../../styles/index';
 import { store } from '../../store/store';
@@ -62,54 +60,8 @@ export default function ClientDetails({ navigation, route }) {
   useEffect(() => { loadAPI() }, []);
 
   function handleModalOpening() {
-    LocationServicesDialogBox.checkLocationServicesIsEnabled({
-      message: "<h2 style='color: #0af13e'>Usar Localização ?</h2>Este app quer alterar as configurações do seu dispositivo:<br/><br/>Usar GPS, Wi-Fi e rede do celular para localização<br/><br/><a href='#'>Saiba mais</a>",
-      ok: "SIM",
-      cancel: "NÃO",
-      enableHighAccuracy: true,
-      showDialog: true,
-      openLocationServices: true,
-      preventOutSideTouch: false,
-      preventBackClick: false,
-      providerListener: false
-    }).then(function (success) {
+    if (LocationService.isGPSEnable()) {
       setIsVisible(true);
-    }).catch((error) => {
-      // console.log(error.message);
-    });
-  }
-
-  async function OpenCoordinate(coordinate) {
-    const [latidude, longitude] = coordinate.split(',');
-
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        const { } = Geolocation.getCurrentPosition(geo_success => {
-          const current_longitude = geo_success.coords.longitude;
-          const current_latitude = geo_success.coords.latitude;
-
-          openMap({
-            provider: 'google',
-            start: `${current_latitude},${current_longitude}`,
-            end: `${latidude},${longitude}`
-          });
-        }, geo_error => {
-          console.log(geo_error)
-          Alert.alert('Erro', 'Não é possível navegar até o cliente');
-        }, {
-          timeout: 5000,
-          enableHighAccuracy: true,
-        });
-      } else {
-        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
-      }
-    } catch (err) {
-      console.log(err);
-      Alert.alert('Erro', 'Não é possível navegar até o cliente');
     }
   }
 
@@ -141,40 +93,6 @@ export default function ClientDetails({ navigation, route }) {
 
   function handleModalClosing() {
     setIsVisible(false);
-  }
-
-  async function OpenCoordinate(coordinate) {
-    const [latidude, longitude] = coordinate.split(',');
-
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      );
-
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        const { } = Geolocation.getCurrentPosition(geo_success => {
-          const current_longitude = geo_success.coords.longitude;
-          const current_latitude = geo_success.coords.latitude;
-
-          openMap({
-            provider: 'google',
-            start: `${current_latitude},${current_longitude}`,
-            end: `${latidude},${longitude}`
-          });
-        }, geo_error => {
-          console.log(geo_error)
-          Alert.alert('Erro', 'Não é possível navegar até o cliente');
-        }, {
-          timeout: 5000,
-          enableHighAccuracy: true,
-        });
-      } else {
-        Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
-      }
-    } catch (err) {
-      console.log(err);
-      Alert.alert('Erro', 'Não é possível navegar até o cliente');
-    }
   }
 
   return (
@@ -334,7 +252,7 @@ export default function ClientDetails({ navigation, route }) {
             </View>
 
             <View style={styles.graph_container}>
-              
+
               {Object.keys(client).length !== 0 &&
                 <BarChart
                   data={client.graph_obj}
@@ -369,7 +287,7 @@ export default function ClientDetails({ navigation, route }) {
         children={
           <View style={styles.modal_style}>
             <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => OpenCoordinate(client.coordenadas)} style={styles.modal_btn}>
+            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(client.coordenadas)} style={styles.modal_btn}>
               <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(client.coordenadas)} style={styles.modal_btn}>
