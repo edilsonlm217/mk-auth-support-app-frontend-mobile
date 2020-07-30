@@ -236,7 +236,7 @@ export default function ClientDetails({ navigation, route }) {
                 <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
                   <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
                 </View>
-                <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diárial</Text>
+                <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diária</Text>
               </View>
               <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
             </View>
@@ -259,6 +259,7 @@ export default function ClientDetails({ navigation, route }) {
                   width={Dimensions.get("window").width * 85 / 100}
                   height={200}
                   withInnerLines={false}
+                  showValuesOnTopOfBars={true}
                   withHorizontalLabels={true}
                   chartConfig={{
                     backgroundGradientFrom: "#FFF",
@@ -413,15 +414,19 @@ const styles = StyleSheet.create({
   },
 
   consumption_section: {
-    marginTop: 15,
   },
 
   icon_frame: {
+    width: 36 ,
+    height: 36  ,
     borderWidth: 1.5,
     padding: 5,
     marginRight: 15,
 
     borderRadius: 5,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   graph_container: {
