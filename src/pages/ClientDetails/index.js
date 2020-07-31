@@ -94,34 +94,35 @@ export default function ClientDetails(props, { navigation }) {
 
   return (
     <>
-      <View style={styles.section_header}>
-        <Text style={styles.header_title}>{client.nome}</Text>
-        <Text style={[styles.sub_text, { textAlign: 'center' }]}>{client.plano}</Text>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-          <Text
-            style={[
-              styles.client_status,
-              {
-                color: client.equipment_status === 'Online' ? 'green' : 'red'
-              }
-            ]}
-          >
-            {client.equipment_status}
-          </Text>
-          <Icon
-            name="circle"
-            size={10}
-            color={client.equipment_status === 'Online' ? 'green' : 'red'}
-            style={{ marginTop: 2 }}
-          />
-        </View>
-      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
         }
       >
+        <View>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Plano</Text>
+              <Text style={[styles.main_text]}>
+                {client.plano}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View>
+          <View style={styles.clickable_line}>
+            <View>
+              <Text style={styles.sub_text}>Status de equipamento</Text>
+              <Text style={[styles.main_text, {
+                color: client.equipment_status === 'Online' ? 'green' : 'red'
+              }]}>
+                {client.equipment_status}
+              </Text>
+            </View>
+          </View>
+        </View>
 
         <TouchableOpacity onPress={() => dialCall(client.fone)}>
           <View style={styles.clickable_line}>
@@ -175,7 +176,7 @@ export default function ClientDetails(props, { navigation }) {
               <Text style={styles.sub_text}>Status Financeiro</Text>
               <Text
                 style={[styles.main_text, {
-                  color: client.bloqueado === 'sim' ? 'red' : '',
+                  color: client.bloqueado === 'sim' ? 'red' : 'green',
                 }]}
               >
                 {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
