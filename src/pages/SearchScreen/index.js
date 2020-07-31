@@ -104,15 +104,16 @@ export default function ClientsScreen({ navigation }) {
     return input.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
   }
 
-  function navigateToClient(client_id) {
+  function navigateToClient(client_id, client_name) {
     navigation.navigate('ClientScreen', {
       client_id,
+      client_name,
     });
   }
 
   function renderItem({ item }) {
     return (
-      <TouchableOpacity onPress={() => navigateToClient(item.id)} style={styles.client_btn}>
+      <TouchableOpacity onPress={() => navigateToClient(item.id, item.nome)} style={styles.client_btn}>
         <Text style={styles.search_result_label}>{item.nome}</Text>
         <Icon name={'chevron-right'} size={icons.super_tiny} color={'#000'} />
       </TouchableOpacity>
