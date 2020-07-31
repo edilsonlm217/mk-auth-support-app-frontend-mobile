@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   label_style: {
     color: '#FFF',
     fontWeight: 'bold',
-    fontSize: fonts.medium,
+    fontSize: fonts.regular,
     alignSelf: 'center',
   },
 
