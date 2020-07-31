@@ -188,9 +188,10 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  function navigateToClient(client_id) {
+  function navigateToClient(client_id, client_name) {
     navigation.navigate('ClientScreen', {
       client_id,
+      client_name,
     });
   }
 
@@ -322,7 +323,7 @@ export default function Details({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigateToClient(state.client_id)} style={styles.header_container}>
+      <TouchableOpacity onPress={() => navigateToClient(state.client_id, state.nome)} style={styles.header_container}>
         <View>
           <Icon name="account" size={icons.tiny} color="#000" />
         </View>
