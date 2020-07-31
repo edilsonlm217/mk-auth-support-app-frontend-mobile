@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fonts } from '../../styles/index';
@@ -9,11 +9,15 @@ export default function AppHeader(props) {
     <View style={[styles.container, { height: props.altura }]}>
       <View style={styles.header_container}>
         {props.backButton === true &&
-          <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginRight: 10 }}>
-            <Icon name="arrow-left" size={24} color="#FFF" />
-          </TouchableOpacity>
+          <View style={{ width: '10%' }}>
+            <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginRight: 0 }}>
+              <Icon name="arrow-left" size={24} color="#FFF" />
+            </TouchableOpacity>
+          </View>
         }
-        <Text style={styles.header_title}>{props.label}</Text>
+        <View style={{ width: '90%' }}>
+          <Text numberOfLines={1} style={styles.header_title}>{props.label}</Text>
+        </View>
       </View>
     </View>
   );
@@ -38,6 +42,6 @@ const styles = StyleSheet.create({
     marginLeft: 15,
     alignItems: "center",
     height: '30%',
-    width: '100%',
+    flex: 1,
   },
 });
