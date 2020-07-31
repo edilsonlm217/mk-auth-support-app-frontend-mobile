@@ -194,7 +194,7 @@ export default function ClientDetails(props, { navigation }) {
         </View>
 
         <View>
-          <View style={styles.clickable_line}>
+          <View style={[styles.clickable_line, { borderBottomWidth: 0, marginBottom: 10 }]}>
             <View>
               <Text style={styles.sub_text}>Última conexão</Text>
               <Text style={styles.main_text} >
@@ -230,7 +230,7 @@ export default function ClientDetails(props, { navigation }) {
             <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
           </View>
 
-          <View style={[styles.clickable_line]}>
+          <View style={[styles.clickable_line, { borderBottomWidth: 0 }]}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
                 <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
   },
 
   graph_container: {
-    marginTop: 20,
+    marginTop: 15,
     marginBottom: 20,
 
     backgroundColor: '#FFF',
