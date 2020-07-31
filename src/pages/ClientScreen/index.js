@@ -6,17 +6,18 @@ import {
   Dimensions
 } from 'react-native';
 import AppHeader from '../../components/AppHeader/index';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { TabView, TabBar } from 'react-native-tab-view';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 
 import ClientDetails from '../ClientDetails/index';
+import ClientConnections from '../ClientConnections/index';
 
 export default function ClientScreen({ navigation, route }) {
   const globalState = useContext(store);
 
-  const { client_id } = route.params;
+  const { client_id, client_name } = route.params;
 
   const [index, setIndex] = useState(0);
 
@@ -41,7 +42,7 @@ export default function ClientScreen({ navigation, route }) {
           <View
             style={styles.section_container}
           >
-            <Text>Hello World</Text>
+            <ClientConnections data={client_id} state={globalState} />
           </View>
         );
 
@@ -54,8 +55,8 @@ export default function ClientScreen({ navigation, route }) {
     <View style={styles.container}>
       <AppHeader
         navigation={navigation}
-        label="Detalhes"
-        altura="15%"
+        label={client_name}
+        altura="10%"
         backButton={true}
       />
 
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
     height: 45,
     marginBottom: 0,
     elevation: 0,
-    width: 250,
+    width: '85%',
     alignSelf: 'center',
     marginBottom: 5,
   },
