@@ -1,15 +1,11 @@
 import React, { useState, useContext } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions
-} from 'react-native';
-import AppHeader from '../../components/AppHeader/index';
+import { View, StyleSheet, Dimensions } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
+
+import AppHeader from '../../components/AppHeader/index';
 
 import ClientDetails from '../ClientDetails/index';
 import ClientConnections from '../ClientConnections/index';
