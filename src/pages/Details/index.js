@@ -323,22 +323,34 @@ export default function Details({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigateToClient(state.client_id, state.nome)} style={styles.header_container}>
-        <View>
-          <Icon name="account" size={icons.tiny} color="#000" />
-        </View>
-        <View style={{ flex: 1, paddingLeft: 10 }}>
-          <Text style={styles.main_text}>{route.params.nome}</Text>
-          <Text style={styles.sub_text}>
-            {`${route.params.plano === 'nenhum'
-              ? 'Nenhum'
-              : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
-            }
-          </Text>
-        </View>
-        <View style={{ alignSelf: "center" }}>
-          <Icon name="chevron-right" size={icons.tiny} color="#000" />
-        </View>
+      <TouchableOpacity onPress={() => navigateToClient(state.client_id, state.nome)} style={styles.section_header}>
+        <Text style={styles.header_title}>{route.params.nome}</Text>
+        <Text style={[styles.sub_text, { textAlign: 'center' }]}>
+          {`${route.params.plano === 'nenhum'
+            ? 'Nenhum'
+            : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
+          }
+        </Text>
+        {state.equipment_status &&
+          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+            <Text
+              style={[
+                styles.client_status,
+                {
+                  color: state.equipment_status === 'Online' ? 'green' : 'red'
+                }
+              ]}
+            >
+              {state.equipment_status}
+            </Text>
+            <Icon
+              name="circle"
+              size={10}
+              color={state.equipment_status === 'Online' ? 'green' : 'red'}
+              style={{ marginTop: 2 }}
+            />
+          </View>
+        }
       </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
