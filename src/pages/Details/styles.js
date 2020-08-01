@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     padding: 20,
-    paddingTop: 80,
+    paddingTop: 60,
   },
   header_container: {
     flexDirection: 'row',
@@ -15,19 +15,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
 
-  main_text_login_senha: { 
+  main_text_login_senha: {
     fontWeight: "bold",
     fontSize: fonts.regular,
   },
-  
-  main_text: { 
+
+  main_text: {
     fontWeight: "bold",
     fontSize: fonts.regular,
     minWidth: '90%',
     maxWidth: '90%',
   },
-  
-  sub_text: { 
+
+  sub_text: {
     fontSize: fonts.small,
     color: '#989898',
   },
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   line_container_location: {
     flexDirection: 'row',
   },
-  
+
   location_line: {
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
@@ -78,13 +78,13 @@ const styles = StyleSheet.create({
 
     elevation: 6,
   },
-  
+
   secondary_btn_text: {
     fontSize: fonts.medium,
     fontWeight: "bold",
     color: '#337AB7',
   },
-  
+
   main_btn: {
     backgroundColor: '#337AB7',
     width: 160,
@@ -162,14 +162,29 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 10,
   },
-  
+
   mfe_confirm_btn_label: {
     color: '#FFF',
     alignSelf: 'center',
     fontWeight: 'bold',
     fontSize: fonts.regular,
     margin: 5,
-    
+  },
+
+  section_header: {
+    marginTop: 0,
+  },
+
+  header_title: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: fonts.regular,
+  },
+
+  client_status: {
+    fontSize: fonts.small,
+    textAlign: 'center',
+    marginRight: 5
   },
 });
 
