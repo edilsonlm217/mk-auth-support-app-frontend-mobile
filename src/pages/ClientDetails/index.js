@@ -179,7 +179,7 @@ export default function ClientDetails(props, { navigation }) {
                   color: client.bloqueado === 'sim' ? 'red' : 'green',
                 }]}
               >
-                {client.bloqueado === 'sim' ? 'Bloqueado' : 'Liberado'}
+                {client.finance_state}
               </Text>
             </View>
           </View>

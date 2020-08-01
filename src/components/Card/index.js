@@ -1,24 +1,11 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import Modal from 'react-native-modal';
-
-import RequestDetail from '../../components/RequestDetails/index';
 
 import { store } from '../../store/store';
 import { fonts } from '../../styles/index';
 
 export default function Card(props) {
-  const [isVisible, setIsVisible] = useState(false);
-
   const globalState = useContext(store);
-  
-  function handleModalOpening() {
-    setIsVisible(true);
-  }
-
-  function handleModalClosing() {
-    setIsVisible(false);
-  }
 
   function UserAdress() {
 
@@ -30,14 +17,22 @@ export default function Card(props) {
       const bairro = props.item.bairro
 
       return (
-        <Text numberOfLines={1}style={{ fontSize: fonts.small }}>{`${endereco}, ${numero} - ${bairro}`}</Text>
+        <Text numberOfLines={1} style={{ fontSize: fonts.small }}>
+          {`${endereco}, ${numero} - ${bairro}`}
+        </Text>
       );
     }
   }
 
   return (
     <>
-      <TouchableOpacity onPress={handleModalOpening}>
+      <TouchableOpacity onPress={() => props.navigation.navigate('Details', {
+        id: props.item.id,
+        nome: props.item.nome,
+        tipo: props.item.tipo,
+        ip: props.item.ip,
+        plano: props.item.plano,
+      })}>
         <View style={styles.card}>
           <View style={styles.card_header_content_container}>
             <View style={styles.card_header}>
@@ -57,23 +52,6 @@ export default function Card(props) {
           </View>
         </View>
       </TouchableOpacity>
-
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <RequestDetail
-            data={props.item}
-            navigation={props.navigation}
-            CloseModal={() => setIsVisible(false)}
-          />
-        }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
     </>
   );
 }
