@@ -104,7 +104,7 @@ export default function RootTab() {
             name="Details"
             component={Details}
             options={{
-              title: 'Mais detalhes',
+              title: 'Detalhes do chamado',
               headerStyle: {
                 backgroundColor: '#FFF',
               },
