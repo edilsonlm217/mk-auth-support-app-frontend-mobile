@@ -22,7 +22,7 @@ import LocationService from '../../services/location';
 
 import { icons, fonts } from '../../styles/index';
 
-export default function ClientDetails(props, { navigation }) {
+export default function ClientDetails(props) {
   const client_id = props.data;
   const globalState = props.state;
 
@@ -81,7 +81,7 @@ export default function ClientDetails(props, { navigation }) {
 
   function handleNavigateNewLocationPicker() {
     setIsVisible(false);
-    navigation.navigate('UpdateClienteLocation', {
+    props.navigation.navigate('UpdateClienteLocation', {
       data: {
         id: client.client_id,
       }
