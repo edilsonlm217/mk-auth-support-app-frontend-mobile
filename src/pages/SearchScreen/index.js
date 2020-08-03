@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useReducer } from 'react';
+import React, { useRef, useContext, useReducer, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -8,6 +8,7 @@ import {
   FlatList,
   RefreshControl
 } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 import { searchUtil } from '../../utils/search';
 import { store } from '../../store/store';
@@ -20,6 +21,9 @@ export default function ClientsScreen({ navigation }) {
   const globalState = useContext(store);
 
   const refInput = useRef(null);
+
+  // Hook para verificar se a tela atual está focada
+  const isFocused = useIsFocused(false);
 
   const [state, dispatch] = useReducer(reducer, {
     clients: [],
@@ -59,6 +63,12 @@ export default function ClientsScreen({ navigation }) {
         break;
     }
   }
+
+  useEffect(() => {
+    if (isFocused) {
+      refInput.current.focus();
+    }
+  }, [isFocused]);
 
   function onChangeHandler(text) {
     search(text);
@@ -160,7 +170,7 @@ export default function ClientsScreen({ navigation }) {
 
       <View style={styles.flatlist_container}>
         <FlatList
-          keyboardShouldPersistTaps={true}
+          keyboardShouldPersistTaps="always"
           data={state.clients}
           renderItem={renderItem}
           keyExtractor={item => item.id.toString()}

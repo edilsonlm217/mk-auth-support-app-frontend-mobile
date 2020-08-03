@@ -100,116 +100,127 @@ export default function ClientConnections(props) {
           </View>
           :
           <View>
-            <View style={styles.card}>
-              <View style={styles.card_first_row}>
-                <Text style={styles.sub_text}>Hora Inicial</Text>
-                <Text style={styles.sub_text}>Hora Final</Text>
-              </View>
-
-              <View style={styles.card_second_row}>
-                <View style={styles.date_container}>
-                  <Text >{connections[0].start_date}</Text>
-                  <Text >{connections[0].start_time}</Text>
+            {connections.length === 0
+              ?
+              <Text style={{ marginBottom: 10, color: '#c9c9c9' }}>Nenhuma conexão</Text>
+              :
+              <View style={styles.card}>
+                <View style={styles.card_first_row}>
+                  <Text style={styles.sub_text}>Hora Inicial</Text>
+                  <Text style={styles.sub_text}>Hora Final</Text>
                 </View>
 
-                <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
+                <View style={styles.card_second_row}>
+                  <View style={styles.date_container}>
+                    <Text >{connections[0].start_date}</Text>
+                    <Text >{connections[0].start_time}</Text>
+                  </View>
 
-                <View style={styles.date_container}>
-                  {connections[0].end_date === null
-                    ?
-                    <Text
-                      style={
-                        [styles.main_text, {
-                          fontWeight: "normal",
-                          color: 'green',
-                          flex: 1,
-                          textAlign: 'center'
-                        }]
-                      }
-                    >
-                      ONLINE
+                  <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
+
+                  <View style={styles.date_container}>
+                    {connections[0].end_date === null
+                      ?
+                      <Text
+                        style={
+                          [styles.main_text, {
+                            fontWeight: "normal",
+                            color: 'green',
+                            flex: 1,
+                            textAlign: 'center'
+                          }]
+                        }
+                      >
+                        ONLINE
                     </Text>
-                    :
-                    <>
-                      <Text >{connections[0].end_date}</Text>
-                      <Text >{connections[0].end_time}</Text>
-                    </>
-                  }
+                      :
+                      <>
+                        <Text >{connections[0].end_date}</Text>
+                        <Text >{connections[0].end_time}</Text>
+                      </>
+                    }
+                  </View>
+                </View>
+
+                <View style={styles.card_third_row}>
+                  <View style={styles.usage_container}>
+                    <Icon style={{ marginRight: 5 }} name="clock-time-eight-outline" size={22} color="#337AB7" />
+                    <Text >{connections[0].duration}</Text>
+                  </View>
+
+                  <View style={styles.usage_container}>
+                    <Icon style={{ marginRight: 5 }} name="cloud-upload-outline" size={22} color="#337AB7" />
+                    <Text >
+                      {`${connections[0].upload.new_value.toFixed(2)}${connections[0].upload.unit}`}
+                    </Text>
+                  </View>
+
+                  <View style={styles.usage_container}>
+                    <Icon style={{ marginRight: 5 }} name="cloud-download-outline" size={22} color="#337AB7" />
+                    <Text >
+                      {`${connections[0].download.new_value.toFixed(2)}${connections[0].download.unit}`}
+                    </Text>
+                  </View>
                 </View>
               </View>
-
-              <View style={styles.card_third_row}>
-                <View style={styles.usage_container}>
-                  <Icon style={{ marginRight: 5 }} name="clock-time-eight-outline" size={22} color="#337AB7" />
-                  <Text >{connections[0].duration}</Text>
-                </View>
-
-                <View style={styles.usage_container}>
-                  <Icon style={{ marginRight: 5 }} name="cloud-upload-outline" size={22} color="#337AB7" />
-                  <Text >
-                    {`${connections[0].upload.new_value.toFixed(2)}${connections[0].upload.unit}`}
-                  </Text>
-                </View>
-
-                <View style={styles.usage_container}>
-                  <Icon style={{ marginRight: 5 }} name="cloud-download-outline" size={22} color="#337AB7" />
-                  <Text >
-                    {`${connections[0].download.new_value.toFixed(2)}${connections[0].download.unit}`}
-                  </Text>
-                </View>
-              </View>
-
-            </View>
+            }
 
             <Text style={[styles.main_text, { marginBottom: 10, fontSize: 16 }]}>Últimas conexões</Text>
 
-            {connections.map((connection, index) => {
-              if (index !== 0) {
-                return (
-                  <View key={index} style={styles.card}>
-                    <View style={styles.card_first_row}>
-                      <Text style={styles.sub_text}>Hora Inicial</Text>
-                      <Text style={styles.sub_text}>Hora Final</Text>
-                    </View>
+            {connections.length === 0
+              ?
+              <Text style={{ marginBottom: 10, color: '#c9c9c9' }}>Nenhuma conexão</Text>
+              :
+              <>
+                {connections.map((connection, index) => {
+                  if (index !== 0) {
+                    return (
+                      <View key={index} style={styles.card}>
+                        <View style={styles.card_first_row}>
+                          <Text style={styles.sub_text}>Hora Inicial</Text>
+                          <Text style={styles.sub_text}>Hora Final</Text>
+                        </View>
 
-                    <View style={styles.card_second_row}>
-                      <View style={styles.date_container}>
-                        <Text >{connection.start_date}</Text>
-                        <Text >{connection.start_time}</Text>
+                        <View style={styles.card_second_row}>
+                          <View style={styles.date_container}>
+                            <Text >{connection.start_date}</Text>
+                            <Text >{connection.start_time}</Text>
+                          </View>
+
+                          <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
+
+                          <View style={styles.date_container}>
+                            <Text >{connection.end_date}</Text>
+                            <Text >{connection.end_time}</Text>
+                          </View>
+                        </View>
+
+                        <View style={styles.card_third_row}>
+                          <View style={styles.usage_container}>
+                            <Icon style={{ marginRight: 5 }} name="clock-time-eight-outline" size={22} color="#337AB7" />
+                            <Text >{connection.duration}</Text>
+                          </View>
+
+                          <View style={styles.usage_container}>
+                            <Icon style={{ marginRight: 5 }} name="cloud-upload-outline" size={22} color="#337AB7" />
+                            <Text >
+                              {`${connection.upload.new_value.toFixed(2)}${connection.upload.unit}`}
+                            </Text>
+                          </View>
+
+                          <View style={styles.usage_container}>
+                            <Icon style={{ marginRight: 5 }} name="cloud-download-outline" size={22} color="#337AB7" />
+                            <Text >
+                              {`${connection.download.new_value.toFixed(2)}${connection.download.unit}`}
+                            </Text>
+                          </View>
+                        </View>
                       </View>
-
-                      <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
-
-                      <View style={styles.date_container}>
-                        <Text >{connection.end_date}</Text>
-                        <Text >{connection.end_time}</Text>
-                      </View>
-                    </View>
-
-                    <View style={styles.card_third_row}>
-                      <View style={styles.usage_container}>
-                        <Icon style={{ marginRight: 5 }} name="clock-time-eight-outline" size={22} color="#337AB7" />
-                        <Text >{connection.duration}</Text>
-                      </View>
-
-                      <View style={styles.usage_container}>
-                        <Icon style={{ marginRight: 5 }} name="cloud-upload-outline" size={22} color="#337AB7" />
-                        <Text >
-                          {`${connection.upload.new_value.toFixed(2)}${connection.upload.unit}`}
-                        </Text>
-                      </View>
-
-                      <View style={styles.usage_container}>
-                        <Icon style={{ marginRight: 5 }} name="cloud-download-outline" size={22} color="#337AB7" />
-                        <Text >
-                          {`${connection.download.new_value.toFixed(2)}${connection.download.unit}`}
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                )
-              }
-            })}
+                    )
+                  }
+                })}
+              </>
+            }
           </View>
         }
       </ScrollView>
