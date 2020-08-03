@@ -160,7 +160,7 @@ export default function ClientsScreen({ navigation }) {
 
       <View style={styles.flatlist_container}>
         <FlatList
-          keyboardShouldPersistTaps={true}
+          keyboardShouldPersistTaps="always"
           data={state.clients}
           renderItem={renderItem}
           keyExtractor={item => item.id.toString()}
