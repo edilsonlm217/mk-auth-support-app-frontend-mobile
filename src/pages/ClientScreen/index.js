@@ -29,7 +29,7 @@ export default function ClientScreen({ navigation, route }) {
           <View
             style={styles.section_container}
           >
-            <ClientDetails data={client_id} state={globalState} />
+            <ClientDetails data={client_id} state={globalState} navigation={navigation} />
           </View>
         );
 
