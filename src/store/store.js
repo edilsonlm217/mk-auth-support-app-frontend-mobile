@@ -156,7 +156,20 @@ const StateProvider = ({ children }) => {
 
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
 
-      changeConfig: (data) => {
+      changeConfig: async (data) => {
+        try {
+          const server_ip_key = ['@server_ip', data.serverIP];
+          const server_port_key = ['@server_port', data.serverPort];
+
+          await AsyncStorage.multiSet([
+            server_ip_key,
+            server_port_key,
+          ]);
+
+        } catch (e) {
+          Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
+        }
+
         dispatch({
           type: 'CHANGE_SERVER_CONFIG', payload: {
             server_ip: data.serverIP,
