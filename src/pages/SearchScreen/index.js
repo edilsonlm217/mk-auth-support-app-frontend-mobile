@@ -124,7 +124,9 @@ export default function ClientsScreen({ navigation }) {
   function renderItem({ item }) {
     return (
       <TouchableOpacity onPress={() => navigateToClient(item.id, item.nome)} style={styles.client_btn}>
-        <Text style={styles.search_result_label}>{item.nome}</Text>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Text numberOfLines={1} style={styles.search_result_label}>{item.nome}</Text>
+        </View>
         <Icon name={'chevron-right'} size={icons.super_tiny} color={'#000'} />
       </TouchableOpacity>
     );
@@ -233,5 +235,6 @@ const styles = StyleSheet.create({
 
   search_result_label: {
     fontSize: fonts.medium,
+    width: '90%',
   },
 });
