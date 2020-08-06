@@ -8,6 +8,7 @@ import {
   RefreshControl,
   ToastAndroid,
   Dimensions,
+  TextInput,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
@@ -53,6 +54,10 @@ export default function Details({ route, navigation }) {
   const [newEmployee, setNewEmployee] = useState({});
 
   const modalHeight = (Dimensions.get('window').width * 80) / 100;
+
+  const [isDialogVisible, setIsDialogVisible] = useState(false);
+
+  const [closingNote, setClosingNote] = useState('');
 
   async function loadAPI() {
     setRefreshing(true);
@@ -210,8 +215,8 @@ export default function Details({ route, navigation }) {
     }
   }
 
-  async function handleCloseRequest() {
-    if (globalState.state.isAdmin) {
+  async function closeRequest() {
+    if (!(closingNote === '')) {
       try {
         const { id: request_id } = route.params;
 
@@ -219,6 +224,8 @@ export default function Details({ route, navigation }) {
           `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
           {
             action: "close_request",
+            closingNote,
+            employee_id: globalState.state.employee_id,
           },
           {
             timeout: 2500,
@@ -229,11 +236,19 @@ export default function Details({ route, navigation }) {
         );
 
         onRefresh();
+        setIsDialogVisible(false);
       } catch (error) {
         console.log(error);
         Alert.alert('Erro', 'Não foi possível fechar chamado');
       }
+    } else {
+      Alert.alert('Erro', 'É obrigatório informar o motivo do fechamento');
+    }
+  }
 
+  function handleCloseRequest() {
+    if (globalState.state.isAdmin) {
+      setIsDialogVisible(true);
     } else {
       Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
     }
@@ -572,6 +587,43 @@ export default function Details({ route, navigation }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
-    </View>
+
+      {isDialogVisible &&
+        <Modal
+          onBackButtonPress={() => setIsDialogVisible(false)}
+          onBackdropPress={() => setIsDialogVisible(false)}
+          children={
+            <View style={styles.modal_style}>
+              <Text style={styles.modal_header}>
+                Fechar chamado
+              </Text>
+              <Text style={{ marginTop: 10 }}>Nota de fechamento:</Text>
+              <TextInput
+                onChangeText={text => setClosingNote(text)}
+                textAlignVertical="top"
+                multiline={true}
+                style={styles.text_input_style}
+
+              />
+              <View style={styles.modal_btn_container}>
+                <TouchableOpacity onPress={() => setIsDialogVisible(false)}>
+                  <Text>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => closeRequest()} style={{ marginLeft: 15 }}>
+                  <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>
+                    Confirmar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          }
+          isVisible={isDialogVisible}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
+      }
+    </View >
   );
 }
