@@ -186,6 +186,35 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginRight: 5
   },
+
+  modal_style: {
+    width: 300,
+    backgroundColor: "#FFF",
+    alignSelf: "center",
+    borderWidth: 0,
+    borderRadius: 10,
+    padding: 20,
+    paddingTop: 10,
+  },
+
+  modal_header: {
+    fontWeight: "bold",
+    fontSize: fonts.regular,
+    width: '100%',
+    marginBottom: 5,
+  },
+
+  text_input_style: {
+    marginTop: 0,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#989898',
+  },
+
+  modal_btn_container: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginTop: 20,
+  },
 });
 
 export default styles;
