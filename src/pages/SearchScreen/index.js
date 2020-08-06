@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useReducer, useEffect } from 'react';
+import React, { useRef, useContext, useReducer, useEffect, useState } from 'react';
 import {
   View,
   TextInput,
@@ -64,6 +64,8 @@ export default function ClientsScreen({ navigation }) {
     }
   }
 
+  const [filterMode, setFilterMode] = useState('all');
+
   useEffect(() => {
     if (isFocused) {
       refInput.current.focus();
@@ -81,13 +83,17 @@ export default function ClientsScreen({ navigation }) {
     });
   }
 
+  useEffect(() => {
+    search(state.search_term);
+  }, [filterMode]);
+
   async function search(term) {
     dispatch({
       type: 'loadingInit',
     });
 
     const response = await searchUtil(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/search?term=${term}`,
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/search?term=${term}&searchmode=${filterMode}`,
       {
         timeout: 2500,
         headers: {
@@ -148,6 +154,10 @@ export default function ClientsScreen({ navigation }) {
     });
   }
 
+  function switchFilter(filterValue) {
+    setFilterMode(filterValue);
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.search_area} >
@@ -167,6 +177,106 @@ export default function ClientsScreen({ navigation }) {
           onPress={() => handleClearInputText()}
         >
           <Icon name="close" size={18} color={'#b0b0b0'} />
+        </TouchableOpacity>
+      </View>
+
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          alignSelf: 'center',
+          backgroundColor: '#FFF',
+          borderRadius: 3,
+          padding: 2,
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => switchFilter('enable')}
+          style={filterMode === 'enable' && {
+            borderColor: 'blue',
+            borderWidth: StyleSheet.hairlineWidth,
+            borderRadius: 3,
+            color: '#b0b0b0',
+            alignItems: 'center',
+          }}
+        >
+          <Text
+            style={filterMode === 'enable'
+              ? {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#000',
+              }
+              : {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#b0b0b0',
+              }
+            }
+          >
+            Ativados
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => switchFilter('disable')}
+          style={filterMode === 'disable' && {
+            borderColor: 'blue',
+            borderWidth: StyleSheet.hairlineWidth,
+            borderRadius: 3,
+            color: '#b0b0b0'
+          }}
+        >
+          <Text
+            style={filterMode === 'disable'
+              ? {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#000',
+              }
+              : {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#b0b0b0',
+              }
+            }
+          >
+            Desativados
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => switchFilter('all')}
+          style={filterMode === 'all' && {
+            borderColor: 'blue',
+            borderWidth: StyleSheet.hairlineWidth,
+            borderRadius: 3,
+            color: '#b0b0b0'
+          }}
+        >
+          <Text
+            style={filterMode === 'all'
+              ? {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#000',
+              }
+              : {
+                padding: 3,
+                paddingLeft: 10,
+                paddingRight: 10,
+                color: '#b0b0b0',
+              }
+            }
+          >
+            Todos
+          </Text>
         </TouchableOpacity>
       </View>
 
