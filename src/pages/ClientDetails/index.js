@@ -116,11 +116,22 @@ export default function ClientDetails(props) {
             <View>
               <View style={styles.clickable_line}>
                 <View>
-                  <Text style={styles.sub_text}>Status de equipamento</Text>
+                  <Text style={styles.sub_text}>Status de conexão</Text>
                   <Text style={[styles.main_text, {
                     color: client.equipment_status === 'Online' ? 'green' : 'red'
                   }]}>
                     {client.equipment_status}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.sub_text}>Status Financeiro</Text>
+                  <Text
+                    style={[styles.main_text, {
+                      color: client.bloqueado === 'sim' ? 'red' : 'green',
+                      textAlign: 'right',
+                    }]}
+                  >
+                    {client.finance_state}
                   </Text>
                 </View>
               </View>
@@ -171,21 +182,6 @@ export default function ClientDetails(props) {
                 </View>
               </View>
             </TouchableOpacity>
-
-            <View>
-              <View style={styles.clickable_line}>
-                <View>
-                  <Text style={styles.sub_text}>Status Financeiro</Text>
-                  <Text
-                    style={[styles.main_text, {
-                      color: client.bloqueado === 'sim' ? 'red' : 'green',
-                    }]}
-                  >
-                    {client.finance_state}
-                  </Text>
-                </View>
-              </View>
-            </View>
 
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Login e senha</Text>
@@ -315,8 +311,7 @@ const styles = StyleSheet.create({
   main_text: {
     fontWeight: "bold",
     fontSize: fonts.regular,
-    minWidth: '90%',
-    maxWidth: '90%',
+    flex: 1,
   },
 
   sub_text: {
