@@ -134,6 +134,20 @@ export default function ClientDetails(props) {
               </View>
             </View>
 
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Endereço IP</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>{client.ip}</Text>
+              </View>
+            </View>
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Endereço MAC</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>{client.mac !== null ? client.mac : 'Não informado'}</Text>
+              </View>
+            </View>
+
             <View>
               <View style={styles.clickable_line}>
                 <View>
