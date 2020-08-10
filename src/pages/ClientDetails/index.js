@@ -148,9 +148,12 @@ export default function ClientDetails(props) {
 
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Endereço IP</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <TouchableOpacity
+                onPress={() => copyToClipboard(client.ip)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+              >
                 <Text style={styles.main_text_login_senha}>{client.ip}</Text>
-              </View>
+              </TouchableOpacity>
             </View>
 
             <View style={styles.line_container}>
