@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  ToastAndroid,
   ScrollView,
   Platform,
   Linking,
@@ -17,6 +18,7 @@ import CallIcon from 'react-native-vector-icons/Zocial';
 import axios from 'axios';
 import Modal from 'react-native-modal';
 import { BarChart } from "react-native-chart-kit";
+import Clipboard from '@react-native-community/clipboard'
 
 import LocationService from '../../services/location';
 
@@ -92,6 +94,11 @@ export default function ClientDetails(props) {
     setIsVisible(false);
   }
 
+  function copyToClipboard(text) {
+    Clipboard.setString(text);
+    ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
   return (
     <>
       <ScrollView
@@ -126,11 +133,16 @@ export default function ClientDetails(props) {
               </View>
             </View>
 
+
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Login e senha</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>{client.login}</Text>
-                <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+                <TouchableOpacity onPress={() => copyToClipboard(client.login)}>
+                  <Text style={styles.main_text_login_senha}>{client.login}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => copyToClipboard(client.senha)}>
+                  <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+                </TouchableOpacity>
               </View>
             </View>
 
