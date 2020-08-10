@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fonts.regular,
     alignSelf: 'center',
+    width: '100%',
   },
 
   tabBar_style: {
