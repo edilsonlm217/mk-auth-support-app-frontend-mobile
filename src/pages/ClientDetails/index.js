@@ -144,7 +144,9 @@ export default function ClientDetails(props) {
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Endereço MAC</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>{client.mac !== null ? client.mac : 'Não informado'}</Text>
+                <Text style={styles.main_text_login_senha}>
+                  {client.mac !== null ? client.mac : 'Não informado'}
+                </Text>
               </View>
             </View>
 
@@ -156,6 +158,15 @@ export default function ClientDetails(props) {
                     {client.plano}
                   </Text>
                 </View>
+              </View>
+            </View>
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Caixa atual</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>
+                  {client.caixa_herm !== null ? client.caixa_herm : 'Nenhuma'}
+                </Text>
               </View>
             </View>
 
