@@ -105,17 +105,6 @@ export default function ClientDetails(props) {
             <View>
               <View style={styles.clickable_line}>
                 <View>
-                  <Text style={styles.sub_text}>Plano</Text>
-                  <Text style={[styles.main_text]}>
-                    {client.plano}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <View>
-              <View style={styles.clickable_line}>
-                <View>
                   <Text style={styles.sub_text}>Status de conexão</Text>
                   <Text style={[styles.main_text, {
                     color: client.equipment_status === 'Online' ? 'green' : 'red'
@@ -132,6 +121,25 @@ export default function ClientDetails(props) {
                     }]}
                   >
                     {client.finance_state}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Login e senha</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>{client.login}</Text>
+                <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+              </View>
+            </View>
+
+            <View>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Plano</Text>
+                  <Text style={[styles.main_text]}>
+                    {client.plano}
                   </Text>
                 </View>
               </View>
@@ -182,14 +190,6 @@ export default function ClientDetails(props) {
                 </View>
               </View>
             </TouchableOpacity>
-
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Login e senha</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>{client.login}</Text>
-                <Text style={styles.main_text_login_senha}>{client.senha}</Text>
-              </View>
-            </View>
 
             <View>
               <View style={[styles.clickable_line, { borderBottomWidth: 0, marginBottom: 10 }]}>
