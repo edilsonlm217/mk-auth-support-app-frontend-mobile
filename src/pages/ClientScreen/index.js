@@ -9,6 +9,7 @@ import AppHeader from '../../components/AppHeader/index';
 
 import ClientDetails from '../ClientDetails/index';
 import ClientConnections from '../ClientConnections/index';
+import ClientFinancing from '../ClientFinancing/index';
 
 export default function ClientScreen({ navigation, route }) {
   const globalState = useContext(store);
@@ -20,6 +21,7 @@ export default function ClientScreen({ navigation, route }) {
   const [routes] = useState([
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
+    { key: 'third', title: 'Financeiro' },
   ]);
 
   const renderScene = ({ route }) => {
@@ -39,6 +41,15 @@ export default function ClientScreen({ navigation, route }) {
             style={styles.section_container}
           >
             <ClientConnections data={client_id} state={globalState} />
+          </View>
+        );
+
+      case 'third':
+        return (
+          <View
+            style={styles.section_container}
+          >
+            <ClientFinancing data={client_id} state={globalState} navigation={navigation} />
           </View>
         );
 
@@ -105,7 +116,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     height: 3,
     borderRadius: 8,
-    alignSelf: 'center',
   },
 
   label_style: {
@@ -113,15 +123,15 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fonts.regular,
     alignSelf: 'center',
+    textAlign: "center",
   },
 
   tabBar_style: {
     backgroundColor: '#337AB7',
-    height: 45,
-    marginBottom: 0,
+    minHeight: 45,
     elevation: 0,
-    width: '85%',
-    alignSelf: 'center',
     marginBottom: 5,
+    width: '90%',
+    alignSelf: 'center',
   },
 });

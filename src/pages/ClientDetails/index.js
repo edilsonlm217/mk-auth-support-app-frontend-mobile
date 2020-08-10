@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   RefreshControl,
+  ToastAndroid,
   ScrollView,
   Platform,
   Linking,
@@ -17,6 +18,7 @@ import CallIcon from 'react-native-vector-icons/Zocial';
 import axios from 'axios';
 import Modal from 'react-native-modal';
 import { BarChart } from "react-native-chart-kit";
+import Clipboard from '@react-native-community/clipboard'
 
 import LocationService from '../../services/location';
 
@@ -92,6 +94,11 @@ export default function ClientDetails(props) {
     setIsVisible(false);
   }
 
+  function copyToClipboard(text) {
+    Clipboard.setString(text);
+    ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
   return (
     <>
       <ScrollView
@@ -105,6 +112,62 @@ export default function ClientDetails(props) {
             <View>
               <View style={styles.clickable_line}>
                 <View>
+                  <Text style={styles.sub_text}>Status de conexão</Text>
+                  <Text style={[styles.main_text, {
+                    color: client.equipment_status === 'Online' ? 'green' : 'red'
+                  }]}>
+                    {client.equipment_status}
+                  </Text>
+                </View>
+                <View>
+                  <Text style={styles.sub_text}>Status Financeiro</Text>
+                  <Text
+                    style={[styles.main_text, {
+                      color: client.bloqueado === 'sim' ? 'red' : 'green',
+                      textAlign: 'right',
+                    }]}
+                  >
+                    {client.finance_state}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Login e senha</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TouchableOpacity onPress={() => copyToClipboard(client.login)}>
+                  <Text style={styles.main_text_login_senha}>{client.login}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => copyToClipboard(client.senha)}>
+                  <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Endereço IP</Text>
+              <TouchableOpacity
+                onPress={() => copyToClipboard(client.ip)}
+                style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+              >
+                <Text style={styles.main_text_login_senha}>{client.ip}</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Endereço MAC</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>
+                  {client.mac !== null ? client.mac : 'Não informado'}
+                </Text>
+              </View>
+            </View>
+
+            <View>
+              <View style={styles.clickable_line}>
+                <View>
                   <Text style={styles.sub_text}>Plano</Text>
                   <Text style={[styles.main_text]}>
                     {client.plano}
@@ -113,16 +176,12 @@ export default function ClientDetails(props) {
               </View>
             </View>
 
-            <View>
-              <View style={styles.clickable_line}>
-                <View>
-                  <Text style={styles.sub_text}>Status de equipamento</Text>
-                  <Text style={[styles.main_text, {
-                    color: client.equipment_status === 'Online' ? 'green' : 'red'
-                  }]}>
-                    {client.equipment_status}
-                  </Text>
-                </View>
+            <View style={styles.line_container}>
+              <Text style={styles.sub_text}>Caixa atual</Text>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={styles.main_text_login_senha}>
+                  {client.caixa_herm !== null ? client.caixa_herm : 'Nenhuma'}
+                </Text>
               </View>
             </View>
 
@@ -171,29 +230,6 @@ export default function ClientDetails(props) {
                 </View>
               </View>
             </TouchableOpacity>
-
-            <View>
-              <View style={styles.clickable_line}>
-                <View>
-                  <Text style={styles.sub_text}>Status Financeiro</Text>
-                  <Text
-                    style={[styles.main_text, {
-                      color: client.bloqueado === 'sim' ? 'red' : 'green',
-                    }]}
-                  >
-                    {client.finance_state}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Login e senha</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>{client.login}</Text>
-                <Text style={styles.main_text_login_senha}>{client.senha}</Text>
-              </View>
-            </View>
 
             <View>
               <View style={[styles.clickable_line, { borderBottomWidth: 0, marginBottom: 10 }]}>
@@ -315,8 +351,7 @@ const styles = StyleSheet.create({
   main_text: {
     fontWeight: "bold",
     fontSize: fonts.regular,
-    minWidth: '90%',
-    maxWidth: '90%',
+    flex: 1,
   },
 
   sub_text: {
