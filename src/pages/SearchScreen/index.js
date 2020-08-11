@@ -325,8 +325,8 @@ const styles = StyleSheet.create({
 
   client_btn: {
     backgroundColor: '#FFF',
-    padding: 5,
-    margin: 5,
+    padding: 9,
+    margin: 1,
     flexDirection: 'row',
     justifyContent: 'space-between'
   },
