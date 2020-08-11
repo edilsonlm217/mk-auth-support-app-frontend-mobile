@@ -66,7 +66,7 @@ export default function AuthScreen({ route, navigation }) {
 
           <HideWithKeyboard>
             <Text style={styles.initial_config_sub_title} >
-              Agora informe seu login e senha de técnico para carregar os seus chamados
+              Agora informe seu usuário e senha para carregar chamados
           </Text>
           </HideWithKeyboard>
 
