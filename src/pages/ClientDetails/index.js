@@ -133,16 +133,20 @@ export default function ClientDetails(props) {
               </View>
             </View>
 
-
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Login e senha</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <TouchableOpacity onPress={() => copyToClipboard(client.login)}>
-                  <Text style={styles.main_text_login_senha}>{client.login}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => copyToClipboard(client.senha)}>
-                  <Text style={styles.main_text_login_senha}>{client.senha}</Text>
-                </TouchableOpacity>
+            <View>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Usuário</Text>
+                  <TouchableOpacity onPress={() => copyToClipboard(client.login)}>
+                    <Text style={styles.main_text_login_senha}>{client.login}</Text>
+                  </TouchableOpacity>
+                </View>
+                <View>
+                  <Text style={[styles.sub_text, { textAlign: 'right', }]}>Senha</Text>
+                  <TouchableOpacity onPress={() => copyToClipboard(client.senha)}>
+                    <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
 

@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, Text } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 
 import { fonts } from '../../styles/index';
@@ -75,8 +75,14 @@ export default function ClientScreen({ navigation, route }) {
         renderTabBar={props =>
           <TabBar
             {...props}
+            renderLabel={({ route }) => (
+              <View>
+                <Text style={styles.label_style} numberOfLines={1}>
+                  {route.title.toUpperCase()}
+                </Text>
+              </View>
+            )}
             indicatorStyle={styles.indicatorStyle}
-            labelStyle={styles.label_style}
             style={styles.tabBar_style}
           />
         }
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
     minHeight: 45,
     elevation: 0,
     marginBottom: 5,
-    width: '90%',
+    width: '100%',
     alignSelf: 'center',
   },
 });

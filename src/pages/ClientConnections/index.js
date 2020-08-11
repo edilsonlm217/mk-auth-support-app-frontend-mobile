@@ -17,7 +17,7 @@ export default function ClientConnections(props) {
 
   const [dataTable, setDataTable] = useState([]);
 
-  const [viewMode, setViewMode] = useState(true);
+  const [viewMode, setViewMode] = useState(false);
 
   async function loadAPI() {
     try {
