@@ -48,28 +48,71 @@ export default function ClientFinancing() {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Tipo</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Tipo
+            </Text>
           </View>
           <Text>Mensalidade</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Valor</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Valor
+            </Text>
           </View>
           <Text>R$ 120,00</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Status</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Status
+            </Text>
           </View>
           <Text>À vencer</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', flex: 1, width: '50%' }]}>Descrição</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  flex: 1, width: '50%'
+                }]}
+            >
+              Descrição
+            </Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
