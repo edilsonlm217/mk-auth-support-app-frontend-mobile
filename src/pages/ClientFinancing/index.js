@@ -30,49 +30,92 @@ export default function ClientFinancing() {
     },
   ];
 
-  const _renderHeader = (section) => {
+  const _renderHeader = (section, isActive, index) => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Icon name="chevron-down-circle" size={icons.large} color="#337AB7" />
         <View style={{ width: '55%', alignItems: 'center' }}>
           <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
         </View>
-        <Text>14/06/2020</Text>
+        <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>14/06/2020</Text>
       </View>
     );
   };
 
-  const _renderContent = section => {
+  const _renderContent = (section) => {
     return (
       <>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Tipo</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Tipo
+            </Text>
           </View>
-          <Text>Mensalidade</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>Mensalidade</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Valor</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Valor
+            </Text>
           </View>
-          <Text>R$ 120,00</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>R$ 120,00</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Status</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
+              Status
+            </Text>
           </View>
-          <Text>À vencer</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>À vencer</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
-            <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', flex: 1, width: '50%' }]}>Descrição</Text>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  flex: 1, width: '50%'
+                }]}
+            >
+              Descrição
+            </Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
+            <Text style={{ fontFamily: 'Roboto-Light' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
           </View>
         </View>
       </>
@@ -94,7 +137,7 @@ export default function ClientFinancing() {
         </View>
         <Switch
           trackColor={{ false: "#767577", true: "#81b0ff" }}
-          thumbColor={isEnabled ? "#f5dd4b" : "#f4f3f4"}
+          thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
           value={isEnabled}
@@ -125,7 +168,7 @@ export default function ClientFinancing() {
 
 const styles = StyleSheet.create({
   main_text: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
 
