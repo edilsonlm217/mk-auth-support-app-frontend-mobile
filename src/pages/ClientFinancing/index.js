@@ -32,7 +32,7 @@ export default function ClientFinancing() {
 
   const _renderHeader = (section, isActive, index) => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
         <Icon name="chevron-down-circle" size={icons.large} color="#337AB7" />
         <View style={{ width: '55%', alignItems: 'center' }}>
           <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
@@ -45,7 +45,7 @@ export default function ClientFinancing() {
   const _renderContent = (section) => {
     return (
       <>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -10 }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
           <View style={{ width: '55%', alignItems: 'center' }}>
             <Text
@@ -114,7 +114,7 @@ export default function ClientFinancing() {
               Descrição
             </Text>
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, marginBottom: 10, }}>
             <Text style={{ fontFamily: 'Roboto-Light' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
           </View>
         </View>
