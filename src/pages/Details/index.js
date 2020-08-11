@@ -13,6 +13,7 @@ import {
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
+import Clipboard from '@react-native-community/clipboard';
 import axios from 'axios';
 
 import LocationService from '../../services/location';
@@ -336,6 +337,11 @@ export default function Details({ route, navigation }) {
     }
   }
 
+  function copyToClipboard(text) {
+    Clipboard.setString(text);
+    ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => navigateToClient(state.client_id, state.nome)} style={styles.section_header}>
@@ -472,13 +478,28 @@ export default function Details({ route, navigation }) {
                 }
               </Text>
             </View>
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Login e senha</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>{state.login}</Text>
-                <Text style={styles.main_text_login_senha}>{state.senha}</Text>
+
+            <View style={[styles.line_container, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+              <View>
+                <Text style={styles.sub_text}>Login</Text>
+                <TouchableOpacity
+                  onPress={() => copyToClipboard(state.login)}
+                  style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                >
+                  <Text style={styles.main_text_login_senha}>{state.login}</Text>
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text style={[styles.sub_text, { textAlign: 'right' }]}>Senha</Text>
+                <TouchableOpacity
+                  onPress={() => copyToClipboard(state.senha)}
+                  style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                >
+                  <Text style={styles.main_text_login_senha}>{state.senha}</Text>
+                </TouchableOpacity>
               </View>
             </View>
+
             <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(state.coordenadas)}>
               <View style={styles.location_line}>
                 <View>
