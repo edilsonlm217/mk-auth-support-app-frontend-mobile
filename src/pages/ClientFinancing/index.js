@@ -30,12 +30,12 @@ export default function ClientFinancing() {
     },
   ];
 
-  const _renderHeader = (index) => {
+  const _renderHeader = (section, isActive, index) => {
     return (
-      <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <Icon name={index ? "chevron-up-circle" : "chevron-down-circle"} size={icons.large} color="#337AB7" />
-        <View style={{ width: '55%', alignItems: 'center' }}>
-          <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
+        <View style={{ width: '50%', alignItems: 'center' }}>
+          <Text numberOfLines={1} style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
         </View>
         <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>14/06/2020</Text>
       </View>
@@ -45,9 +45,9 @@ export default function ClientFinancing() {
   const _renderContent = (section) => {
     return (
       <>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: -10 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
-          <View style={{ width: '55%', alignItems: 'center' }}>
+          <View style={{ width: '50%', alignItems: 'center' }}>
             <Text
               style={[
                 styles.main_text,
@@ -65,7 +65,7 @@ export default function ClientFinancing() {
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
-          <View style={{ width: '55%', alignItems: 'center' }}>
+          <View style={{ width: '50%', alignItems: 'center' }}>
             <Text
               style={[
                 styles.main_text,
@@ -83,7 +83,7 @@ export default function ClientFinancing() {
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
-          <View style={{ width: '55%', alignItems: 'center' }}>
+          <View style={{ width: '50%', alignItems: 'center' }}>
             <Text
               style={[
                 styles.main_text,
@@ -101,7 +101,7 @@ export default function ClientFinancing() {
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
-          <View style={{ width: '55%', alignItems: 'center' }}>
+          <View style={{ width: '50%', alignItems: 'center' }}>
             <Text
               style={[
                 styles.main_text,
@@ -114,11 +114,17 @@ export default function ClientFinancing() {
               Descrição
             </Text>
           </View>
-          <View style={{ flex: 1, marginBottom: 10, }}>
+          <View style={{ flex: 1, marginBottom: 10 }}>
             <Text style={{ fontFamily: 'Roboto-Light' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
           </View>
         </View>
       </>
+    );
+  };
+
+  const _renderFooter = () => {
+    return (
+      <View style={{ flex: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: "#d9d9d9" }}></View>
     );
   };
 
@@ -136,7 +142,7 @@ export default function ClientFinancing() {
           </Text>
         </View>
         <Switch
-          trackColor={{ false: "#767577", true: "#81b0ff" }}
+          trackColor={{ false: "#767577", true: "#337AB7" }}
           thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
@@ -153,6 +159,7 @@ export default function ClientFinancing() {
           activeSections={activeSections}
           renderHeader={_renderHeader}
           renderContent={_renderContent}
+          renderFooter={_renderFooter}
           onChange={_updateSections}
         />
 
