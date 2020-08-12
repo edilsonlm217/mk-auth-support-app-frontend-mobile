@@ -58,6 +58,14 @@ export default function ClientScreen({ navigation, route }) {
     }
   };
 
+  const renderLabel = ({ route }) => (
+    <View>
+      <Text style={styles.label_style} ellipsizeMode='tail' numberOfLines={1}>
+        {route.title.toUpperCase()}
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <AppHeader
@@ -75,13 +83,7 @@ export default function ClientScreen({ navigation, route }) {
         renderTabBar={props =>
           <TabBar
             {...props}
-            renderLabel={({ route }) => (
-              <View>
-                <Text style={styles.label_style} numberOfLines={1}>
-                  {route.title.toUpperCase()}
-                </Text>
-              </View>
-            )}
+            renderLabel={renderLabel}
             indicatorStyle={styles.indicatorStyle}
             style={styles.tabBar_style}
           />
@@ -137,7 +139,7 @@ const styles = StyleSheet.create({
     minHeight: 45,
     elevation: 0,
     marginBottom: 5,
-    width: '100%',
+    width: '90%',
     alignSelf: 'center',
   },
 });

@@ -66,7 +66,7 @@ export default function ClientDetails(props) {
 
   function dialCall(number) {
     if (number === null) {
-      return Alert.alert('Errp', 'Número não informado');
+      return Alert.alert('Erro', 'Número não informado');
     }
 
     let phoneNumber;
@@ -120,7 +120,7 @@ export default function ClientDetails(props) {
                   </Text>
                 </View>
                 <View>
-                  <Text style={styles.sub_text}>Status Financeiro</Text>
+                  <Text style={[styles.sub_text, {textAlign: 'right' }]}>Status Financeiro</Text>
                   <Text
                     style={[styles.main_text, {
                       color: client.bloqueado === 'sim' ? 'red' : 'green',
