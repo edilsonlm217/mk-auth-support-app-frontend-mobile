@@ -1,49 +1,47 @@
-import React, { useState } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, Switch, StyleSheet, ScrollView, Alert } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
+import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts, icons } from '../../styles/index';
+import { store } from '../../store/store';
 
 export default function ClientFinancing() {
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const [activeSections, setActiveSections] = useState([]);
+  const [PendingActiveSections, setPendingActiveSections] = useState([]);
+
+  const [state, setState] = useState(null);
+
+  const globalState = useContext(store);
+
+  async function loadAPI() {
+    try {
+      const response = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/invoices/galvao`,
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      setState(response.data);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível comunicar com a API');
+    }
+  }
+
+  useEffect(() => {
+    loadAPI();
+  }, []);
 
   function toggleSwitch() {
     setIsEnabled(previousState => !previousState);
   }
-
-  const SECTIONS = [
-    {
-      title: '14/06/2020',
-      content: {
-        tipo: 'Mensalidade',
-        valor: 'R$ 120,00',
-        status: 'Vencido',
-        descricao: 'Plano básico + roteador',
-      },
-    },
-    {
-      title: '14/07/2020',
-      content: {
-        tipo: 'Serviço',
-        valor: 'R$ 100,00',
-        status: 'Vencido',
-        descricao: 'Roteador',
-      },
-    },
-    {
-      title: '14/08/2020',
-      content: {
-        tipo: 'Mensalidade',
-        valor: 'R$ 120,00',
-        status: 'À vencer',
-        descricao: 'Plano básico',
-      },
-    },
-  ];
 
   const _renderHeader = (section, isActive, index) => {
     return (
@@ -144,7 +142,7 @@ export default function ClientFinancing() {
   };
 
   const _updateSections = activeSections => {
-    setActiveSections(activeSections);
+    setPendingActiveSections(activeSections);
   };
 
   return (
@@ -168,15 +166,17 @@ export default function ClientFinancing() {
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
 
-        <Accordion
-          underlayColor="#FFF"
-          sections={SECTIONS}
-          activeSections={activeSections}
-          renderHeader={_renderHeader}
-          renderContent={_renderContent}
-          renderFooter={_renderFooter}
-          onChange={_updateSections}
-        />
+        {state !== null &&
+          <Accordion
+            underlayColor="#FFF"
+            sections={state.pending_invoices}
+            activeSections={PendingActiveSections}
+            renderHeader={_renderHeader}
+            renderContent={_renderContent}
+            renderFooter={_renderFooter}
+            onChange={_updateSections}
+          />
+        }
 
       </View>
 
