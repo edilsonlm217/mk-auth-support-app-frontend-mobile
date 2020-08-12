@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import axios from 'axios';
 
@@ -19,10 +19,13 @@ export default function ClientFinancing(props) {
 
   const [state, setState] = useState(null);
 
+  const [refreshing, setRefreshing] = useState(false);
+
   const globalState = useContext(store);
 
   async function loadAPI() {
     try {
+      setRefreshing(true);
       const response = await axios.get(
         `http://${globalState.state.server_ip}:${globalState.state.server_port}/invoices/${client_id}`,
         {
@@ -32,12 +35,14 @@ export default function ClientFinancing(props) {
           },
         },
       );
-      
+
       setState(response.data);
       if (response.data.observacao === 'sim') {
         toggleSwitch();
       }
+      setRefreshing(false);
     } catch (error) {
+      setRefreshing(false);
       Alert.alert('Erro', 'Não foi possível comunicar com a API ClientFinancing');
     }
   }
@@ -160,7 +165,12 @@ export default function ClientFinancing(props) {
   };
 
   return (
-    <ScrollView>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+      }
+    >
       <View style={styles.observation_section}>
         <View style={{ flex: 1 }}>
           <Text style={styles.main_text}>Em observação</Text>
