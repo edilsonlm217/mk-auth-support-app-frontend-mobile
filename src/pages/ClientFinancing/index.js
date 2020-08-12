@@ -8,7 +8,9 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fonts, icons } from '../../styles/index';
 import { store } from '../../store/store';
 
-export default function ClientFinancing() {
+export default function ClientFinancing(props) {
+  const client_id = props.data;
+
   const [isEnabled, setIsEnabled] = useState(false);
 
   const [PendingActiveSections, setPendingActiveSections] = useState([]);
@@ -22,18 +24,21 @@ export default function ClientFinancing() {
   async function loadAPI() {
     try {
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/invoices/galvao`,
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/invoices/${client_id}`,
         {
-          timeout: 2500,
+          timeout: 3500,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
         },
       );
-
+      
       setState(response.data);
+      if (response.data.observacao === 'sim') {
+        toggleSwitch();
+      }
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível comunicar com a API');
+      Alert.alert('Erro', 'Não foi possível comunicar com a API ClientFinancing');
     }
   }
 
@@ -178,7 +183,7 @@ export default function ClientFinancing() {
         {state !== null &&
           <Accordion
             underlayColor="#FFF"
-            sections={state.pending_invoices}
+            sections={state.invoices.pending_invoices}
             activeSections={PendingActiveSections}
             renderHeader={_renderHeader}
             renderContent={_renderContent}
@@ -195,7 +200,7 @@ export default function ClientFinancing() {
         {state !== null &&
           <Accordion
             underlayColor="#FFF"
-            sections={state.paid_invoices}
+            sections={state.invoices.paid_invoices}
             activeSections={PaidActiveSections}
             renderHeader={_renderHeader}
             renderContent={_renderContent}
