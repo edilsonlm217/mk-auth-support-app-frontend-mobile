@@ -17,16 +17,31 @@ export default function ClientFinancing() {
 
   const SECTIONS = [
     {
-      title: 'First',
-      content: 'Lorem ipsum...',
+      title: '14/06/2020',
+      content: {
+        tipo: 'Mensalidade',
+        valor: 'R$ 120,00',
+        status: 'Vencido',
+        descricao: 'Plano básico + roteador',
+      },
     },
     {
-      title: 'Second',
-      content: 'Lorem ipsum...',
+      title: '14/07/2020',
+      content: {
+        tipo: 'Serviço',
+        valor: 'R$ 100,00',
+        status: 'Vencido',
+        descricao: 'Roteador',
+      },
     },
     {
-      title: 'Second',
-      content: 'Lorem ipsum...',
+      title: '14/08/2020',
+      content: {
+        tipo: 'Mensalidade',
+        valor: 'R$ 120,00',
+        status: 'À vencer',
+        descricao: 'Plano básico',
+      },
     },
   ];
 
@@ -37,7 +52,7 @@ export default function ClientFinancing() {
         <View style={{ width: '50%', alignItems: 'center' }}>
           <Text numberOfLines={1} style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
         </View>
-        <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>14/06/2020</Text>
+        <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
       </View>
     );
   };
@@ -61,7 +76,7 @@ export default function ClientFinancing() {
               Tipo
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>Mensalidade</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.tipo}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -79,7 +94,7 @@ export default function ClientFinancing() {
               Valor
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>R$ 120,00</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.valor}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -97,7 +112,7 @@ export default function ClientFinancing() {
               Status
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>À vencer</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.status}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -115,7 +130,7 @@ export default function ClientFinancing() {
             </Text>
           </View>
           <View style={{ flex: 1, marginBottom: 10 }}>
-            <Text style={{ fontFamily: 'Roboto-Light' }}>Lorem ipsum dolor sit amet, consectetur adipiscing elit</Text>
+            <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.descricao}</Text>
           </View>
         </View>
       </>
