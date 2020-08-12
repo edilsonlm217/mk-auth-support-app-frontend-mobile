@@ -52,7 +52,10 @@ export default function ClientFinancing() {
         <View style={{ width: '50%', alignItems: 'center' }}>
           <Text numberOfLines={1} style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
         </View>
-        <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
+        {section.content.status === 'vencido'
+          ? <Text style={{ color: index ? '#000' : 'red', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
+          : <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
+        }
       </View>
     );
   };
