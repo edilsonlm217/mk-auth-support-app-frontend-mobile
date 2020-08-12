@@ -13,6 +13,8 @@ export default function ClientFinancing() {
 
   const [PendingActiveSections, setPendingActiveSections] = useState([]);
 
+  const [PaidActiveSections, setPaidActiveSections] = useState([]);
+
   const [state, setState] = useState(null);
 
   const globalState = useContext(store);
@@ -141,8 +143,12 @@ export default function ClientFinancing() {
     );
   };
 
-  const _updateSections = activeSections => {
-    setPendingActiveSections(activeSections);
+  const _updateSections = (option, activeSections) => {
+    if (option === 'pending') {
+      setPendingActiveSections(activeSections);
+    } else {
+      setPaidActiveSections(activeSections);
+    }
   };
 
   return (
@@ -174,7 +180,7 @@ export default function ClientFinancing() {
             renderHeader={_renderHeader}
             renderContent={_renderContent}
             renderFooter={_renderFooter}
-            onChange={_updateSections}
+            onChange={(activeSections) => _updateSections('pending', activeSections)}
           />
         }
 
@@ -182,6 +188,18 @@ export default function ClientFinancing() {
 
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
+
+        {state !== null &&
+          <Accordion
+            underlayColor="#FFF"
+            sections={state.paid_invoices}
+            activeSections={PaidActiveSections}
+            renderHeader={_renderHeader}
+            renderContent={_renderContent}
+            renderFooter={_renderFooter}
+            onChange={(activeSections) => _updateSections('paid', activeSections)}
+          />
+        }
 
       </View>
     </ScrollView>
@@ -206,6 +224,6 @@ const styles = StyleSheet.create({
   },
 
   invoices: {
-    marginTop: 10,
+    marginTop: 15,
   },
 });
