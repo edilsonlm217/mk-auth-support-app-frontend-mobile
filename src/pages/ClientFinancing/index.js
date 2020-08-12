@@ -30,10 +30,10 @@ export default function ClientFinancing() {
     },
   ];
 
-  const _renderHeader = (section, isActive, index) => {
+  const _renderHeader = (index) => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10, }}>
-        <Icon name="chevron-down-circle" size={icons.large} color="#337AB7" />
+        <Icon name={index ? "chevron-up-circle" : "chevron-down-circle"} size={icons.large} color="#337AB7" />
         <View style={{ width: '55%', alignItems: 'center' }}>
           <Text style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
         </View>
