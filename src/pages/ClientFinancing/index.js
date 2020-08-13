@@ -1,6 +1,8 @@
 import React, { useState, useContext, useEffect, useReducer } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -19,6 +21,8 @@ export default function ClientFinancing(props) {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
   const [switcherState, dispatch] = useReducer(reducer, {
     isEnabled: false,
     date: new Date(),
@@ -33,10 +37,11 @@ export default function ClientFinancing(props) {
         }
 
       case 'turnOn':
-        console.log(action.payload);
+        setIsDatePickerVisible(false);
+
         return {
-          ...switcherState,
           isEnabled: true,
+          date: action.payload.date,
         }
     }
   }
@@ -77,9 +82,7 @@ export default function ClientFinancing(props) {
         type: 'turnOff',
       });
     } else {
-      dispatch({
-        type: 'turnOn',
-      });
+      setIsDatePickerVisible(true);
     }
 
     // try {
@@ -218,6 +221,19 @@ export default function ClientFinancing(props) {
     }
   };
 
+  async function handleNewDate(event, selectedDate) {
+    if (event.type === 'set') {
+      dispatch({
+        type: 'turnOn',
+        payload: {
+          date: selectedDate,
+        },
+      });
+    } else if (event.type === 'dismissed') {
+      setIsDatePickerVisible(false);
+    }
+  }
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -228,9 +244,16 @@ export default function ClientFinancing(props) {
       <View style={styles.observation_section}>
         <View style={{ flex: 1 }}>
           <Text style={styles.main_text}>Em observação</Text>
-          <Text style={styles.sub_text}>
-            Habilitar o modo observasão impedirá que o sistema bloqueie o cliente
-          </Text>
+          {switcherState.isEnabled
+            ?
+            <Text style={styles.sub_text}>
+              {`Até: ${format(switcherState.date, 'dd/MM/yyyy')}`}
+            </Text>
+            :
+            <Text style={styles.sub_text}>
+              Habilitar o modo observasão impedirá que o sistema bloqueie o cliente
+            </Text>
+          }
         </View>
         <Switch
           trackColor={{ false: "#767577", true: "#337AB7" }}
@@ -274,6 +297,15 @@ export default function ClientFinancing(props) {
         } */}
 
       </View>
+
+      {isDatePickerVisible &&
+        <DateTimePicker
+          mode="datetime"
+          display="calendar"
+          value={switcherState.date}
+          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+        />
+      }
     </ScrollView>
   );
 }
