@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl } from 'react-native';
+import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import axios from 'axios';
 
@@ -37,7 +37,7 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
-      if (response.data.observacao === 'sim') {
+      if (response.data.observacao === 'sim' && isEnabled === false) {
         toggleSwitch();
       }
       setRefreshing(false);
@@ -51,8 +51,27 @@ export default function ClientFinancing(props) {
     loadAPI();
   }, []);
 
-  function toggleSwitch() {
+  async function toggleSwitch() {
     setIsEnabled(previousState => !previousState);
+
+    try {
+      const response = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        {
+          observacao: isEnabled === true ? 'nao' : 'sim',
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+    } catch (error) {
+      setIsEnabled(previousState => !previousState);
+      ToastAndroid.show("Erro. Tente novamente", ToastAndroid.SHORT);
+    }
   }
 
   const _renderHeader = (section, isActive, index) => {
