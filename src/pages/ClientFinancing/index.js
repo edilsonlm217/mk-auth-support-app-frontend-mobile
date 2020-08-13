@@ -1,6 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl } from 'react-native';
+import React, { useState, useContext, useEffect, useReducer } from 'react';
+import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,7 +13,7 @@ import { store } from '../../store/store';
 export default function ClientFinancing(props) {
   const client_id = props.data;
 
-  const [isEnabled, setIsEnabled] = useState(false);
+  const globalState = useContext(store);
 
   const [PendingActiveSections, setPendingActiveSections] = useState([]);
 
@@ -21,7 +23,30 @@ export default function ClientFinancing(props) {
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const globalState = useContext(store);
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+
+  const [switcherState, dispatch] = useReducer(reducer, {
+    isEnabled: false,
+    date: null,
+  });
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'turnOff':
+        return {
+          isEnabled: false,
+          date: null,
+        }
+
+      case 'turnOn':
+        setIsDatePickerVisible(false);
+
+        return {
+          isEnabled: true,
+          date: action.payload.date,
+        }
+    }
+  }
 
   async function loadAPI() {
     try {
@@ -37,7 +62,7 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
-      if (response.data.observacao === 'sim') {
+      if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
         toggleSwitch();
       }
       setRefreshing(false);
@@ -51,8 +76,41 @@ export default function ClientFinancing(props) {
     loadAPI();
   }, []);
 
-  function toggleSwitch() {
-    setIsEnabled(previousState => !previousState);
+  async function toggleSwitch() {
+    const previousDate = switcherState.date;
+
+    if (switcherState.isEnabled === true) {
+      dispatch({
+        type: 'turnOff',
+      });
+
+      try {
+        const response_update = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+          {
+            observacao: 'nao',
+            date: null,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      } catch (error) {
+        ToastAndroid.show("Não foi possível desabilitar", ToastAndroid.SHORT);
+        dispatch({
+          type: 'turnOn',
+          payload: {
+            date: previousDate,
+          },
+        });
+      }
+
+    } else {
+      setIsDatePickerVisible(true);
+    }
   }
 
   const _renderHeader = (section, isActive, index) => {
@@ -164,6 +222,42 @@ export default function ClientFinancing(props) {
     }
   };
 
+  async function handleNewDate(event, selectedDate) {
+    if (event.type === 'set') {
+      dispatch({
+        type: 'turnOn',
+        payload: {
+          date: selectedDate,
+        },
+      });
+
+      try {
+        const response_update = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+          {
+            observacao: 'sim',
+            date: selectedDate,
+          },
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      } catch (error) {
+        dispatch({
+          type: 'turnOff',
+        });
+        ToastAndroid.show("Não foi possível habilitar", ToastAndroid.SHORT);
+      }
+
+
+    } else if (event.type === 'dismissed') {
+      setIsDatePickerVisible(false);
+    }
+  }
+
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -174,16 +268,23 @@ export default function ClientFinancing(props) {
       <View style={styles.observation_section}>
         <View style={{ flex: 1 }}>
           <Text style={styles.main_text}>Em observação</Text>
-          <Text style={styles.sub_text}>
-            Habilitar o modo observasão impedirá que o sistema bloqueie o cliente
-          </Text>
+          {switcherState.isEnabled
+            ?
+            <Text style={styles.sub_text}>
+              {`Até: ${format(switcherState.date, 'dd/MM/yyyy')}`}
+            </Text>
+            :
+            <Text style={styles.sub_text}>
+              Habilitar o modo observasão impedirá que o sistema bloqueie o cliente
+            </Text>
+          }
         </View>
         <Switch
           trackColor={{ false: "#767577", true: "#337AB7" }}
-          thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
+          thumbColor={switcherState.isEnabled ? "#f4f3f4" : "#f4f3f4"}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
-          value={isEnabled}
+          value={switcherState.isEnabled}
         />
       </View>
 
@@ -220,6 +321,15 @@ export default function ClientFinancing(props) {
         }
 
       </View>
+
+      {isDatePickerVisible &&
+        <DateTimePicker
+          mode="datetime"
+          display="calendar"
+          value={new Date()}
+          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+        />
+      }
     </ScrollView>
   );
 }
