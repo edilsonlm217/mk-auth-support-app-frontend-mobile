@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useReducer } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import axios from 'axios';
@@ -11,8 +11,6 @@ import { store } from '../../store/store';
 export default function ClientFinancing(props) {
   const client_id = props.data;
 
-  const [isEnabled, setIsEnabled] = useState(false);
-
   const [PendingActiveSections, setPendingActiveSections] = useState([]);
 
   const [PaidActiveSections, setPaidActiveSections] = useState([]);
@@ -20,6 +18,28 @@ export default function ClientFinancing(props) {
   const [state, setState] = useState(null);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const [switcherState, dispatch] = useReducer(reducer, {
+    isEnabled: false,
+    date: new Date(),
+  });
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'turnOff':
+        return {
+          isEnabled: false,
+          date: new Date(),
+        }
+
+      case 'turnOn':
+        console.log(action.payload);
+        return {
+          ...switcherState,
+          isEnabled: true,
+        }
+    }
+  }
 
   const globalState = useContext(store);
 
@@ -37,7 +57,7 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
-      if (response.data.observacao === 'sim' && isEnabled === false) {
+      if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
         toggleSwitch();
       }
       setRefreshing(false);
@@ -52,26 +72,41 @@ export default function ClientFinancing(props) {
   }, []);
 
   async function toggleSwitch() {
-    setIsEnabled(previousState => !previousState);
-
-    try {
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
-        {
-          observacao: isEnabled === true ? 'nao' : 'sim',
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
-          },
-        },
-      );
-
-    } catch (error) {
-      setIsEnabled(previousState => !previousState);
-      ToastAndroid.show("Erro. Tente novamente", ToastAndroid.SHORT);
+    if (switcherState.isEnabled === true) {
+      dispatch({
+        type: 'turnOff',
+      });
+    } else {
+      dispatch({
+        type: 'turnOn',
+      });
     }
+
+    // try {
+    //   const response = await axios.post(
+    //     `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+    //     {
+    //       observacao: switcherState.isEnabled === true ? 'nao' : 'sim',
+    //     },
+    //     {
+    //       timeout: 2500,
+    //       headers: {
+    //         Authorization: `Bearer ${globalState.state.userToken}`,
+    //       },
+    //     },
+    //   );
+
+    // } catch (error) {
+    //   console.log(error);
+    //   dispatch({
+    //     type: 'turnOff',
+    //     payload: {
+    //       isEnable: true,
+    //       date: new Date(),
+    //     },
+    //   });
+    //   ToastAndroid.show("Erro. Tente novamente", ToastAndroid.SHORT);
+    // }
   }
 
   const _renderHeader = (section, isActive, index) => {
@@ -199,17 +234,17 @@ export default function ClientFinancing(props) {
         </View>
         <Switch
           trackColor={{ false: "#767577", true: "#337AB7" }}
-          thumbColor={isEnabled ? "#f4f3f4" : "#f4f3f4"}
+          thumbColor={switcherState.isEnabled ? "#f4f3f4" : "#f4f3f4"}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
-          value={isEnabled}
+          value={switcherState.isEnabled}
         />
       </View>
 
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
 
-        {state !== null &&
+        {/* {state !== null &&
           <Accordion
             underlayColor="#FFF"
             sections={state.invoices.pending_invoices}
@@ -219,14 +254,14 @@ export default function ClientFinancing(props) {
             renderFooter={_renderFooter}
             onChange={(activeSections) => _updateSections('pending', activeSections)}
           />
-        }
+        } */}
 
       </View>
 
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
 
-        {state !== null &&
+        {/* {state !== null &&
           <Accordion
             underlayColor="#FFF"
             sections={state.invoices.paid_invoices}
@@ -236,7 +271,7 @@ export default function ClientFinancing(props) {
             renderFooter={_renderFooter}
             onChange={(activeSections) => _updateSections('paid', activeSections)}
           />
-        }
+        } */}
 
       </View>
     </ScrollView>
