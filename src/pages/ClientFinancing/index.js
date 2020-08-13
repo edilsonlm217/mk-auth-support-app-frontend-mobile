@@ -13,6 +13,8 @@ import { store } from '../../store/store';
 export default function ClientFinancing(props) {
   const client_id = props.data;
 
+  const globalState = useContext(store);
+
   const [PendingActiveSections, setPendingActiveSections] = useState([]);
 
   const [PaidActiveSections, setPaidActiveSections] = useState([]);
@@ -25,7 +27,7 @@ export default function ClientFinancing(props) {
 
   const [switcherState, dispatch] = useReducer(reducer, {
     isEnabled: false,
-    date: new Date(),
+    date: null,
   });
 
   function reducer(state, action) {
@@ -33,7 +35,7 @@ export default function ClientFinancing(props) {
       case 'turnOff':
         return {
           isEnabled: false,
-          date: new Date(),
+          date: null,
         }
 
       case 'turnOn':
@@ -45,8 +47,6 @@ export default function ClientFinancing(props) {
         }
     }
   }
-
-  const globalState = useContext(store);
 
   async function loadAPI() {
     try {
@@ -81,35 +81,23 @@ export default function ClientFinancing(props) {
       dispatch({
         type: 'turnOff',
       });
+
+      const response_update = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        {
+          observacao: 'nao',
+          date: null,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
     } else {
       setIsDatePickerVisible(true);
     }
-
-    // try {
-    //   const response = await axios.post(
-    //     `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
-    //     {
-    //       observacao: switcherState.isEnabled === true ? 'nao' : 'sim',
-    //     },
-    //     {
-    //       timeout: 2500,
-    //       headers: {
-    //         Authorization: `Bearer ${globalState.state.userToken}`,
-    //       },
-    //     },
-    //   );
-
-    // } catch (error) {
-    //   console.log(error);
-    //   dispatch({
-    //     type: 'turnOff',
-    //     payload: {
-    //       isEnable: true,
-    //       date: new Date(),
-    //     },
-    //   });
-    //   ToastAndroid.show("Erro. Tente novamente", ToastAndroid.SHORT);
-    // }
   }
 
   const _renderHeader = (section, isActive, index) => {
@@ -229,6 +217,21 @@ export default function ClientFinancing(props) {
           date: selectedDate,
         },
       });
+
+      const response_update = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        {
+          observacao: 'sim',
+          date: selectedDate,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
     } else if (event.type === 'dismissed') {
       setIsDatePickerVisible(false);
     }
@@ -267,7 +270,7 @@ export default function ClientFinancing(props) {
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
 
-        {/* {state !== null &&
+        {state !== null &&
           <Accordion
             underlayColor="#FFF"
             sections={state.invoices.pending_invoices}
@@ -277,14 +280,14 @@ export default function ClientFinancing(props) {
             renderFooter={_renderFooter}
             onChange={(activeSections) => _updateSections('pending', activeSections)}
           />
-        } */}
+        }
 
       </View>
 
       <View style={styles.invoices}>
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
 
-        {/* {state !== null &&
+        {state !== null &&
           <Accordion
             underlayColor="#FFF"
             sections={state.invoices.paid_invoices}
@@ -294,7 +297,7 @@ export default function ClientFinancing(props) {
             renderFooter={_renderFooter}
             onChange={(activeSections) => _updateSections('paid', activeSections)}
           />
-        } */}
+        }
 
       </View>
 
@@ -302,7 +305,7 @@ export default function ClientFinancing(props) {
         <DateTimePicker
           mode="datetime"
           display="calendar"
-          value={switcherState.date}
+          value={new Date()}
           onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
         />
       }
