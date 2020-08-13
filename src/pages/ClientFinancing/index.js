@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect, useReducer } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
 import Accordion from 'react-native-collapsible/Accordion';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -63,12 +63,18 @@ export default function ClientFinancing(props) {
 
       setState(response.data);
       if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
-        toggleSwitch();
+        // console.warn(response.data.rem_obs);
+        dispatch({
+          type: 'turnOn',
+          payload: {
+            date: parseISO(response.data.rem_obs),
+          },
+        });
       }
       setRefreshing(false);
     } catch (error) {
       setRefreshing(false);
-      Alert.alert('Erro', 'Não foi possível comunicar com a API ClientFinancing');
+      Alert.alert('Erro', 'Não foi possível comunicar com a API');
     }
   }
 
