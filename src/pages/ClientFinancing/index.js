@@ -77,24 +77,37 @@ export default function ClientFinancing(props) {
   }, []);
 
   async function toggleSwitch() {
+    const previousDate = switcherState.date;
+
     if (switcherState.isEnabled === true) {
       dispatch({
         type: 'turnOff',
       });
 
-      const response_update = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
-        {
-          observacao: 'nao',
-          date: null,
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+      try {
+        const response_update = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+          {
+            observacao: 'nao',
+            date: null,
           },
-        },
-      );
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      } catch (error) {
+        ToastAndroid.show("Não foi possível desabilitar", ToastAndroid.SHORT);
+        dispatch({
+          type: 'turnOn',
+          payload: {
+            date: previousDate,
+          },
+        });
+      }
+
     } else {
       setIsDatePickerVisible(true);
     }
@@ -218,19 +231,27 @@ export default function ClientFinancing(props) {
         },
       });
 
-      const response_update = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
-        {
-          observacao: 'sim',
-          date: selectedDate,
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+      try {
+        const response_update = await axios.post(
+          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+          {
+            observacao: 'sim',
+            date: selectedDate,
           },
-        },
-      );
+          {
+            timeout: 2500,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+      } catch (error) {
+        dispatch({
+          type: 'turnOff',
+        });
+        ToastAndroid.show("Não foi possível habilitar", ToastAndroid.SHORT);
+      }
+
 
     } else if (event.type === 'dismissed') {
       setIsDatePickerVisible(false);
