@@ -1,6 +1,8 @@
-import React, { useState, useContext } from 'react';
-import { View, StyleSheet, Dimensions, Text } from 'react-native';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
+import Modal from 'react-native-modal';
+import { useIsFocused } from '@react-navigation/native';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
@@ -18,11 +20,26 @@ export default function ClientScreen({ navigation, route }) {
 
   const [index, setIndex] = useState(0);
 
+  const [count, setCount] = useState(0);
+
   const [routes] = useState([
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
     { key: 'third', title: 'Financeiro' },
   ]);
+
+  const [isVisible, setIsVisible] = useState(false);
+
+  const isFocused = useIsFocused(false);
+
+  useEffect(() => {
+    if (isFocused) {
+      setCount(count + 1);
+      if (count + 1 > 1) {
+        setIsVisible(true);
+      }
+    }
+  }, [isFocused]);
 
   const renderScene = ({ route }) => {
     switch (route.key) {
@@ -66,6 +83,16 @@ export default function ClientScreen({ navigation, route }) {
     </View>
   );
 
+  function handleModalClosing() {
+    setIsVisible(false);
+  }
+
+  function handleNavigate() {
+    handleModalClosing();
+
+    navigation.navigate('MyModal')
+  }
+
   return (
     <View style={styles.container}>
       <AppHeader
@@ -73,6 +100,8 @@ export default function ClientScreen({ navigation, route }) {
         label={client_name}
         altura="10%"
         backButton={true}
+        clientScreen={true}
+        OpenModal={() => setIsVisible(true)}
       />
 
       <TabView
@@ -88,6 +117,24 @@ export default function ClientScreen({ navigation, route }) {
             style={styles.tabBar_style}
           />
         }
+      />
+
+      <Modal
+        onBackButtonPress={handleModalClosing}
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={{ position: "absolute", height: 200, width: '100%', backgroundColor: "#FFF", bottom: 0 }}>
+            <Text>Edit Options</Text>
+            <TouchableOpacity onPress={() => handleNavigate()}>
+              <Text>Go Modal</Text>
+            </TouchableOpacity>
+          </View>
+        }
+        isVisible={isVisible}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
       />
     </View>
   );

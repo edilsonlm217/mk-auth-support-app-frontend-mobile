@@ -64,7 +64,7 @@ export default function ClientsScreen({ navigation }) {
     }
   }
 
-  const [filterMode, setFilterMode] = useState('all');
+  const [filterMode, setFilterMode] = useState('enable');
 
   useEffect(() => {
     if (isFocused) {
