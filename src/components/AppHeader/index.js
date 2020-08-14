@@ -15,9 +15,14 @@ export default function AppHeader(props) {
             </TouchableOpacity>
           </View>
         }
-        <View style={{ width: '90%' }}>
+        <View style={{ width: '70%' }}>
           <Text numberOfLines={1} style={styles.header_title}>{props.label}</Text>
         </View>
+        {props.clientScreen &&
+          <TouchableOpacity onPress={props.OpenModal} style={{ flex: 1, marginRight: 20, alignItems: 'flex-end' }}>
+            <Icon name="menu" size={24} color="#FFF" />
+          </TouchableOpacity>
+        }
       </View>
     </View>
   );
