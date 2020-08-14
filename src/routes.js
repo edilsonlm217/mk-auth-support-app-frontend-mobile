@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { View, Text, Button } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -84,7 +85,16 @@ function AuthStack() {
   );
 }
 
-export default function RootTab() {
+function ModalScreen({ navigation }) {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text style={{ fontSize: 30 }}>This is a modal!</Text>
+      <Button onPress={() => navigation.goBack()} title="Dismiss" />
+    </View>
+  );
+}
+
+function MainStack() {
   const globalState = useContext(store);
 
   return (
@@ -117,7 +127,7 @@ export default function RootTab() {
               },
             }}
           />
-          
+
           <Stack.Screen
             name="ClientScreen"
             component={ClientScreen}
@@ -186,5 +196,16 @@ export default function RootTab() {
       }
     </>
 
+  );
+}
+
+const RootStack = createStackNavigator();
+
+export default function App() {
+  return (
+    <RootStack.Navigator mode="modal" headerMode="none">
+      <RootStack.Screen name="Main" component={MainStack} />
+      <RootStack.Screen name="MyModal" component={ModalScreen} />
+    </RootStack.Navigator>
   );
 }
