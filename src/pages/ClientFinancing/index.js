@@ -281,7 +281,7 @@ export default function ClientFinancing(props) {
             </Text>
             :
             <Text style={styles.sub_text}>
-              Habilitar o modo observasão impedirá que o sistema bloqueie o cliente
+              Habilitar o modo observação impedirá que o sistema bloqueie o cliente
             </Text>
           }
         </View>
