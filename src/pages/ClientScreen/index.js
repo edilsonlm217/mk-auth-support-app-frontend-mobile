@@ -8,6 +8,7 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 
 import AppHeader from '../../components/AppHeader/index';
+import ModalContainer from '../../components/ModalContainer/index';
 
 import ClientDetails from '../ClientDetails/index';
 import ClientConnections from '../ClientConnections/index';
@@ -123,11 +124,8 @@ export default function ClientScreen({ navigation, route }) {
         onBackButtonPress={handleModalClosing}
         onBackdropPress={handleModalClosing}
         children={
-          <View style={{ position: "absolute", height: 200, width: '100%', backgroundColor: "#FFF", bottom: 0 }}>
-            <Text>Edit Options</Text>
-            <TouchableOpacity onPress={() => handleNavigate()}>
-              <Text>Go Modal</Text>
-            </TouchableOpacity>
+          <View style={styles.modal_style}>
+            <ModalContainer goToModal={() => handleNavigate()} />
           </View>
         }
         isVisible={isVisible}
@@ -188,5 +186,16 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     width: '90%',
     alignSelf: 'center',
+  },
+
+  modal_style: {
+    position: "absolute",
+    width: '100%',
+    backgroundColor: "#FFF",
+    bottom: 0,
+    padding: 20,
+    paddingBottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
