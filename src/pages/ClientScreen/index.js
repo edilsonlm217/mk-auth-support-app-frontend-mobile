@@ -1,7 +1,6 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
-import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
 
 import { fonts } from '../../styles/index';
@@ -120,20 +119,11 @@ export default function ClientScreen({ navigation, route }) {
         }
       />
 
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <ModalContainer goToModal={() => handleNavigate()} />
-          </View>
+      <>
+        {isVisible &&
+          <ModalContainer closeModal={() => setIsVisible(false)} goToModal={() => handleNavigate()} />
         }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
+      </>
     </View>
   );
 }
