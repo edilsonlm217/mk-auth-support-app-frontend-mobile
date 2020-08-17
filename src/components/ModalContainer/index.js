@@ -8,6 +8,7 @@ import EditPhoneNumber from '../ModalEditContact/index';
 import EditAddress from '../ModalEditAddress/index';
 
 export default function ModalContainer(props) {
+  console.log(props.clientData);
   const [viewMode, setViewMode] = useState(0);
 
   const [isVisible, setIsVisible] = useState(true);
@@ -27,16 +28,16 @@ export default function ModalContainer(props) {
       );
     } else if (viewMode === 1) {
       return (
-        <EditNumber label="Alterar número de telefone" goBack={() => setViewMode(0)} />
+        <EditNumber for={'editFone'} clientData={props.clientData} label="Alterar número de telefone" goBack={() => setViewMode(0)} />
       );
     } else if (viewMode === 2) {
       return (
-        <EditPhoneNumber label="Alterar número do celular" goBack={() => setViewMode(0)} />
+        <EditPhoneNumber for={'editCelular'} clientData={props.clientData} label="Alterar número do celular" goBack={() => setViewMode(0)} />
       );
     }
 
     return (
-      <EditAddress label="Alterar endereço" goBack={() => setViewMode(0)} />
+      <EditAddress clientData={props.clientData} label="Alterar endereço" goBack={() => setViewMode(0)} />
     );
   }
 
