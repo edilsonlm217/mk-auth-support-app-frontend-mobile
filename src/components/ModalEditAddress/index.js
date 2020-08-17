@@ -16,19 +16,19 @@ export default function ModalEditAddress(props) {
 
       <View style={{ marginBottom: 10 }}>
         <Text>Endereço</Text>
-        <TextInput editable={true} style={styles.enable_text_input} />
+        <TextInput value={props.clientData.endereco_res} editable={true} style={styles.enable_text_input} />
       </View>
 
       <View style={{ marginBottom: 20, flexDirection: 'row' }}>
         <View style={{ flexDirection: 'column', width: '20%' }}>
           <Text textAlign="center" >Número</Text>
-          <TextInput editable={true} style={styles.enable_text_input} />
+          <TextInput value={props.clientData.numero_res} editable={true} style={styles.enable_text_input} />
         </View>
 
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <Text>Bairro</Text>
           <View style={{ flexDirection: 'row' }}>
-            <TextInput editable={true} style={styles.enable_text_input} />
+            <TextInput value={props.clientData.bairro_res} editable={true} style={styles.enable_text_input} />
             <TouchableOpacity style={[styles.save_btn_container]}>
               <Icon name='check' size={20} color='#FFF' />
             </TouchableOpacity>

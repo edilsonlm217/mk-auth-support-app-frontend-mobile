@@ -6,6 +6,15 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fonts } from '../../styles/index';
 
 export default function ModalEditContact(props) {
+  const data = () => {
+    if (props.for === 'editFone') {
+      return props.clientData.fone ? props.clientData.fone : 'Nenhum';
+    }
+    
+    if (props.for === 'editCelular') {
+      return props.clientData.celular ? props.clientData.celular : 'Nenhum'
+    }
+  };
   return (
     <>
       <TouchableOpacity onPress={props.goBack} style={styles.header}>
@@ -15,7 +24,7 @@ export default function ModalEditContact(props) {
 
       <View style={{ marginBottom: 20 }}>
         <Text>Número atual</Text>
-        <TextInput editable={false} style={styles.disabled_text_input} />
+        <TextInput value={data()} editable={false} style={styles.disabled_text_input} />
       </View>
 
       <View style={{ marginBottom: 20 }}>

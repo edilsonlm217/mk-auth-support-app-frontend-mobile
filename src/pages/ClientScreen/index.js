@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Alert } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
-import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
+import { clientStore } from '../../store/client';
 
 import AppHeader from '../../components/AppHeader/index';
 import ModalContainer from '../../components/ModalContainer/index';
@@ -16,6 +17,8 @@ import ClientFinancing from '../ClientFinancing/index';
 
 export default function ClientScreen({ navigation, route }) {
   const globalState = useContext(store);
+  const ClientState = useContext(clientStore);
+  const { setIsLoading, setClientData } = ClientState.methods;
 
   const { client_id, client_name } = route.params;
 
@@ -42,6 +45,36 @@ export default function ClientScreen({ navigation, route }) {
     }
   }, [isFocused]);
 
+  async function loadAPI() {
+    try {
+      setIsLoading();
+
+      const response = await axios.get(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      setClientData(response.data);
+    } catch {
+      Alert.alert('Erro', 'Não foi possível comunicar com a API');
+    }
+  }
+
+  useEffect(() => {
+    loadAPI();
+  }, []);
+
+  useEffect(() => {
+    if (isVisible === false) {
+      loadAPI();
+    }
+  }, [isVisible]);
+
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'first':
@@ -49,7 +82,7 @@ export default function ClientScreen({ navigation, route }) {
           <View
             style={styles.section_container}
           >
-            <ClientDetails data={client_id} state={globalState} navigation={navigation} />
+            <ClientDetails data={client_id} state={globalState} clientState={ClientState} navigation={navigation} />
           </View>
         );
 
@@ -120,20 +153,11 @@ export default function ClientScreen({ navigation, route }) {
         }
       />
 
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <ModalContainer goToModal={() => handleNavigate()} />
-          </View>
+      <>
+        {isVisible &&
+          <ModalContainer clientData={ClientState.state.client} closeModal={() => setIsVisible(false)} goToModal={() => handleNavigate()} />
         }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
+      </>
     </View>
   );
 }
