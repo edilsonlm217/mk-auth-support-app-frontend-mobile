@@ -64,7 +64,6 @@ export default function ModalContainer(props) {
       animationOutTiming={500}
       useNativeDriver={true}
     />
-
   );
 }
 
