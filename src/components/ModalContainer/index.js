@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import Modal from 'react-native-modal';
 
 import ModalHome from '../ModalHome/index';
 import EditNumber from '../ModalEditContact/index';
@@ -8,6 +9,8 @@ import EditAddress from '../ModalEditAddress/index';
 
 export default function ModalContainer(props) {
   const [viewMode, setViewMode] = useState(0);
+
+  const [isVisible, setIsVisible] = useState(true);
 
   const navigation_array = [
     () => { setViewMode(1) },
@@ -37,11 +40,43 @@ export default function ModalContainer(props) {
     );
   }
 
+  function handleModalClosing() {
+    if (viewMode === 0) {
+      setIsVisible(false);
+      props.closeModal();
+    } else {
+      setViewMode(0);
+    }
+  }
+
   return (
-    <CurrentView />
+    <Modal
+      onBackButtonPress={handleModalClosing}
+      onBackdropPress={handleModalClosing}
+      children={
+        <View style={styles.modal_style}>
+          <CurrentView />
+        </View>
+      }
+      isVisible={isVisible}
+      style={{ margin: 0 }}
+      animationInTiming={500}
+      animationOutTiming={500}
+      useNativeDriver={true}
+    />
+
   );
 }
 
 const styles = StyleSheet.create({
-
+  modal_style: {
+    position: "absolute",
+    width: '100%',
+    backgroundColor: "#FFF",
+    bottom: 0,
+    padding: 20,
+    paddingBottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
 });
