@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -25,21 +25,19 @@ import LocationService from '../../services/location';
 import { icons, fonts } from '../../styles/index';
 
 export default function ClientDetails(props) {
-  const client_id = props.data;
   const globalState = props.state;
 
-  const [client, setClient] = useState({});
-
-  const [refreshing, setRefreshing] = useState(false);
+  const clientState = props.clientState;
+  const { setIsLoading, setClientData } = clientState.methods;
 
   const [isVisible, setIsVisible] = useState(false);
 
   async function loadAPI() {
     try {
-      setRefreshing(true);
+      setIsLoading();
 
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
         {
           timeout: 2500,
           headers: {
@@ -48,15 +46,13 @@ export default function ClientDetails(props) {
         },
       );
 
-      setClient(response.data);
-      setRefreshing(false);
+      setClientData(response.data);
     } catch {
-      setRefreshing(false);
       Alert.alert('Erro', 'Não foi possível comunicar com a API');
     }
   }
 
-  useEffect(() => { loadAPI() }, []);
+  // useEffect(() => { loadAPI() }, []);
 
   function handleModalOpening() {
     if (LocationService.isGPSEnable()) {
@@ -85,7 +81,7 @@ export default function ClientDetails(props) {
     setIsVisible(false);
     props.navigation.navigate('UpdateClienteLocation', {
       data: {
-        id: client.client_id,
+        id: clientState.state.client.client_id,
       }
     });
   }
@@ -104,30 +100,30 @@ export default function ClientDetails(props) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+          <RefreshControl refreshing={clientState.state.isLoading} onRefresh={() => loadAPI()} />
         }
       >
-        {refreshing === false &&
+        {clientState.state.isLoading === false &&
           <>
             <View>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Status de conexão</Text>
                   <Text style={[styles.main_text, {
-                    color: client.equipment_status === 'Online' ? 'green' : 'red'
+                    color: clientState.state.client.equipment_status === 'Online' ? 'green' : 'red'
                   }]}>
-                    {client.equipment_status}
+                    {clientState.state.client.equipment_status}
                   </Text>
                 </View>
                 <View>
-                  <Text style={[styles.sub_text, {textAlign: 'right' }]}>Status Financeiro</Text>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>Status Financeiro</Text>
                   <Text
                     style={[styles.main_text, {
-                      color: client.bloqueado === 'sim' ? 'red' : 'green',
+                      color: clientState.state.client.bloqueado === 'sim' ? 'red' : 'green',
                       textAlign: 'right',
                     }]}
                   >
-                    {client.finance_state}
+                    {clientState.state.client.finance_state}
                   </Text>
                 </View>
               </View>
@@ -137,14 +133,14 @@ export default function ClientDetails(props) {
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Usuário</Text>
-                  <TouchableOpacity onPress={() => copyToClipboard(client.login)}>
-                    <Text style={styles.main_text_login_senha}>{client.login}</Text>
+                  <TouchableOpacity onPress={() => copyToClipboard(clientState.state.client.login)}>
+                    <Text style={styles.main_text_login_senha}>{clientState.state.client.login}</Text>
                   </TouchableOpacity>
                 </View>
                 <View>
                   <Text style={[styles.sub_text, { textAlign: 'right', }]}>Senha</Text>
-                  <TouchableOpacity onPress={() => copyToClipboard(client.senha)}>
-                    <Text style={styles.main_text_login_senha}>{client.senha}</Text>
+                  <TouchableOpacity onPress={() => copyToClipboard(clientState.state.client.senha)}>
+                    <Text style={styles.main_text_login_senha}>{clientState.state.client.senha}</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -153,10 +149,10 @@ export default function ClientDetails(props) {
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Endereço IP</Text>
               <TouchableOpacity
-                onPress={() => copyToClipboard(client.ip)}
+                onPress={() => copyToClipboard(clientState.state.client.ip)}
                 style={{ flexDirection: 'row', justifyContent: 'space-between' }}
               >
-                <Text style={styles.main_text_login_senha}>{client.ip}</Text>
+                <Text style={styles.main_text_login_senha}>{clientState.state.client.ip}</Text>
               </TouchableOpacity>
             </View>
 
@@ -164,7 +160,7 @@ export default function ClientDetails(props) {
               <Text style={styles.sub_text}>Endereço MAC</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.main_text_login_senha}>
-                  {client.mac !== null ? client.mac : 'Não informado'}
+                  {clientState.state.client.mac !== null ? clientState.state.client.mac : 'Não informado'}
                 </Text>
               </View>
             </View>
@@ -174,7 +170,7 @@ export default function ClientDetails(props) {
                 <View>
                   <Text style={styles.sub_text}>Plano</Text>
                   <Text style={[styles.main_text]}>
-                    {client.plano}
+                    {clientState.state.client.plano}
                   </Text>
                 </View>
               </View>
@@ -184,20 +180,20 @@ export default function ClientDetails(props) {
               <Text style={styles.sub_text}>Caixa atual</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={styles.main_text_login_senha}>
-                  {client.caixa_herm !== null ? client.caixa_herm : 'Nenhuma'}
+                  {clientState.state.client.caixa_herm !== null ? clientState.state.client.caixa_herm : 'Nenhuma'}
                 </Text>
               </View>
             </View>
 
-            <TouchableOpacity onPress={() => dialCall(client.fone)}>
+            <TouchableOpacity onPress={() => dialCall(clientState.state.client.fone)}>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Telefone</Text>
                   <Text style={styles.main_text}>
-                    {client.fone ? client.fone : 'Não informado'}
+                    {clientState.state.client.fone ? clientState.state.client.fone : 'Não informado'}
                   </Text>
                 </View>
-                {client.fone &&
+                {clientState.state.client.fone &&
                   <View style={{ justifyContent: 'center' }}>
                     <CallIcon name="call" size={icons.tiny} color="#000" />
                   </View>
@@ -205,15 +201,15 @@ export default function ClientDetails(props) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => dialCall(client.celular)}>
+            <TouchableOpacity onPress={() => dialCall(clientState.state.client.celular)}>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Celular</Text>
                   <Text style={styles.main_text}>
-                    {client.celular ? client.celular : 'Não informado'}
+                    {clientState.state.client.celular ? clientState.state.client.celular : 'Não informado'}
                   </Text>
                 </View>
-                {client.celular &&
+                {clientState.state.client.celular &&
                   <View style={{ justifyContent: 'center' }}>
                     <CallIcon name="call" size={icons.tiny} color="#000" />
                   </View>
@@ -226,7 +222,7 @@ export default function ClientDetails(props) {
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
                   <Text style={styles.main_text}>
-                    {`${client.endereco_res}, ${client.numero_res} - ${client.bairro_res}`}
+                    {`${clientState.state.client.endereco_res}, ${clientState.state.client.numero_res} - ${clientState.state.client.bairro_res}`}
                   </Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
@@ -240,7 +236,7 @@ export default function ClientDetails(props) {
                 <View>
                   <Text style={styles.sub_text}>Última conexão</Text>
                   <Text style={styles.main_text} >
-                    {client.current_user_connection}
+                    {clientState.state.client.current_user_connection}
                   </Text>
                 </View>
               </View>
@@ -258,7 +254,7 @@ export default function ClientDetails(props) {
                 <Text
                   style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
                 >
-                  {`${client.current_data_usage} Gb`}
+                  {`${clientState.state.client.current_data_usage} Gb`}
                 </Text>
               </View>
 
@@ -269,7 +265,7 @@ export default function ClientDetails(props) {
                   </View>
                   <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diária</Text>
                 </View>
-                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.consuption_average} Gb`}</Text>
+                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${clientState.state.client.consuption_average} Gb`}</Text>
               </View>
 
               <View style={[styles.clickable_line, { borderBottomWidth: 0 }]}>
@@ -279,14 +275,14 @@ export default function ClientDetails(props) {
                   </View>
                   <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
                 </View>
-                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${client.expected_consuption} Gb`}</Text>
+                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${clientState.state.client.expected_consuption} Gb`}</Text>
               </View>
 
               <View style={styles.graph_container}>
 
-                {Object.keys(client).length !== 0 &&
+                {Object.keys(clientState.state.client).length !== 0 &&
                   <BarChart
-                    data={client.graph_obj}
+                    data={clientState.state.client.graph_obj}
                     width={Dimensions.get("window").width * 85 / 100}
                     height={200}
                     withInnerLines={false}
@@ -319,10 +315,10 @@ export default function ClientDetails(props) {
         children={
           <View style={styles.modal_style}>
             <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(client.coordenadas)} style={styles.modal_btn}>
+            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(clientState.state.client.coordenadas)} style={styles.modal_btn}>
               <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(client.coordenadas)} style={styles.modal_btn}>
+            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(clientState.state.client.coordenadas)} style={styles.modal_btn}>
               <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
             </TouchableOpacity>
           </View>
