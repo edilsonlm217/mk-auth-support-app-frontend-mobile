@@ -39,9 +39,6 @@ const ClientStateProvider = ({ children }) => {
         }
       });
     },
-    getClientData: data => {
-      return console.log('shaushuah');
-    },
   }), []);
 
   return <Provider value={{ state, methods }}>{children}</Provider>;
