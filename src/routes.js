@@ -85,15 +85,6 @@ function AuthStack() {
   );
 }
 
-function ModalScreen({ navigation }) {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={{ fontSize: 30 }}>This is a modal!</Text>
-      <Button onPress={() => navigation.goBack()} title="Dismiss" />
-    </View>
-  );
-}
-
 function MainStack() {
   const globalState = useContext(store);
 
@@ -205,7 +196,6 @@ export default function App() {
   return (
     <RootStack.Navigator mode="modal" headerMode="none">
       <RootStack.Screen name="Main" component={MainStack} />
-      <RootStack.Screen name="MyModal" component={ModalScreen} />
     </RootStack.Navigator>
   );
 }

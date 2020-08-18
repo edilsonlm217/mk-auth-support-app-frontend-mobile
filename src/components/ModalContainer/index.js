@@ -8,7 +8,6 @@ import EditPhoneNumber from '../ModalEditContact/index';
 import EditAddress from '../ModalEditAddress/index';
 
 export default function ModalContainer(props) {
-  console.log(props.clientData);
   const [viewMode, setViewMode] = useState(0);
 
   const [isVisible, setIsVisible] = useState(true);
@@ -17,8 +16,8 @@ export default function ModalContainer(props) {
     () => { setViewMode(1) },
     () => { setViewMode(2) },
     () => { setViewMode(3) },
-    () => { props.goToModal() },
-    () => { props.goToModal() },
+    () => { props.goToModalLocation() },
+    () => { props.goToModalCTO() },
   ];
 
   const CurrentView = () => {

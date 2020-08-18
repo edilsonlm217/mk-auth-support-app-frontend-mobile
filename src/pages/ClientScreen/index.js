@@ -121,10 +121,28 @@ export default function ClientScreen({ navigation, route }) {
     setIsVisible(false);
   }
 
-  function handleNavigate() {
+  function handleNavigateToLocation() {
     handleModalClosing();
 
-    navigation.navigate('MyModal')
+    navigation.navigate('UpdateClienteLocation', {
+      data: {
+        id: ClientState.state.client.id,
+      }
+    });
+  }
+
+  function handleNavigateToCTO() {
+    handleModalClosing();
+
+    const [latidude, longitude] = ClientState.state.client.coordenadas.split(',');
+
+    navigation.navigate('CTOs', {
+      to: 'CTO',
+      latidude: latidude,
+      longitude: longitude,
+      client_name: ClientState.state.client.nome,
+      client_id: ClientState.state.client.id,
+    });
   }
 
   return (
@@ -155,7 +173,12 @@ export default function ClientScreen({ navigation, route }) {
 
       <>
         {isVisible &&
-          <ModalContainer clientData={ClientState.state.client} closeModal={() => setIsVisible(false)} goToModal={() => handleNavigate()} />
+          <ModalContainer
+            clientData={ClientState.state.client}
+            closeModal={() => setIsVisible(false)}
+            goToModalLocation={() => handleNavigateToLocation()}
+            goToModalCTO={() => handleNavigateToCTO()}
+          />
         }
       </>
     </View>

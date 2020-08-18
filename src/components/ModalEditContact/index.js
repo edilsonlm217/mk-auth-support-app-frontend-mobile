@@ -1,20 +1,77 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
+import { store } from '../../store/store';
+import { clientStore } from '../../store/client';
 
 export default function ModalEditContact(props) {
+  const globalState = useContext(store);
+  const clientState = useContext(clientStore);
+
+  const { setClientData } = clientState.methods;
+
+  const [newNumber, setNewNumber] = useState('');
+
   const data = () => {
     if (props.for === 'editFone') {
       return props.clientData.fone ? props.clientData.fone : 'Nenhum';
     }
-    
+
     if (props.for === 'editCelular') {
       return props.clientData.celular ? props.clientData.celular : 'Nenhum'
     }
   };
+
+  async function handleSaveNewNumber() {
+    if (props.for === 'editCelular') {
+      const response_update = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+        {
+          celular: newNumber,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      const newState = clientState.state.client;
+
+      newState.celular = newNumber;
+
+      setClientData(newState);
+      props.goBack();
+      ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+    } else {
+      const response_update = await axios.post(
+        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+        {
+          fone: newNumber,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
+
+      const newState = clientState.state.client;
+
+      newState.fone = newNumber;
+
+      setClientData(newState);
+      props.goBack();
+      ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+    }
+  }
+
   return (
     <>
       <TouchableOpacity onPress={props.goBack} style={styles.header}>
@@ -30,8 +87,8 @@ export default function ModalEditContact(props) {
       <View style={{ marginBottom: 20 }}>
         <Text>Novo número</Text>
         <View style={{ flexDirection: 'row' }}>
-          <TextInput editable={true} style={styles.enable_text_input} />
-          <TouchableOpacity style={[styles.save_btn_container]}>
+          <TextInput onChangeText={text => setNewNumber(text)} editable={true} style={styles.enable_text_input} />
+          <TouchableOpacity onPress={() => handleSaveNewNumber()} style={[styles.save_btn_container]}>
             <Icon name='check' size={20} color='#FFF' />
           </TouchableOpacity>
           <TouchableOpacity style={[styles.cancel_btn_container]}>
