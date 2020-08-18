@@ -16,8 +16,8 @@ export default function ModalContainer(props) {
     () => { setViewMode(1) },
     () => { setViewMode(2) },
     () => { setViewMode(3) },
-    () => { props.goToModal() },
-    () => { props.goToModal() },
+    () => { props.goToModalLocation() },
+    () => { props.goToModalCTO() },
   ];
 
   const CurrentView = () => {
