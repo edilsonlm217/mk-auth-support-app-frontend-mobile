@@ -8,7 +8,6 @@ import EditPhoneNumber from '../ModalEditContact/index';
 import EditAddress from '../ModalEditAddress/index';
 
 export default function ModalContainer(props) {
-  console.log(props.clientData);
   const [viewMode, setViewMode] = useState(0);
 
   const [isVisible, setIsVisible] = useState(true);
