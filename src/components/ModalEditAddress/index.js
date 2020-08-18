@@ -1,11 +1,49 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
+import { store } from '../../store/store';
+import { clientStore } from '../../store/client';
 
 export default function ModalEditAddress(props) {
+  const globalState = useContext(store);
+  const clientState = useContext(clientStore);
+
+  const { setClientData } = clientState.methods;
+
+  const [newAddress, setNewAddres] = useState(clientState.state.client.endereco_res);
+  const [newNo, setNewNo] = useState(clientState.state.client.numero_res);
+  const [newNeighborhood, setNewNeighborhood] = useState(clientState.state.client.bairro_res);
+
+  async function handleNewAddress() {
+    const response_update = await axios.post(
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+      {
+        endereco_res: newAddress,
+        numero_res: newNo,
+        bairro_res: newNeighborhood,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
+    );
+
+    const newState = clientState.state.client;
+    newState.endereco_res = newAddress;
+    newState.numero_res = newNo;
+    newState.bairro_res = newNeighborhood;
+
+    setClientData(newState);
+    props.goBack();
+    ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+  }
+
   return (
     <>
       <TouchableOpacity onPress={props.goBack} style={styles.header}>
@@ -16,20 +54,20 @@ export default function ModalEditAddress(props) {
 
       <View style={{ marginBottom: 10 }}>
         <Text>Endereço</Text>
-        <TextInput value={props.clientData.endereco_res} editable={true} style={styles.enable_text_input} />
+        <TextInput onChangeText={text => setNewAddres(text)} value={newAddress} editable={true} style={styles.enable_text_input} />
       </View>
 
       <View style={{ marginBottom: 20, flexDirection: 'row' }}>
         <View style={{ flexDirection: 'column', width: '20%' }}>
           <Text textAlign="center" >Número</Text>
-          <TextInput value={props.clientData.numero_res} editable={true} style={styles.enable_text_input} />
+          <TextInput onChangeText={text => setNewNo(text)} value={newNo} editable={true} style={styles.enable_text_input} />
         </View>
 
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <Text>Bairro</Text>
           <View style={{ flexDirection: 'row' }}>
-            <TextInput value={props.clientData.bairro_res} editable={true} style={styles.enable_text_input} />
-            <TouchableOpacity style={[styles.save_btn_container]}>
+            <TextInput onChangeText={text => setNewNeighborhood(text)} value={newNeighborhood} editable={true} style={styles.enable_text_input} />
+            <TouchableOpacity onPress={() => handleNewAddress()} style={[styles.save_btn_container]}>
               <Icon name='check' size={20} color='#FFF' />
             </TouchableOpacity>
           </View>
