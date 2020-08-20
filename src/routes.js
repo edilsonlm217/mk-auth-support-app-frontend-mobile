@@ -1,5 +1,4 @@
 import React, { useContext } from 'react';
-import { View, Text, Button } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -18,6 +17,7 @@ import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
+import NotificationScreen from './pages/NotificationScreen/index';
 
 import { fonts } from './styles/index';
 
@@ -48,6 +48,16 @@ function HomeTabs() {
           tabBarLabel: 'Buscar cliente',
           tabBarIcon: ({ color }) => (
             <Icon name="account-search" size={icons.tiny} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Notification"
+        component={NotificationScreen}
+        options={{
+          tabBarLabel: 'Notificações',
+          tabBarIcon: ({ color }) => (
+            <Icon name="bell" size={icons.tiny} color={color} />
           ),
         }}
       />
