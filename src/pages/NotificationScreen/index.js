@@ -45,7 +45,8 @@ export default function NotificationScreen() {
             {notification.data.content}
           </Text>
         </View>
-      </View>);
+      </View>
+    );
   };
 
   return (
