@@ -11,7 +11,7 @@ import { store } from '../../store/store';
 export default function NotificationScreen() {
   const globalState = useContext(store);
 
-  const { server_ip, server_port, employee_id } = globalState.state;
+  const { server_ip, server_port, employee_id, userToken } = globalState.state;
 
   const [notifications, setNotifications] = useState([]);
 
@@ -21,7 +21,7 @@ export default function NotificationScreen() {
       {
         timeout: 2500,
         headers: {
-          Authorization: `Bearer ${globalState.state.userToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       },
     );
