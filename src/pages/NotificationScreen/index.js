@@ -1,35 +1,49 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import axios from 'axios';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
+import { store } from '../../store/store';
 
 export default function NotificationScreen() {
-  const data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  const globalState = useContext(store);
+
+  const [notifications, setNotifications] = useState([]);
 
   async function loadAPI() {
+    const response = await axios.get(
+      `http://${globalState.state.server_ip}:${globalState.state.server_port}/notification/${globalState.state.employee_id}`,
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
+    );
 
+    setNotifications(response.data.notificatios);
   }
 
   useEffect(() => {
-
+    loadAPI();
   }, []);
 
-  const NotificationComponent = () => (
-    <View style={styles.notification_container}>
+  const NotificationComponent = (notification) => {
+    return (<View style={styles.notification_container}>
       <View>
         <Icon name="bell-outline" size={20} color="#000" />
       </View>
       <View style={{ flex: 1, marginLeft: 10 }}>
         <Text style={styles.notification_main_text}>Novo Chamado</Text>
         <Text style={styles.notification_sub_text}>
-          Chamado de Erick de Souza Vieira agora está assinalado para Lucas Campos: há 2h
+          {notification.data.content}
         </Text>
       </View>
-    </View>
-  );
+    </View>);
+  };
 
   return (
     <>
@@ -38,8 +52,8 @@ export default function NotificationScreen() {
         <View style={styles.container}>
           <ScrollView style={{ flex: 1 }}>
             <Text style={styles.main_text}>Mais recentes</Text>
-            {data.map((item, index) => (
-              <NotificationComponent key={index} />
+            {notifications.map((item, index) => (
+              <NotificationComponent key={index} data={item} />
             ))}
           </ScrollView>
         </View>
