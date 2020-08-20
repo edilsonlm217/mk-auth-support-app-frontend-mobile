@@ -11,11 +11,13 @@ import { store } from '../../store/store';
 export default function NotificationScreen() {
   const globalState = useContext(store);
 
+  const { server_ip, server_port, employee_id } = globalState.state;
+
   const [notifications, setNotifications] = useState([]);
 
   async function loadAPI() {
     const response = await axios.get(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/notification/${globalState.state.employee_id}`,
+      `http://${server_ip}:${server_port}/notification/${employee_id}`,
       {
         timeout: 2500,
         headers: {
