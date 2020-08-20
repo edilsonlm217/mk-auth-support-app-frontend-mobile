@@ -1,6 +1,7 @@
-import React, { useEffect, useContext, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import React, { useEffect, useContext, useState, useMemo } from 'react';
+import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import axios from 'axios';
+import socketio from 'socket.io-client';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,6 +15,8 @@ export default function NotificationScreen() {
   const { server_ip, server_port, employee_id, userToken } = globalState.state;
 
   const [notifications, setNotifications] = useState([]);
+
+  const [refreshing, setRefreshing] = useState(false);
 
   async function loadAPI() {
     const response = await axios.get(
@@ -32,6 +35,21 @@ export default function NotificationScreen() {
   useEffect(() => {
     loadAPI();
   }, []);
+
+  const socket = useMemo(() =>
+    socketio(`http://${server_ip}:${server_port}`, {
+      query: {
+        employee_id,
+      }
+    }), [employee_id]);
+
+  useEffect(() => {
+    socket.on('notification', notification => {
+      const newState = [notification, ...notifications]
+      setNotifications(newState);
+      console.log('notification');
+    });
+  }, [socket, notifications]);
 
   const NotificationComponent = (notification) => {
     return (
@@ -54,7 +72,12 @@ export default function NotificationScreen() {
       <AppHeader label="Notificações" altura="21%" />
       <View style={{ backgroundColor: '#337AB7' }}>
         <View style={styles.container}>
-          <ScrollView style={{ flex: 1 }}>
+          <ScrollView
+            style={{ flex: 1 }}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+            }
+          >
             <Text style={styles.main_text}>Mais recentes</Text>
             {notifications.map((item, index) => (
               <NotificationComponent key={index} data={item} />
