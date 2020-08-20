@@ -32,17 +32,18 @@ export default function NotificationScreen() {
   }, []);
 
   const NotificationComponent = (notification) => {
-    return (<View style={styles.notification_container}>
-      <View>
-        <Icon name="bell-outline" size={20} color="#000" />
-      </View>
-      <View style={{ flex: 1, marginLeft: 10 }}>
-        <Text style={styles.notification_main_text}>Novo Chamado</Text>
-        <Text style={styles.notification_sub_text}>
-          {notification.data.content}
-        </Text>
-      </View>
-    </View>);
+    return (
+      <View style={styles.notification_container}>
+        <View>
+          <Icon name="bell-outline" size={20} color="#000" />
+        </View>
+        <View style={{ flex: 1, marginLeft: 10 }}>
+          <Text style={styles.notification_main_text}>Novo Chamado</Text>
+          <Text style={styles.notification_sub_text}>
+            {notification.data.content}
+          </Text>
+        </View>
+      </View>);
   };
 
   return (
