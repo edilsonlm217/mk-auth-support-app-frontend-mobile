@@ -18,6 +18,8 @@ export default function NotificationScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const { setNotificationCount } = globalState.methods;
+
   async function loadAPI() {
     const response = await axios.get(
       `http://${server_ip}:${server_port}/notification/${employee_id}`,
@@ -29,6 +31,7 @@ export default function NotificationScreen() {
       },
     );
 
+    setNotificationCount(response.data.notificatios.length);
     setNotifications(response.data.notificatios);
   }
 
@@ -47,6 +50,7 @@ export default function NotificationScreen() {
     socket.on('notification', notification => {
       const newState = [notification, ...notifications]
       setNotifications(newState);
+      setNotificationCount(newState.length);
       console.log('notification');
     });
   }, [socket, notifications]);
