@@ -89,7 +89,7 @@ export default function NotificationScreen() {
       );
     }
 
-    if (!isFocused) {
+    if (isFocused) {
       markAsRead();
     }
   }, [isFocused]);
