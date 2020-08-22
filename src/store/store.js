@@ -61,7 +61,7 @@ const StateProvider = ({ children }) => {
 
       case 'setNotification':
         return {
-          ...state,
+          ...prevState,
           notification_count: action.payload.notification_count,
         }
 
