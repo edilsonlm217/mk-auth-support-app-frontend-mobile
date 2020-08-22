@@ -25,6 +25,7 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
+  const globalState = useContext(store);
   return (
     <Tab.Navigator tabBarOptions={{
       keyboardHidesTabBar: true,
@@ -55,6 +56,7 @@ function HomeTabs() {
         name="Notification"
         component={NotificationScreen}
         options={{
+          tabBarBadge: globalState.state.notification_count,
           tabBarLabel: 'Notificações',
           tabBarIcon: ({ color }) => (
             <Icon name="bell" size={icons.tiny} color={color} />
@@ -97,7 +99,7 @@ function AuthStack() {
 
 function MainStack() {
   const globalState = useContext(store);
-
+  
   return (
     <>
       {globalState.state.userToken !== null
