@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import axios from 'axios';
 import socketio from 'socket.io-client';
+import { isToday, parseISO } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 
 
@@ -59,16 +60,24 @@ export default function NotificationScreen() {
 
   useEffect(() => {
     socket.on('notification', notification => {
-      const newState = [notification, ...notifications]
+      const newState = [notification, ...notifications];
+
+      let count = 0;
+      newState.map(item => {
+        if (item.read === false) {
+          count += 1;
+        }
+      });
+
       setNotifications(newState);
-      setNotificationCount(newState.length);
+      setNotificationCount(count);
     });
   }, [socket, notifications]);
 
   useEffect(() => {
     async function markAsRead() {
       const mark_as_read = [];
-      
+
       notifications.map(item => {
         if (item.read === false) {
           mark_as_read.push({ id: item._id });
@@ -87,6 +96,8 @@ export default function NotificationScreen() {
           },
         },
       );
+
+      setNotificationCount(0);
     }
 
     if (isFocused) {
@@ -106,7 +117,9 @@ export default function NotificationScreen() {
           <Icon name="bell-outline" size={20} color="#000" />
         </View>
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={styles.notification_main_text}>{notification.data.header}</Text>
+          <Text style={styles.notification_main_text}>
+            {notification.data.header}
+          </Text>
           <Text style={styles.notification_sub_text}>
             {notification.data.content}
           </Text>
@@ -123,13 +136,40 @@ export default function NotificationScreen() {
           <ScrollView
             style={{ flex: 1 }}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => loadAPI()}
+              />
             }
           >
-            <Text style={styles.main_text}>Mais recentes</Text>
-            {notifications.map((item, index) => (
-              <NotificationComponent key={index} data={item} />
-            ))}
+            <Text style={styles.main_text}>Novas</Text>
+            {notifications.map((item, index) => {
+              if (item.read === false) {
+                return (
+                  <NotificationComponent key={index} data={item} />
+                );
+              }
+            })}
+
+            <Text style={[styles.main_text, { marginTop: 10 }]}>Hoje</Text>
+            {notifications.map((item, index) => {
+              if (isToday(parseISO(item.createdAt)) && item.read !== false) {
+                return (
+                  <NotificationComponent key={index} data={item} />
+                );
+              }
+            })}
+
+            <Text style={[styles.main_text, { marginTop: 10 }]}>
+              Anteriores
+            </Text>
+            {notifications.map((item, index) => {
+              if (isToday(parseISO(item.createdAt)) === false) {
+                return (
+                  <NotificationComponent key={index} data={item} />
+                );
+              }
+            })}
           </ScrollView>
         </View>
       </View>
