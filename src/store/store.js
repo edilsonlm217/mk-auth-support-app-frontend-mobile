@@ -11,6 +11,7 @@ const initialState = {
   server_port: null,
   employee_id: null,
   isAdmin: false,
+  notification_count: 0,
 };
 
 const store = createContext(initialState);
@@ -57,6 +58,12 @@ const StateProvider = ({ children }) => {
         }
 
         return changedState;
+
+      case 'setNotification':
+        return {
+          ...prevState,
+          notification_count: action.payload.notification_count,
+        }
 
       default:
         throw new Error();
@@ -174,6 +181,13 @@ const StateProvider = ({ children }) => {
           type: 'CHANGE_SERVER_CONFIG', payload: {
             server_ip: data.serverIP,
             server_port: data.serverPort,
+          }
+        });
+      },
+      setNotificationCount: data => {
+        dispatch({
+          type: 'setNotification', payload: {
+            notification_count: data,
           }
         });
       },

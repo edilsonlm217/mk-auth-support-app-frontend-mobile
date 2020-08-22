@@ -18,6 +18,8 @@ export default function NotificationScreen() {
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const { setNotificationCount } = globalState.methods;
+
   async function loadAPI() {
     const response = await axios.get(
       `http://${server_ip}:${server_port}/notification/${employee_id}`,
@@ -29,6 +31,14 @@ export default function NotificationScreen() {
       },
     );
 
+    let count = 0;
+    response.data.notificatios.map(notification => {
+      if (!notification.read) {
+        count += 1;
+      }
+    });
+
+    setNotificationCount(count);
     setNotifications(response.data.notificatios);
   }
 
@@ -47,18 +57,23 @@ export default function NotificationScreen() {
     socket.on('notification', notification => {
       const newState = [notification, ...notifications]
       setNotifications(newState);
-      console.log('notification');
+      setNotificationCount(newState.length);
     });
   }, [socket, notifications]);
 
   const NotificationComponent = (notification) => {
     return (
-      <View style={styles.notification_container}>
+      <View
+        style={notification.data.read
+          ? styles.notification_container_read
+          : styles.notification_container_unread
+        }
+      >
         <View>
           <Icon name="bell-outline" size={20} color="#000" />
         </View>
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={styles.notification_main_text}>Novo Chamado</Text>
+          <Text style={styles.notification_main_text}>{notification.data.header}</Text>
           <Text style={styles.notification_sub_text}>
             {notification.data.content}
           </Text>
@@ -108,12 +123,21 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
 
-  notification_container: {
+  notification_container_read: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderColor: '#D9D9D9'
+    borderColor: '#D9D9D9',
+  },
+
+  notification_container_unread: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderColor: '#D9D9D9',
+    backgroundColor: '#F0F0F0',
   },
 
   notification_main_text: {
