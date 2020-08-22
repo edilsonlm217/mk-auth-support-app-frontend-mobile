@@ -2,6 +2,8 @@ import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import axios from 'axios';
 import socketio from 'socket.io-client';
+import { useIsFocused } from '@react-navigation/native';
+
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,6 +19,8 @@ export default function NotificationScreen() {
   const [notifications, setNotifications] = useState([]);
 
   const [refreshing, setRefreshing] = useState(false);
+
+  const isFocused = useIsFocused(false);
 
   const { setNotificationCount } = globalState.methods;
 
@@ -60,6 +64,35 @@ export default function NotificationScreen() {
       setNotificationCount(newState.length);
     });
   }, [socket, notifications]);
+
+  useEffect(() => {
+    async function markAsRead() {
+      const mark_as_read = [];
+      
+      notifications.map(item => {
+        if (item.read === false) {
+          mark_as_read.push({ id: item._id });
+        }
+      });
+
+      const response = await axios.put(
+        `http://${server_ip}:${server_port}/notification`,
+        {
+          mark_as_read,
+        },
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+    }
+
+    if (!isFocused) {
+      markAsRead();
+    }
+  }, [isFocused]);
 
   const NotificationComponent = (notification) => {
     return (
