@@ -1,7 +1,8 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import axios from 'axios';
+import { differenceInMinutes, parseISO, isToday } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -36,7 +37,8 @@ export default function NotificationScreen() {
 
   async function markAsViewed() {
     const now_time = new Date();
-    await axios.put(
+
+    const response = await axios.put(
       `http://${server_ip}:${server_port}/notification`,
       {
         viewedAt: now_time,
@@ -50,12 +52,11 @@ export default function NotificationScreen() {
       },
     );
 
-    markAllAsViewed(now_time);
+    markAllAsViewed(now_time, newNotifications);
   }
 
   useEffect(() => {
     if (isFocused) {
-      console.log('is focused');
       markAsViewed();
     }
   }, [isFocused]);
