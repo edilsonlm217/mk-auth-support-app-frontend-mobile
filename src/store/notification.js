@@ -6,7 +6,6 @@ import axios from 'axios';
 
 const initialState = {
   notification_count: 0,
-  notifications: [],
   new_notifications: [],
   today_notifications: [],
   previous_notifications: [],
@@ -22,6 +21,7 @@ const NotificationStateProvider = ({ children }) => {
         return {
           ...prevState,
           notification_count: 0,
+          new_notifications: action.payload.new_notifications,
         }
 
       case 'setNotification':
@@ -81,8 +81,6 @@ const NotificationStateProvider = ({ children }) => {
       const notificationAge =
         differenceInMinutes(new Date(), parseISO(item.viewedAt));
 
-      console.log(notificationAge);
-
       if (item.viewedAt === null || notificationAge <= 5) {
         new_notifications.push(item);
       } else {
@@ -101,7 +99,6 @@ const NotificationStateProvider = ({ children }) => {
     dispatch({
       type: 'setNotification', payload: {
         notification_count: count,
-        notifications: response.data.notifications,
         new_notifications,
         today_notifications,
         previous_notifications,
@@ -129,19 +126,20 @@ const NotificationStateProvider = ({ children }) => {
         await loadNotification();
         setLoadingFalse();
       },
-      markAllAsViewed: data => {
-        // const marked_notifications = [];
+      markAllAsViewed: (now_time, newNotifications) => {
+        let temp_state = newNotifications;
 
-        // state.notifications.map(item => {
-        //   marked_notifications.push({
-        //     ...item,
-        //     viewed: true,
-        //     viewedAt: data.viewedAt
-        //   })
-        // });
+        temp_state.map(item => {
+          if (item.viewed === false) {
+            item.viewed = true;
+            item.viewedAt = now_time;
+          }
+        });
 
         dispatch({
-          type: 'MarkAllAsViewed',
+          type: 'MarkAllAsViewed', payload: {
+            new_notifications: temp_state,
+          }
         });
       }
 
