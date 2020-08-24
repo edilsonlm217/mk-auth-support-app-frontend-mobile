@@ -28,7 +28,7 @@ export default function NotificationScreen() {
 
   const { markAllAsViewed, reloadNotifications } = NotificationState.methods;
 
-  const { server_ip, server_port, userToken } = GlobalState.state;
+  const { server_ip, server_port, userToken, employee_id } = GlobalState.state;
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -40,6 +40,7 @@ export default function NotificationScreen() {
       `http://${server_ip}:${server_port}/notification`,
       {
         viewedAt: now_time,
+        employee_id,
       },
       {
         timeout: 2500,
@@ -54,6 +55,7 @@ export default function NotificationScreen() {
 
   useEffect(() => {
     if (isFocused) {
+      console.log('is focused');
       markAsViewed();
     }
   }, [isFocused]);
