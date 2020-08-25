@@ -1,7 +1,6 @@
 import React, { createContext, useReducer, useContext, useEffect, useState, useMemo } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
-import socketio from 'socket.io-client';
 import axios from 'axios';
 
 const initialState = {
@@ -9,6 +8,7 @@ const initialState = {
   new_notifications: [],
   today_notifications: [],
   previous_notifications: [],
+  isLoading: false,
 };
 
 const notification_store = createContext(initialState);
@@ -17,38 +17,20 @@ const { Provider } = notification_store;
 const NotificationStateProvider = ({ children }) => {
   const [state, dispatch] = useReducer((prevState, action) => {
     switch (action.type) {
-      case 'MarkAllAsViewed':
+      case 'setNotifications':
         return {
-          ...prevState,
-          notification_count: 0,
-          new_notifications: action.payload.new_notifications,
-        }
-
-      case 'setNotification':
-        return {
-          ...prevState,
           notification_count: action.payload.notification_count,
           new_notifications: action.payload.new_notifications,
           today_notifications: action.payload.today_notifications,
           previous_notifications: action.payload.previous_notifications,
         }
 
-      case 'addOnlyOne':
-        const new_state = [
-          action.payload.new_notification,
-          ...prevState.notifications
-        ];
-
-        let count = 0;
-        new_state.map(item => {
-          if (item.read === false) {
-            count++;
-          }
-        });
-
+      case 'setAllAsViewed':
         return {
-          ...prevState,
-          notification_count: new_state,
+          notification_count: action.payload.notification_count,
+          new_notifications: action.payload.new_notifications,
+          today_notifications: action.payload.today_notifications,
+          previous_notifications: action.payload.previous_notifications,
         }
 
       default:
@@ -56,7 +38,7 @@ const NotificationStateProvider = ({ children }) => {
     };
   }, initialState);
 
-  async function loadNotification() {
+  async function fetchNotifications() {
     const userToken = await AsyncStorage.getItem('@auth_token');
     const server_ip = await AsyncStorage.getItem('@server_ip');
     const server_port = await AsyncStorage.getItem('@server_port');
@@ -72,11 +54,11 @@ const NotificationStateProvider = ({ children }) => {
       },
     );
 
-    let count = 0;
     const new_notifications = [];
     const today_notifications = [];
     const previous_notifications = [];
 
+    let count_unread = 0;
     response.data.notifications.map(item => {
       const notificationAge =
         differenceInMinutes(new Date(), parseISO(item.viewedAt));
@@ -92,57 +74,69 @@ const NotificationStateProvider = ({ children }) => {
       }
 
       if (item.viewed === false) {
-        count += 1;
+        count_unread++;
       }
     });
 
     dispatch({
-      type: 'setNotification', payload: {
-        notification_count: count,
+      type: 'setNotifications', payload: {
+        notification_count: count_unread,
         new_notifications,
         today_notifications,
-        previous_notifications,
+        previous_notifications
       }
     });
   }
 
   useEffect(() => {
-    loadNotification();
+    fetchNotifications();
   }, []);
 
   const methods = React.useMemo(
     () => ({
-      setNotificationCount: data => {
-      },
-      addSingleNotification: data => {
+      setNotifications: (
+        notification_count,
+        new_notifications,
+        today_notifications,
+        previous_notifications
+      ) => {
         dispatch({
-          type: 'addOnlyOne', payload: {
-            new_notification: data,
+          type: 'setNotifications', payload: {
+            notification_count,
+            new_notifications,
+            today_notifications,
+            previous_notifications
           }
         });
       },
-      reloadNotifications: async (setLoadingTrue, setLoadingFalse) => {
-        setLoadingTrue();
-        await loadNotification();
-        setLoadingFalse();
-      },
-      markAllAsViewed: (now_time, newNotifications) => {
-        let temp_state = newNotifications;
+      setAllAsViewed: (
+        new_notifications,
+        today_notifications,
+        previous_notifications
+      ) => {
+        const new_notifications_updated = [];
 
-        temp_state.map(item => {
+        new_notifications.map(item => {
+          item.viewed = true;
+          new_notifications_updated.push(item);
+        });
+
+        let count_unread = 0;
+        new_notifications_updated.map(item => {
           if (item.viewed === false) {
-            item.viewed = true;
-            item.viewedAt = now_time;
+            count_unread++;
           }
         });
 
         dispatch({
-          type: 'MarkAllAsViewed', payload: {
-            new_notifications: temp_state,
+          type: 'setAllAsViewed', payload: {
+            notification_count: count_unread,
+            new_notifications,
+            today_notifications,
+            previous_notifications,
           }
         });
-      }
-
+      },
     }), []);
 
   return <Provider value={{ state, methods }}>{children}</Provider>;
