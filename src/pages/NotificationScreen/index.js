@@ -1,52 +1,37 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import axios from 'axios';
+import { differenceInMinutes, parseISO, isToday } from 'date-fns';
+import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
+import axios from 'axios';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
+import { notification_store } from '../../store/notification';
 
 export default function NotificationScreen() {
-  const globalState = useContext(store);
+  const GlobalStore = useContext(store);
+  const NotificationStore = useContext(notification_store);
 
-  const { server_ip, server_port, employee_id, userToken } = globalState.state;
+  const { setNotifications, setAllAsViewed } = NotificationStore.methods;
 
-  const [notifications, setNotifications] = useState([]);
+  const {
+    new_notifications,
+    today_notifications,
+    previous_notifications
+  } = NotificationStore.state;
+
+  const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const { setNotificationCount } = globalState.methods;
+  const isFocused = useIsFocused(false);
 
-  async function loadAPI() {
-    const response = await axios.get(
-      `http://${server_ip}:${server_port}/notification/${employee_id}`,
-      {
-        timeout: 2500,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      },
-    );
-
-    let count = 0;
-    response.data.notificatios.map(notification => {
-      if (!notification.read) {
-        count += 1;
-      }
-    });
-
-    setNotificationCount(count);
-    setNotifications(response.data.notificatios);
-  }
-
-  useEffect(() => {
-    loadAPI();
-  }, []);
-
-  const socket = useMemo(() =>
+  let socket = null;
+  socket = useMemo(() =>
     socketio(`http://${server_ip}:${server_port}`, {
       query: {
         employee_id,
@@ -54,12 +39,108 @@ export default function NotificationScreen() {
     }), [employee_id]);
 
   useEffect(() => {
+    console.log('socket inicializado');
     socket.on('notification', notification => {
-      const newState = [notification, ...notifications]
-      setNotifications(newState);
-      setNotificationCount(newState.length);
+      console.warn(notification);
+      const new_notifications_updated = [notification, ...new_notifications];
+
+      let count_unread = 0;
+      new_notifications_updated.map(item => {
+        if (item.viewed === false) {
+          count_unread++;
+        }
+      });
+
+      setNotifications(
+        count_unread,
+        new_notifications_updated,
+        today_notifications,
+        previous_notifications
+      );
     });
-  }, [socket, notifications]);
+  }, [socket, new_notifications]);
+
+  async function fetchNotifications() {
+    setRefreshing(true);
+
+    const response = await axios.get(
+      `http://${server_ip}:${server_port}/notification/${employee_id}`,
+      {
+        timeout: 5000,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+
+    const new_notifications = [];
+    const today_notifications = [];
+    const previous_notifications = [];
+
+    let count_unread = 0;
+    response.data.notifications.map(item => {
+      const notificationAge =
+        differenceInMinutes(new Date(), parseISO(item.viewedAt));
+
+      if (item.viewedAt === null || notificationAge <= 5) {
+        new_notifications.push(item);
+      } else {
+        if (isToday(parseISO(item.viewedAt))) {
+          today_notifications.push(item);
+        } else {
+          previous_notifications.push(item);
+        }
+      }
+
+      if (item.viewed === false) {
+        count_unread++;
+      }
+    });
+
+    setNotifications(
+      count_unread,
+      new_notifications,
+      today_notifications,
+      previous_notifications
+    );
+
+    setRefreshing(false);
+  }
+
+  useEffect(() => {
+    async function markAsViewedRoutine() {
+      if (isFocused) {
+        await markNotificationsAsRead();
+        setAllAsViewed(
+          new_notifications,
+          today_notifications,
+          previous_notifications
+        );
+      }
+    }
+
+    markAsViewedRoutine();
+  }, [isFocused]);
+
+  async function markNotificationsAsRead() {
+    const response = await axios.put(
+      `http://${server_ip}:${server_port}/notification`,
+      {
+        viewedAt: new Date(),
+        employee_id: employee_id,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+  }
+
+  async function onRefresh() {
+    fetchNotifications();
+  }
 
   const NotificationComponent = (notification) => {
     return (
@@ -73,7 +154,9 @@ export default function NotificationScreen() {
           <Icon name="bell-outline" size={20} color="#000" />
         </View>
         <View style={{ flex: 1, marginLeft: 10 }}>
-          <Text style={styles.notification_main_text}>{notification.data.header}</Text>
+          <Text style={styles.notification_main_text}>
+            {notification.data.header}
+          </Text>
           <Text style={styles.notification_sub_text}>
             {notification.data.content}
           </Text>
@@ -90,13 +173,54 @@ export default function NotificationScreen() {
           <ScrollView
             style={{ flex: 1 }}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => { onRefresh() }}
+              />
             }
           >
-            <Text style={styles.main_text}>Mais recentes</Text>
-            {notifications.map((item, index) => (
-              <NotificationComponent key={index} data={item} />
-            ))}
+            {new_notifications.length !== 0 &&
+              <>
+                <Text style={[styles.main_text, { marginTop: 10 }]}>Novas</Text>
+                <>
+                  {new_notifications.map((item, index) => {
+                    return (
+                      <NotificationComponent key={index} data={item} />
+                    );
+                  })}
+                </>
+              </>
+            }
+
+            {today_notifications.length !== 0 &&
+              <>
+                <Text style={[styles.main_text, { marginTop: 10 }]}>
+                  Hoje
+                </Text>
+                <>
+                  {today_notifications.map((item, index) => {
+                    return (
+                      <NotificationComponent key={index} data={item} />
+                    );
+                  })}
+                </>
+              </>
+            }
+
+            {previous_notifications.length !== 0 &&
+              <>
+                <Text style={[styles.main_text, { marginTop: 10 }]}>
+                  Anteriores
+                </Text>
+                <>
+                  {previous_notifications.map((item, index) => {
+                    return (
+                      <NotificationComponent key={index} data={item} />
+                    );
+                  })}
+                </>
+              </>
+            }
           </ScrollView>
         </View>
       </View>

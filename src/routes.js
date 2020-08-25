@@ -6,6 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SettingsIcon from 'react-native-vector-icons/Ionicons';
 
 import { store } from './store/store';
+import { notification_store } from './store/notification';
 import { icons } from './styles/index';
 
 import Home from './pages/Home/index';
@@ -25,14 +26,16 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
-  const globalState = useContext(store);
+  const NotificationStore = useContext(notification_store);
   return (
-    <Tab.Navigator tabBarOptions={{
-      keyboardHidesTabBar: true,
-      labelStyle: {
-        fontSize: fonts.small,
-      }
-    }}>
+    <Tab.Navigator
+      lazy={false}
+      tabBarOptions={{
+        keyboardHidesTabBar: true,
+        labelStyle: {
+          fontSize: fonts.small,
+        }
+      }}>
       <Tab.Screen
         name="Chamados"
         component={Home}
@@ -56,7 +59,7 @@ function HomeTabs() {
         name="Notification"
         component={NotificationScreen}
         options={{
-          tabBarBadge: globalState.state.notification_count,
+          tabBarBadge: NotificationStore.state.notification_count,
           tabBarLabel: 'Notificações',
           tabBarIcon: ({ color }) => (
             <Icon name="bell" size={icons.tiny} color={color} />
