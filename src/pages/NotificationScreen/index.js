@@ -1,4 +1,4 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState, useReducer } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
@@ -9,40 +9,92 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
-import { notification_store } from '../../store/notification';
+
+const initialState = {
+  new_notifications: [],
+  today_notifications: [],
+  previous_notifications: [],
+};
 
 export default function NotificationScreen() {
-  const NotificationState = useContext(notification_store);
-  const GlobalState = useContext(store);
-
-  const [newNotifications, setNewNotifications] = useState(
-    NotificationState.state.new_notifications
-  );
-
-  const [todayNotifications, setTodayNotifications] = useState(
-    NotificationState.state.today_notifications
-  );
-
-  const [previousNotifications, setPreviousNotifications] = useState(
-    NotificationState.state.previous_notifications
-  );
-
-  const { markAllAsViewed, reloadNotifications } = NotificationState.methods;
-
-  const { server_ip, server_port, userToken, employee_id } = GlobalState.state;
+  const GlobalStore = useContext(store);
+  const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
 
   const [refreshing, setRefreshing] = useState(false);
 
+  const [state, dispatch] = useReducer((prevState, action) => {
+    switch (action.type) {
+      case 'setNotification':
+        return {
+          ...prevState,
+          new_notifications: action.payload.new_notifications,
+          today_notifications: action.payload.today_notifications,
+          previous_notifications: action.payload.previous_notifications,
+        }
+
+      default:
+        throw new Error();
+    };
+  }, initialState);
+
   const isFocused = useIsFocused(false);
 
-  async function markAsViewed() {
-    const now_time = new Date();
+  async function fetchNotifications() {
+    setRefreshing(true);
+    const response = await axios.get(
+      `http://${server_ip}:${server_port}/notification/${employee_id}`,
+      {
+        timeout: 5000,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
 
+    const new_notifications = [];
+    const today_notifications = [];
+    const previous_notifications = [];
+
+    response.data.notifications.map(item => {
+      const notificationAge =
+        differenceInMinutes(new Date(), parseISO(item.viewedAt));
+
+      if (item.viewedAt === null || notificationAge <= 5) {
+        new_notifications.push(item);
+      } else {
+        if (isToday(parseISO(item.viewedAt))) {
+          today_notifications.push(item);
+        } else {
+          previous_notifications.push(item);
+        }
+      }
+    });
+
+    dispatch({
+      type: 'setNotification', payload: {
+        new_notifications,
+        today_notifications,
+        previous_notifications,
+      }
+    });
+
+    setRefreshing(false);
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchNotifications();
+    } else {
+      markNotificationsAsRead();
+    }
+  }, [isFocused]);
+
+  async function markNotificationsAsRead() {
     const response = await axios.put(
       `http://${server_ip}:${server_port}/notification`,
       {
-        viewedAt: now_time,
-        employee_id,
+        viewedAt: new Date(),
+        employee_id: employee_id,
       },
       {
         timeout: 2500,
@@ -51,21 +103,12 @@ export default function NotificationScreen() {
         },
       },
     );
-
-    markAllAsViewed(now_time, newNotifications);
   }
 
-  useEffect(() => {
-    if (isFocused) {
-      markAsViewed();
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    setNewNotifications(NotificationState.state.new_notifications);
-    setTodayNotifications(NotificationState.state.today_notifications);
-    setPreviousNotifications(NotificationState.state.previous_notifications);
-  }, [NotificationState.state]);
+  async function onRefresh() {
+    await markNotificationsAsRead();
+    fetchNotifications();
+  }
 
   const NotificationComponent = (notification) => {
     return (
@@ -100,20 +143,15 @@ export default function NotificationScreen() {
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={
-                  () => reloadNotifications(
-                    () => { setRefreshing(true) },
-                    () => { setRefreshing(false) }
-                  )
-                }
+                onRefresh={() => { onRefresh() }}
               />
             }
           >
-            {newNotifications.length !== 0 &&
+            {state.new_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>Novas</Text>
                 <>
-                  {newNotifications.map((item, index) => {
+                  {state.new_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -122,13 +160,13 @@ export default function NotificationScreen() {
               </>
             }
 
-            {todayNotifications.length !== 0 &&
+            {state.today_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Hoje
                 </Text>
                 <>
-                  {todayNotifications.map((item, index) => {
+                  {state.today_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -137,13 +175,13 @@ export default function NotificationScreen() {
               </>
             }
 
-            {previousNotifications.length !== 0 &&
+            {state.previous_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Anteriores
                 </Text>
                 <>
-                  {previousNotifications.map((item, index) => {
+                  {state.previous_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
