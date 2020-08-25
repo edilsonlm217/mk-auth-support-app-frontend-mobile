@@ -1,7 +1,8 @@
-import React, { useEffect, useContext, useState, useReducer } from 'react';
+import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
+import socketio from 'socket.io-client';
 import axios from 'axios';
 
 import AppHeader from '../../components/AppHeader/index';
@@ -9,38 +10,59 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
-
-const initialState = {
-  new_notifications: [],
-  today_notifications: [],
-  previous_notifications: [],
-};
+import { notification_store } from '../../store/notification';
 
 export default function NotificationScreen() {
   const GlobalStore = useContext(store);
+  const NotificationStore = useContext(notification_store);
+
+  const { setNotifications, setAllAsViewed } = NotificationStore.methods;
+
+  const {
+    new_notifications,
+    today_notifications,
+    previous_notifications
+  } = NotificationStore.state;
+
   const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
 
   const [refreshing, setRefreshing] = useState(false);
 
-  const [state, dispatch] = useReducer((prevState, action) => {
-    switch (action.type) {
-      case 'setNotification':
-        return {
-          ...prevState,
-          new_notifications: action.payload.new_notifications,
-          today_notifications: action.payload.today_notifications,
-          previous_notifications: action.payload.previous_notifications,
-        }
-
-      default:
-        throw new Error();
-    };
-  }, initialState);
-
   const isFocused = useIsFocused(false);
+
+  let socket = null;
+  socket = useMemo(() =>
+    socketio(`http://${server_ip}:${server_port}`, {
+      query: {
+        employee_id,
+      }
+    }), [employee_id]);
+
+  useEffect(() => {
+    console.log('socket inicializado');
+    socket.on('notification', notification => {
+      console.warn(notification);
+      const new_notifications_updated = [notification, ...new_notifications];
+
+      let count_unread = 0;
+      new_notifications_updated.map(item => {
+        if (item.viewed === false) {
+          count_unread++;
+        }
+      });
+
+      setNotifications(
+        count_unread,
+        new_notifications_updated,
+        today_notifications,
+        previous_notifications
+      );
+    });
+  }, [socket, new_notifications]);
 
   async function fetchNotifications() {
     setRefreshing(true);
+
     const response = await axios.get(
       `http://${server_ip}:${server_port}/notification/${employee_id}`,
       {
@@ -55,6 +77,7 @@ export default function NotificationScreen() {
     const today_notifications = [];
     const previous_notifications = [];
 
+    let count_unread = 0;
     response.data.notifications.map(item => {
       const notificationAge =
         differenceInMinutes(new Date(), parseISO(item.viewedAt));
@@ -68,25 +91,35 @@ export default function NotificationScreen() {
           previous_notifications.push(item);
         }
       }
-    });
 
-    dispatch({
-      type: 'setNotification', payload: {
-        new_notifications,
-        today_notifications,
-        previous_notifications,
+      if (item.viewed === false) {
+        count_unread++;
       }
     });
+
+    setNotifications(
+      count_unread,
+      new_notifications,
+      today_notifications,
+      previous_notifications
+    );
 
     setRefreshing(false);
   }
 
   useEffect(() => {
-    if (isFocused) {
-      fetchNotifications();
-    } else {
-      markNotificationsAsRead();
+    async function markAsViewedRoutine() {
+      if (isFocused) {
+        await markNotificationsAsRead();
+        setAllAsViewed(
+          new_notifications,
+          today_notifications,
+          previous_notifications
+        );
+      }
     }
+
+    markAsViewedRoutine();
   }, [isFocused]);
 
   async function markNotificationsAsRead() {
@@ -106,7 +139,6 @@ export default function NotificationScreen() {
   }
 
   async function onRefresh() {
-    await markNotificationsAsRead();
     fetchNotifications();
   }
 
@@ -147,11 +179,11 @@ export default function NotificationScreen() {
               />
             }
           >
-            {state.new_notifications.length !== 0 &&
+            {new_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>Novas</Text>
                 <>
-                  {state.new_notifications.map((item, index) => {
+                  {new_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -160,13 +192,13 @@ export default function NotificationScreen() {
               </>
             }
 
-            {state.today_notifications.length !== 0 &&
+            {today_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Hoje
                 </Text>
                 <>
-                  {state.today_notifications.map((item, index) => {
+                  {today_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -175,13 +207,13 @@ export default function NotificationScreen() {
               </>
             }
 
-            {state.previous_notifications.length !== 0 &&
+            {previous_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Anteriores
                 </Text>
                 <>
-                  {state.previous_notifications.map((item, index) => {
+                  {previous_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
