@@ -32,7 +32,7 @@ export default function NotificationScreen({ navigation }) {
   const GlobalStore = useContext(store);
   const NotificationStore = useContext(notification_store);
 
-  const { setNotifications, setAllAsViewed } = NotificationStore.methods;
+  const { setNotifications, setAllAsViewed, setAsRead } = NotificationStore.methods;
 
   const {
     new_notifications,
@@ -45,6 +45,8 @@ export default function NotificationScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const isFocused = useIsFocused(false);
+
+  const [selectedNotificationID, setSelectedNotificationID] = useState(null);
 
   let socket = null;
   socket = useMemo(() =>
@@ -125,23 +127,57 @@ export default function NotificationScreen({ navigation }) {
 
   useEffect(() => {
     async function markAsViewedRoutine() {
-      if (isFocused) {
-        await markNotificationsAsRead();
+      if (isFocused && selectedNotificationID === null) {
         setAllAsViewed(
           new_notifications,
           today_notifications,
           previous_notifications
         );
+        await markNotificationsAsViewed();
       }
     }
 
     markAsViewedRoutine();
   }, [isFocused]);
 
-  async function markNotificationsAsRead() {
+  async function markNotificationsAsRead(notification_id) {
+    setTimeout(() => {
+      setAsRead(
+        new_notifications,
+        today_notifications,
+        previous_notifications,
+        notification_id
+      );
+    }, 500);
+
     const response = await axios.put(
       `http://${server_ip}:${server_port}/notification`,
       {
+        action: 'markAsRead',
+        notification_id,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+  }
+
+  useEffect(() => {
+    if (isFocused && selectedNotificationID !== null) {
+      markNotificationsAsRead(selectedNotificationID);
+      setSelectedNotificationID(null);
+    }
+
+  }, [isFocused]);
+
+  async function markNotificationsAsViewed() {
+    const response = await axios.put(
+      `http://${server_ip}:${server_port}/notification`,
+      {
+        action: 'markAsViewed',
         viewedAt: new Date(),
         employee_id: employee_id,
       },
@@ -182,13 +218,14 @@ export default function NotificationScreen({ navigation }) {
   async function handleNotificationPress(notification) {
     const { id, nome, tipo, ip, plano } = notification.data.request_data;
 
+    setSelectedNotificationID(notification.data._id);
     navigation.navigate('Details', { id, nome, tipo, ip, plano });
   }
 
   const NotificationComponent = (notification) => {
     return (
       <TouchableOpacity onPress={() => handleNotificationPress(notification)}
-        style={notification.data.read
+        style={notification.data.isRead
           ? styles.notification_container_read
           : styles.notification_container_unread
         }
