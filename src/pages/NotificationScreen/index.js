@@ -1,6 +1,6 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { differenceInMinutes, parseISO, isToday } from 'date-fns';
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
 import axios from 'axios';
@@ -138,6 +138,27 @@ export default function NotificationScreen() {
     );
   }
 
+  const NotificationAge = (date) => {
+    const parsedDate = parseISO(date);
+
+    let duration = 0;
+    duration = `${differenceInDays(new Date(), parsedDate)}d`;
+
+    if (duration === '0d') {
+      duration = `${differenceInHours(new Date(), parsedDate)}h`;
+    }
+
+    if (duration === '0h') {
+      duration = `${differenceInMinutes(new Date(), parsedDate)}m`;
+    }
+
+    if (duration === '0m') {
+      duration = `${differenceInSeconds(new Date(), parsedDate)}s`;
+    }
+
+    return duration;
+  };
+
   async function onRefresh() {
     fetchNotifications();
   }
@@ -158,7 +179,7 @@ export default function NotificationScreen() {
             {notification.data.header}
           </Text>
           <Text style={styles.notification_sub_text}>
-            {notification.data.content}
+            {`${notification.data.content}: há ${NotificationAge(notification.data.createdAt)}`}
           </Text>
         </View>
       </View>
