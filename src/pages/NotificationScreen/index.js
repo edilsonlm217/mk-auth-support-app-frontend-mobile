@@ -1,5 +1,5 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
@@ -12,7 +12,7 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 import { notification_store } from '../../store/notification';
 
-export default function NotificationScreen() {
+export default function NotificationScreen({ navigation }) {
   const GlobalStore = useContext(store);
   const NotificationStore = useContext(notification_store);
 
@@ -163,9 +163,15 @@ export default function NotificationScreen() {
     fetchNotifications();
   }
 
+  async function handleNotificationPress(notification) {
+    const { id, nome, tipo, ip, plano } = notification.data.request_data;
+
+    navigation.navigate('Details', { id, nome, tipo, ip, plano });
+  }
+
   const NotificationComponent = (notification) => {
     return (
-      <View
+      <TouchableOpacity onPress={() => handleNotificationPress(notification)}
         style={notification.data.read
           ? styles.notification_container_read
           : styles.notification_container_unread
@@ -182,7 +188,7 @@ export default function NotificationScreen() {
             {`${notification.data.content}: há ${NotificationAge(notification.data.createdAt)}`}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
