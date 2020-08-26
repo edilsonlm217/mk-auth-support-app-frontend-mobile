@@ -1,9 +1,25 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity
+} from 'react-native';
+
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
 import axios from 'axios';
+
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  parseISO,
+  isToday
+} from 'date-fns';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
