@@ -33,6 +33,14 @@ const NotificationStateProvider = ({ children }) => {
           previous_notifications: action.payload.previous_notifications,
         }
 
+      case 'setAllAsRead':
+        return {
+          ...prevState,
+          new_notifications: action.payload.new_notifications,
+          today_notifications: action.payload.today_notifications,
+          previous_notifications: action.payload.previous_notifications,
+        }
+
       default:
         throw new Error();
     };
@@ -137,6 +145,51 @@ const NotificationStateProvider = ({ children }) => {
           }
         });
       },
+      setAsRead: (
+        new_notifications,
+        today_notifications,
+        previous_notifications,
+        notification_id
+      ) => {
+        console.log('dá store');
+        console.log(notification_id);
+        const new_notifications_updated = [];
+        const today_notifications_updated = [];
+        const previous_notifications_updated = [];
+
+        new_notifications.map(item => {
+          if (item._id === notification_id) {
+            item.isRead = true;
+
+            new_notifications_updated.push(item);
+          }
+        });
+
+        today_notifications.map(item => {
+          if (item._id === notification_id) {
+            item.isRead = true;
+
+            today_notifications_updated.push(item);
+          }
+        });
+
+        previous_notifications.map(item => {
+          if (item._id === notification_id) {
+            item.isRead = true;
+
+            previous_notifications_updated.push(item);
+          }
+        });
+
+        dispatch({
+          type: 'setAllAsRead', payload: {
+            new_notifications,
+            today_notifications,
+            previous_notifications,
+          }
+        });
+
+      }
     }), []);
 
   return <Provider value={{ state, methods }}>{children}</Provider>;

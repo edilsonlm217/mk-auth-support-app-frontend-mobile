@@ -1,9 +1,25 @@
 import React, { useEffect, useContext, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { differenceInMinutes, parseISO, isToday } from 'date-fns';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity
+} from 'react-native';
+
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
 import axios from 'axios';
+
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  parseISO,
+  isToday
+} from 'date-fns';
 
 import AppHeader from '../../components/AppHeader/index';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -12,11 +28,11 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 import { notification_store } from '../../store/notification';
 
-export default function NotificationScreen() {
+export default function NotificationScreen({ navigation }) {
   const GlobalStore = useContext(store);
   const NotificationStore = useContext(notification_store);
 
-  const { setNotifications, setAllAsViewed } = NotificationStore.methods;
+  const { setNotifications, setAllAsViewed, setAsRead } = NotificationStore.methods;
 
   const {
     new_notifications,
@@ -29,6 +45,8 @@ export default function NotificationScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const isFocused = useIsFocused(false);
+
+  const [selectedNotificationID, setSelectedNotificationID] = useState(null);
 
   let socket = null;
   socket = useMemo(() =>
@@ -109,23 +127,57 @@ export default function NotificationScreen() {
 
   useEffect(() => {
     async function markAsViewedRoutine() {
-      if (isFocused) {
-        await markNotificationsAsRead();
+      if (isFocused && selectedNotificationID === null) {
         setAllAsViewed(
           new_notifications,
           today_notifications,
           previous_notifications
         );
+        await markNotificationsAsViewed();
       }
     }
 
     markAsViewedRoutine();
   }, [isFocused]);
 
-  async function markNotificationsAsRead() {
+  async function markNotificationsAsRead(notification_id) {
+    setTimeout(() => {
+      setAsRead(
+        new_notifications,
+        today_notifications,
+        previous_notifications,
+        notification_id
+      );
+    }, 500);
+
     const response = await axios.put(
       `http://${server_ip}:${server_port}/notification`,
       {
+        action: 'markAsRead',
+        notification_id,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+  }
+
+  useEffect(() => {
+    if (isFocused && selectedNotificationID !== null) {
+      markNotificationsAsRead(selectedNotificationID);
+      setSelectedNotificationID(null);
+    }
+
+  }, [isFocused]);
+
+  async function markNotificationsAsViewed() {
+    const response = await axios.put(
+      `http://${server_ip}:${server_port}/notification`,
+      {
+        action: 'markAsViewed',
         viewedAt: new Date(),
         employee_id: employee_id,
       },
@@ -138,14 +190,42 @@ export default function NotificationScreen() {
     );
   }
 
+  const NotificationAge = (date) => {
+    const parsedDate = parseISO(date);
+
+    let duration = 0;
+    duration = `${differenceInDays(new Date(), parsedDate)}d`;
+
+    if (duration === '0d') {
+      duration = `${differenceInHours(new Date(), parsedDate)}h`;
+    }
+
+    if (duration === '0h') {
+      duration = `${differenceInMinutes(new Date(), parsedDate)}m`;
+    }
+
+    if (duration === '0m') {
+      duration = `${differenceInSeconds(new Date(), parsedDate)}s`;
+    }
+
+    return duration;
+  };
+
   async function onRefresh() {
     fetchNotifications();
   }
 
+  async function handleNotificationPress(notification) {
+    const { id, nome, tipo, ip, plano } = notification.data.request_data;
+
+    setSelectedNotificationID(notification.data._id);
+    navigation.navigate('Details', { id, nome, tipo, ip, plano });
+  }
+
   const NotificationComponent = (notification) => {
     return (
-      <View
-        style={notification.data.read
+      <TouchableOpacity onPress={() => handleNotificationPress(notification)}
+        style={notification.data.isRead
           ? styles.notification_container_read
           : styles.notification_container_unread
         }
@@ -158,10 +238,10 @@ export default function NotificationScreen() {
             {notification.data.header}
           </Text>
           <Text style={styles.notification_sub_text}>
-            {notification.data.content}
+            {`${notification.data.content}: há ${NotificationAge(notification.data.createdAt)}`}
           </Text>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
