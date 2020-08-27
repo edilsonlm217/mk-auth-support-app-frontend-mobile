@@ -36,6 +36,8 @@ export default function ClientDetails(props) {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [isResetMacDialogVisible, setIsResetMacDialogVisible] = useState(false);
+
   async function loadAPI() {
     try {
       setIsLoading();
@@ -125,7 +127,10 @@ export default function ClientDetails(props) {
       },
     );
 
+    setIsResetMacDialogVisible(false);
+    ToastAndroid.show("Alteração solicitada", ToastAndroid.SHORT);
     loadAPI();
+
   }
 
   return (
@@ -189,7 +194,7 @@ export default function ClientDetails(props) {
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity onPress={() => handleMACRefreshing()}>
+            <TouchableOpacity onPress={() => setIsResetMacDialogVisible(true)}>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço MAC</Text>
@@ -346,6 +351,18 @@ export default function ClientDetails(props) {
           </>
         }
       </ScrollView>
+
+      <View>
+        <Dialog.Container visible={isResetMacDialogVisible}>
+          <Dialog.Title>Redefinir MAC</Dialog.Title>
+          <Dialog.Description>
+            Deseja realmente redefinir o endereço MAC?
+            </Dialog.Description>
+          <Dialog.Button onPress={() => setIsResetMacDialogVisible(false)} label="Cancelar" />
+          <Dialog.Button onPress={() => handleMACRefreshing()} label="Redefinir" />
+
+        </Dialog.Container>
+      </View>
 
       <Modal
         onBackButtonPress={handleModalClosing}
