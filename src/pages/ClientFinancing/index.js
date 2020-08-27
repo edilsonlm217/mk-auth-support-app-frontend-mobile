@@ -63,7 +63,7 @@ export default function ClientFinancing(props) {
 
       setState(response.data);
       if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
-        // console.warn(response.data.rem_obs);
+
         dispatch({
           type: 'turnOn',
           payload: {
