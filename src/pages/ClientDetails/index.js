@@ -13,12 +13,14 @@ import {
   Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RefreshIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import CallIcon from 'react-native-vector-icons/Zocial';
-import axios from 'axios';
-import Modal from 'react-native-modal';
-import { BarChart } from "react-native-chart-kit";
 import Clipboard from '@react-native-community/clipboard'
+import CallIcon from 'react-native-vector-icons/Zocial';
+import { BarChart } from "react-native-chart-kit";
+import Dialog from "react-native-dialog";
+import Modal from 'react-native-modal';
+import axios from 'axios';
 
 import LocationService from '../../services/location';
 
@@ -26,22 +28,26 @@ import { icons, fonts } from '../../styles/index';
 
 export default function ClientDetails(props) {
   const globalState = props.state;
+  const { server_ip, server_port, userToken } = globalState.state;
 
   const clientState = props.clientState;
+  const { client } = clientState.state;
   const { setIsLoading, setClientData } = clientState.methods;
 
   const [isVisible, setIsVisible] = useState(false);
+
+  const [isResetMacDialogVisible, setIsResetMacDialogVisible] = useState(false);
 
   async function loadAPI() {
     try {
       setIsLoading();
 
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+        `http://${server_ip}:${server_port}/client/${client.id}`,
         {
           timeout: 2500,
           headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+            Authorization: `Bearer ${userToken}`,
           },
         },
       );
@@ -51,8 +57,6 @@ export default function ClientDetails(props) {
       Alert.alert('Erro', 'Não foi possível comunicar com a API');
     }
   }
-
-  // useEffect(() => { loadAPI() }, []);
 
   function handleModalOpening() {
     if (LocationService.isGPSEnable()) {
@@ -93,6 +97,39 @@ export default function ClientDetails(props) {
   function copyToClipboard(text) {
     Clipboard.setString(text);
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
+  function getMACAddressStatus() {
+    const { mac, automac } = clientState.state.client;
+
+    if (mac === null && automac === 'sim') {
+      return 'Carregando...';
+    }
+
+    if (mac === null && automac === 'nao') {
+      return 'Não informado';
+    }
+
+    return mac;
+  }
+
+  async function handleMACRefreshing() {
+    await axios.post(
+      `http://${server_ip}:${server_port}/client/${client.id}`,
+      {
+        automac: true,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+
+    setIsResetMacDialogVisible(false);
+    ToastAndroid.show("Alteração solicitada", ToastAndroid.SHORT);
+    loadAPI();
   }
 
   return (
@@ -156,22 +193,34 @@ export default function ClientDetails(props) {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Endereço MAC</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>
-                  {clientState.state.client.mac !== null ? clientState.state.client.mac : 'Não informado'}
-                </Text>
+            <TouchableOpacity onPress={() => setIsResetMacDialogVisible(true)}>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Endereço MAC</Text>
+                  <Text style={styles.main_text}>
+                    {getMACAddressStatus()}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <RefreshIcon name="refresh" size={icons.tiny} color="#000" />
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
 
             <View>
               <View style={styles.clickable_line}>
-                <View>
+                <View style={{ width: '100%' }}>
                   <Text style={styles.sub_text}>Plano</Text>
-                  <Text style={[styles.main_text]}>
-                    {clientState.state.client.plano}
-                  </Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={[styles.main_text, { flex: 0, marginRight: 10 }]}>
+                      {clientState.state.client.plano}
+                    </Text>
+                    {clientState.state.client.status_corte === 'down' &&
+                      <View style={styles.down_badge}>
+                        <Text style={{ fontFamily: 'Roboto-Light' }}>Down</Text>
+                      </View>
+                    }
+                  </View>
                 </View>
               </View>
             </View>
@@ -308,6 +357,18 @@ export default function ClientDetails(props) {
           </>
         }
       </ScrollView>
+
+      <View>
+        <Dialog.Container visible={isResetMacDialogVisible}>
+          <Dialog.Title>Redefinir MAC</Dialog.Title>
+          <Dialog.Description>
+            Deseja realmente redefinir o endereço MAC?
+            </Dialog.Description>
+          <Dialog.Button onPress={() => setIsResetMacDialogVisible(false)} label="Cancelar" />
+          <Dialog.Button onPress={() => handleMACRefreshing()} label="Redefinir" />
+
+        </Dialog.Container>
+      </View>
 
       <Modal
         onBackButtonPress={handleModalClosing}
@@ -475,4 +536,11 @@ const styles = StyleSheet.create({
 
     elevation: 4,
   },
+
+  down_badge: {
+    width: 55,
+    backgroundColor: '#f5e642',
+    borderRadius: 20,
+    alignItems: 'center',
+  }
 });

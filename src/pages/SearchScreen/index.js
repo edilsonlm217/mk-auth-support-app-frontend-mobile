@@ -68,7 +68,9 @@ export default function ClientsScreen({ navigation }) {
 
   useEffect(() => {
     if (isFocused) {
-      refInput.current.focus();
+      setTimeout(() => {
+        refInput.current.focus();
+      }, 250);
     }
   }, [isFocused]);
 
