@@ -1,7 +1,10 @@
-import React, { createContext, useReducer, useContext, useEffect, useState, useMemo } from 'react';
+import React, { createContext, useReducer, useEffect, useContext } from 'react';
+import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
 import axios from 'axios';
+
+import { store } from '../store/store';
 
 const initialState = {
   notification_count: 0,
@@ -46,59 +49,67 @@ const NotificationStateProvider = ({ children }) => {
     };
   }, initialState);
 
+  const GlobalStore = useContext(store);
+
   async function fetchNotifications() {
-    const userToken = await AsyncStorage.getItem('@auth_token');
-    const server_ip = await AsyncStorage.getItem('@server_ip');
-    const server_port = await AsyncStorage.getItem('@server_port');
-    const employee_id = await AsyncStorage.getItem('@employee_id');
+    try {
+      const userToken = await AsyncStorage.getItem('@auth_token');
+      const server_ip = await AsyncStorage.getItem('@server_ip');
+      const server_port = await AsyncStorage.getItem('@server_port');
+      const employee_id = await AsyncStorage.getItem('@employee_id');
 
-    const response = await axios.get(
-      `http://${server_ip}:${server_port}/notification/${employee_id}`,
-      {
-        timeout: 5000,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
-      },
-    );
+      if (employee_id) {
+        const response = await axios.get(
+          `http://${server_ip}:${server_port}/notification/${employee_id}`,
+          {
+            timeout: 5000,
+            headers: {
+              Authorization: `Bearer ${userToken}`,
+            },
+          },
+        );
 
-    const new_notifications = [];
-    const today_notifications = [];
-    const previous_notifications = [];
+        const new_notifications = [];
+        const today_notifications = [];
+        const previous_notifications = [];
 
-    let count_unread = 0;
-    response.data.notifications.map(item => {
-      const notificationAge =
-        differenceInMinutes(new Date(), parseISO(item.viewedAt));
+        let count_unread = 0;
+        response.data.notifications.map(item => {
+          const notificationAge =
+            differenceInMinutes(new Date(), parseISO(item.viewedAt));
 
-      if (item.viewedAt === null || notificationAge <= 5) {
-        new_notifications.push(item);
-      } else {
-        if (isToday(parseISO(item.viewedAt))) {
-          today_notifications.push(item);
-        } else {
-          previous_notifications.push(item);
-        }
+          if (item.viewedAt === null || notificationAge <= 5) {
+            new_notifications.push(item);
+          } else {
+            if (isToday(parseISO(item.viewedAt))) {
+              today_notifications.push(item);
+            } else {
+              previous_notifications.push(item);
+            }
+          }
+
+          if (item.viewed === false) {
+            count_unread++;
+          }
+        });
+
+        dispatch({
+          type: 'setNotifications', payload: {
+            notification_count: count_unread,
+            new_notifications,
+            today_notifications,
+            previous_notifications
+          }
+        });
       }
-
-      if (item.viewed === false) {
-        count_unread++;
-      }
-    });
-
-    dispatch({
-      type: 'setNotifications', payload: {
-        notification_count: count_unread,
-        new_notifications,
-        today_notifications,
-        previous_notifications
-      }
-    });
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao chamadar a API (notification_store)');
+    }
   }
 
   useEffect(() => {
     fetchNotifications();
-  }, []);
+  }, [GlobalStore.state.employee_id]);
 
   const methods = React.useMemo(
     () => ({
@@ -151,8 +162,6 @@ const NotificationStateProvider = ({ children }) => {
         previous_notifications,
         notification_id
       ) => {
-        console.log('dá store');
-        console.log(notification_id);
         const new_notifications_updated = [];
         const today_notifications_updated = [];
         const previous_notifications_updated = [];
