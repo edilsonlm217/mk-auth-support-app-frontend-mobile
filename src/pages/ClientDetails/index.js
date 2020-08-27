@@ -209,11 +209,18 @@ export default function ClientDetails(props) {
 
             <View>
               <View style={styles.clickable_line}>
-                <View>
+                <View style={{ width: '100%' }}>
                   <Text style={styles.sub_text}>Plano</Text>
-                  <Text style={[styles.main_text]}>
-                    {clientState.state.client.plano}
-                  </Text>
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text style={[styles.main_text, { flex: 0, marginRight: 10 }]}>
+                      {clientState.state.client.plano}
+                    </Text>
+                    {clientState.state.client.status_corte === 'down' &&
+                      <View style={styles.down_badge}>
+                        <Text style={{ fontFamily: 'Roboto-Light' }}>Down</Text>
+                      </View>
+                    }
+                  </View>
                 </View>
               </View>
             </View>
@@ -529,4 +536,11 @@ const styles = StyleSheet.create({
 
     elevation: 4,
   },
+
+  down_badge: {
+    width: 55,
+    backgroundColor: '#f5e642',
+    borderRadius: 20,
+    alignItems: 'center',
+  }
 });
