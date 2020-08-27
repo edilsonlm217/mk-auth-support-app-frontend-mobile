@@ -13,10 +13,12 @@ import {
   Dimensions
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import RefreshIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import Clipboard from '@react-native-community/clipboard'
 import CallIcon from 'react-native-vector-icons/Zocial';
 import { BarChart } from "react-native-chart-kit";
+import Dialog from "react-native-dialog";
 import Modal from 'react-native-modal';
 import axios from 'axios';
 
@@ -95,6 +97,37 @@ export default function ClientDetails(props) {
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
   }
 
+  function getMACAddressStatus() {
+    const { mac, automac } = clientState.state.client;
+
+    if (mac === null && automac === 'sim') {
+      return 'Carregando...';
+    }
+
+    if (mac === null && automac === 'nao') {
+      return 'Não informado';
+    }
+
+    return mac;
+  }
+
+  async function handleMACRefreshing() {
+    await axios.post(
+      `http://${server_ip}:${server_port}/client/${client.id}`,
+      {
+        automac: true,
+      },
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+    );
+
+    loadAPI();
+  }
+
   return (
     <>
       <ScrollView
@@ -156,14 +189,19 @@ export default function ClientDetails(props) {
               </TouchableOpacity>
             </View>
 
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Endereço MAC</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>
-                  {clientState.state.client.mac !== null ? clientState.state.client.mac : 'Não informado'}
-                </Text>
+            <TouchableOpacity onPress={() => handleMACRefreshing()}>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Endereço MAC</Text>
+                  <Text style={styles.main_text}>
+                    {getMACAddressStatus()}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <RefreshIcon name="refresh" size={icons.tiny} color="#000" />
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
 
             <View>
               <View style={styles.clickable_line}>
