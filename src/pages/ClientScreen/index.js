@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   label_style: {
     color: '#FFF',
     fontWeight: 'bold',
-    fontSize: fonts.regular,
+    fontSize: fonts.medium,
     alignSelf: 'center',
     textAlign: "center",
   },
