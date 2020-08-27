@@ -14,11 +14,11 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import CallIcon from 'react-native-vector-icons/Zocial';
-import axios from 'axios';
-import Modal from 'react-native-modal';
-import { BarChart } from "react-native-chart-kit";
 import Clipboard from '@react-native-community/clipboard'
+import CallIcon from 'react-native-vector-icons/Zocial';
+import { BarChart } from "react-native-chart-kit";
+import Modal from 'react-native-modal';
+import axios from 'axios';
 
 import LocationService from '../../services/location';
 
@@ -26,8 +26,10 @@ import { icons, fonts } from '../../styles/index';
 
 export default function ClientDetails(props) {
   const globalState = props.state;
+  const { server_ip, server_port, userToken } = globalState.state;
 
   const clientState = props.clientState;
+  const { client } = clientState.state;
   const { setIsLoading, setClientData } = clientState.methods;
 
   const [isVisible, setIsVisible] = useState(false);
@@ -37,11 +39,11 @@ export default function ClientDetails(props) {
       setIsLoading();
 
       const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+        `http://${server_ip}:${server_port}/client/${client.id}`,
         {
           timeout: 2500,
           headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+            Authorization: `Bearer ${userToken}`,
           },
         },
       );
@@ -51,8 +53,6 @@ export default function ClientDetails(props) {
       Alert.alert('Erro', 'Não foi possível comunicar com a API');
     }
   }
-
-  // useEffect(() => { loadAPI() }, []);
 
   function handleModalOpening() {
     if (LocationService.isGPSEnable()) {
