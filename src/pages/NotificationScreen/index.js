@@ -5,7 +5,8 @@ import {
   StyleSheet,
   ScrollView,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert
 } from 'react-native';
 
 import { useIsFocused } from '@react-navigation/native';
@@ -79,50 +80,57 @@ export default function NotificationScreen({ navigation }) {
   }, [socket, new_notifications]);
 
   async function fetchNotifications() {
-    setRefreshing(true);
 
-    const response = await axios.get(
-      `http://${server_ip}:${server_port}/notification/${employee_id}`,
-      {
-        timeout: 5000,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
+    try {
+      setRefreshing(true);
+
+      const response = await axios.get(
+        `http://${server_ip}:${server_port}/notification/${employee_id}`,
+        {
+          timeout: 5000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
         },
-      },
-    );
+      );
 
-    const new_notifications = [];
-    const today_notifications = [];
-    const previous_notifications = [];
+      const new_notifications = [];
+      const today_notifications = [];
+      const previous_notifications = [];
 
-    let count_unread = 0;
-    response.data.notifications.map(item => {
-      const notificationAge =
-        differenceInMinutes(new Date(), parseISO(item.viewedAt));
+      let count_unread = 0;
+      response.data.notifications.map(item => {
+        const notificationAge =
+          differenceInMinutes(new Date(), parseISO(item.viewedAt));
 
-      if (item.viewedAt === null || notificationAge <= 5) {
-        new_notifications.push(item);
-      } else {
-        if (isToday(parseISO(item.viewedAt))) {
-          today_notifications.push(item);
+        if (item.viewedAt === null || notificationAge <= 5) {
+          new_notifications.push(item);
         } else {
-          previous_notifications.push(item);
+          if (isToday(parseISO(item.viewedAt))) {
+            today_notifications.push(item);
+          } else {
+            previous_notifications.push(item);
+          }
         }
-      }
 
-      if (item.viewed === false) {
-        count_unread++;
-      }
-    });
+        if (item.viewed === false) {
+          count_unread++;
+        }
+      });
 
-    setNotifications(
-      count_unread,
-      new_notifications,
-      today_notifications,
-      previous_notifications
-    );
+      setNotifications(
+        count_unread,
+        new_notifications,
+        today_notifications,
+        previous_notifications
+      );
 
-    setRefreshing(false);
+      setRefreshing(false);
+    } catch (error) {
+      setRefreshing(false);
+      Alert.alert('Erro', 'Falha ao chamar a API (fetchNotifications at NotificationScreen)');
+    }
+
   }
 
   useEffect(() => {
@@ -150,19 +158,24 @@ export default function NotificationScreen({ navigation }) {
       );
     }, 500);
 
-    const response = await axios.put(
-      `http://${server_ip}:${server_port}/notification`,
-      {
-        action: 'markAsRead',
-        notification_id,
-      },
-      {
-        timeout: 2500,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
+    try {
+      await axios.put(
+        `http://${server_ip}:${server_port}/notification`,
+        {
+          action: 'markAsRead',
+          notification_id,
         },
-      },
-    );
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao marcar notificação como lida (notification_screen)');
+    }
+
   }
 
   useEffect(() => {
@@ -174,20 +187,24 @@ export default function NotificationScreen({ navigation }) {
   }, [isFocused]);
 
   async function markNotificationsAsViewed() {
-    const response = await axios.put(
-      `http://${server_ip}:${server_port}/notification`,
-      {
-        action: 'markAsViewed',
-        viewedAt: new Date(),
-        employee_id: employee_id,
-      },
-      {
-        timeout: 2500,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
+    try {
+      await axios.put(
+        `http://${server_ip}:${server_port}/notification`,
+        {
+          action: 'markAsViewed',
+          viewedAt: new Date(),
+          employee_id: employee_id,
         },
-      },
-    );
+        {
+          timeout: 2500,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao marcar notificações como visualizadas (notification_screen)');
+    }
   }
 
   const NotificationAge = (date) => {
