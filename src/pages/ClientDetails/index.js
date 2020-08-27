@@ -130,7 +130,6 @@ export default function ClientDetails(props) {
     setIsResetMacDialogVisible(false);
     ToastAndroid.show("Alteração solicitada", ToastAndroid.SHORT);
     loadAPI();
-
   }
 
   return (
