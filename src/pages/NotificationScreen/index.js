@@ -9,7 +9,6 @@ import {
   Alert
 } from 'react-native';
 
-import { useAsyncStorage } from '@react-native-community/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
 import axios from 'axios';
