@@ -12,6 +12,7 @@ const initialState = {
   employee_id: null,
   isAdmin: false,
   notification_count: 0,
+  oneSignalUserId: null,
 };
 
 const store = createContext(initialState);
@@ -29,6 +30,7 @@ const StateProvider = ({ children }) => {
           server_port: action.payload.server_port,
           employee_id: action.payload.employee_id,
           isAdmin: action.payload.isAdmin,
+          oneSignalUserId: action.payload.oneSignalUserId,
         };
 
       case 'RESTORE_TOKEN':
@@ -40,6 +42,7 @@ const StateProvider = ({ children }) => {
           employee_id: action.payload.employee_id,
           isLoading: false,
           isAdmin: action.payload.isAdmin,
+          oneSignalUserId: action.payload.oneSignalUserId,
         };
 
       case 'SIGN_OUT':
@@ -80,6 +83,7 @@ const StateProvider = ({ children }) => {
         server_port = await AsyncStorage.getItem('@server_port');
         employee_id = await AsyncStorage.getItem('@employee_id');
         isAdmin = await AsyncStorage.getItem('@isAdmin');
+        oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
         if (isAdmin === "false") {
           isAdmin = false;
@@ -98,6 +102,7 @@ const StateProvider = ({ children }) => {
           server_port,
           employee_id,
           isAdmin,
+          oneSignalUserId,
         }
       });
     };
@@ -126,6 +131,8 @@ const StateProvider = ({ children }) => {
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
           const isAdmin = ['@isAdmin', user.isAdmin.toString()];
 
+          const oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
+
           try {
             await AsyncStorage.multiSet([
               auth_token_key,
@@ -146,6 +153,7 @@ const StateProvider = ({ children }) => {
               server_port,
               employee_id: user.employee_id,
               isAdmin: user.isAdmin,
+              oneSignalUserId,
             }
           });
 
