@@ -9,6 +9,7 @@ import {
   Alert
 } from 'react-native';
 
+import { useAsyncStorage } from '@react-native-community/async-storage';
 import { useIsFocused } from '@react-navigation/native';
 import socketio from 'socket.io-client';
 import axios from 'axios';
@@ -41,7 +42,7 @@ export default function NotificationScreen({ navigation }) {
     previous_notifications
   } = NotificationStore.state;
 
-  const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
+  const { userToken, server_ip, server_port, employee_id, oneSignalUserId } = GlobalStore.state;
 
   const [refreshing, setRefreshing] = useState(false);
 
@@ -54,6 +55,7 @@ export default function NotificationScreen({ navigation }) {
     socketio(`http://${server_ip}:${server_port}`, {
       query: {
         employee_id,
+        oneSignalUserId: oneSignalUserId,
       }
     }), [employee_id]);
 
