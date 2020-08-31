@@ -1,87 +1,30 @@
-import React, { useEffect, useContext, useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  RefreshControl,
-  TouchableOpacity,
-  Alert
-} from 'react-native';
-
-import { useIsFocused } from '@react-navigation/native';
-import socketio from 'socket.io-client';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native';
+import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 
-import {
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInSeconds,
-  parseISO,
-  isToday
-} from 'date-fns';
-
 import AppHeader from '../../components/AppHeader/index';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 import { notification_store } from '../../store/notification';
 
-export default function NotificationScreen({ navigation }) {
-  const GlobalStore = useContext(store);
-  const NotificationStore = useContext(notification_store);
-
-  const { setNotifications, setAllAsViewed, setAsRead } = NotificationStore.methods;
-
-  const {
-    new_notifications,
-    today_notifications,
-    previous_notifications
-  } = NotificationStore.state;
-
-  const { userToken, server_ip, server_port, employee_id, oneSignalUserId } = GlobalStore.state;
-
+export default function NotificationScreen(props) {
   const [refreshing, setRefreshing] = useState(false);
 
-  const isFocused = useIsFocused(false);
+  const GlobalStore = useContext(store);
+  const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
+
+  const NotificationStore = useContext(notification_store);
+  const { setNotifications, setAsRead } = NotificationStore.methods;
 
   const [selectedNotificationID, setSelectedNotificationID] = useState(null);
 
-  let socket = null;
-  socket = useMemo(() =>
-    socketio(`http://${server_ip}:${server_port}`, {
-      query: {
-        employee_id,
-        oneSignalUserId: oneSignalUserId,
-      }
-    }), [employee_id]);
-
-  useEffect(() => {
-    console.log('socket inicializado');
-    socket.on('notification', notification => {
-      console.warn(notification);
-      const new_notifications_updated = [notification, ...new_notifications];
-
-      let count_unread = 0;
-      new_notifications_updated.map(item => {
-        if (item.viewed === false) {
-          count_unread++;
-        }
-      });
-
-      setNotifications(
-        count_unread,
-        new_notifications_updated,
-        today_notifications,
-        previous_notifications
-      );
-    });
-  }, [socket, new_notifications]);
+  const navigation = useNavigation();
 
   async function fetchNotifications() {
-
     try {
       setRefreshing(true);
 
@@ -95,9 +38,9 @@ export default function NotificationScreen({ navigation }) {
         },
       );
 
-      const new_notifications = [];
-      const today_notifications = [];
-      const previous_notifications = [];
+      const temp_new_notifications = [];
+      const temp_today_notifications = [];
+      const temp_previous_notifications = [];
 
       let count_unread = 0;
       response.data.notifications.map(item => {
@@ -105,12 +48,12 @@ export default function NotificationScreen({ navigation }) {
           differenceInMinutes(new Date(), parseISO(item.viewedAt));
 
         if (item.viewedAt === null || notificationAge <= 5) {
-          new_notifications.push(item);
+          temp_new_notifications.push(item);
         } else {
           if (isToday(parseISO(item.viewedAt))) {
-            today_notifications.push(item);
+            temp_today_notifications.push(item);
           } else {
-            previous_notifications.push(item);
+            temp_previous_notifications.push(item);
           }
         }
 
@@ -121,9 +64,9 @@ export default function NotificationScreen({ navigation }) {
 
       setNotifications(
         count_unread,
-        new_notifications,
-        today_notifications,
-        previous_notifications
+        temp_new_notifications,
+        temp_today_notifications,
+        temp_previous_notifications
       );
 
       setRefreshing(false);
@@ -131,33 +74,19 @@ export default function NotificationScreen({ navigation }) {
       setRefreshing(false);
       Alert.alert('Erro', 'Falha ao chamar a API (fetchNotifications at NotificationScreen)');
     }
-
   }
 
   useEffect(() => {
-    async function markAsViewedRoutine() {
-      if (isFocused && selectedNotificationID === null) {
-        setAllAsViewed(
-          new_notifications,
-          today_notifications,
-          previous_notifications
-        );
-        await markNotificationsAsViewed();
-      }
-    }
-
-    markAsViewedRoutine();
-  }, [isFocused]);
+    fetchNotifications();
+  }, []);
 
   async function markNotificationsAsRead(notification_id) {
-    setTimeout(() => {
-      setAsRead(
-        new_notifications,
-        today_notifications,
-        previous_notifications,
-        notification_id
-      );
-    }, 500);
+    setAsRead(
+      NotificationStore.state.new_notifications,
+      NotificationStore.state.today_notifications,
+      NotificationStore.state.previous_notifications,
+      notification_id
+    );
 
     try {
       await axios.put(
@@ -176,36 +105,21 @@ export default function NotificationScreen({ navigation }) {
     } catch (error) {
       Alert.alert('Erro', 'Falha ao marcar notificação como lida (notification_screen)');
     }
-
   }
 
   useEffect(() => {
-    if (isFocused && selectedNotificationID !== null) {
+    if (props.isFocused && selectedNotificationID !== null) {
       markNotificationsAsRead(selectedNotificationID);
       setSelectedNotificationID(null);
     }
 
-  }, [isFocused]);
+  }, [props.isFocused]);
 
-  async function markNotificationsAsViewed() {
-    try {
-      await axios.put(
-        `http://${server_ip}:${server_port}/notification`,
-        {
-          action: 'markAsViewed',
-          viewedAt: new Date(),
-          employee_id: employee_id,
-        },
-        {
-          timeout: 2500,
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        },
-      );
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao marcar notificações como visualizadas (notification_screen)');
-    }
+  async function handleNotificationPress(notification) {
+    const { id, nome, tipo, ip, plano } = notification.data.request_data;
+
+    setSelectedNotificationID(notification.data._id);
+    navigation.navigate('Details', { id, nome, tipo, ip, plano });
   }
 
   const NotificationAge = (date) => {
@@ -228,17 +142,6 @@ export default function NotificationScreen({ navigation }) {
 
     return duration;
   };
-
-  async function onRefresh() {
-    fetchNotifications();
-  }
-
-  async function handleNotificationPress(notification) {
-    const { id, nome, tipo, ip, plano } = notification.data.request_data;
-
-    setSelectedNotificationID(notification.data._id);
-    navigation.navigate('Details', { id, nome, tipo, ip, plano });
-  }
 
   const NotificationComponent = (notification) => {
     return (
@@ -273,15 +176,15 @@ export default function NotificationScreen({ navigation }) {
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={() => { onRefresh() }}
+                onRefresh={() => { fetchNotifications() }}
               />
             }
           >
-            {new_notifications.length !== 0 &&
+            {NotificationStore.state.new_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>Novas</Text>
                 <>
-                  {new_notifications.map((item, index) => {
+                  {NotificationStore.state.new_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -290,13 +193,13 @@ export default function NotificationScreen({ navigation }) {
               </>
             }
 
-            {today_notifications.length !== 0 &&
+            {NotificationStore.state.today_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Hoje
                 </Text>
                 <>
-                  {today_notifications.map((item, index) => {
+                  {NotificationStore.state.today_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
@@ -305,13 +208,13 @@ export default function NotificationScreen({ navigation }) {
               </>
             }
 
-            {previous_notifications.length !== 0 &&
+            {NotificationStore.state.previous_notifications.length !== 0 &&
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Anteriores
                 </Text>
                 <>
-                  {previous_notifications.map((item, index) => {
+                  {NotificationStore.state.previous_notifications.map((item, index) => {
                     return (
                       <NotificationComponent key={index} data={item} />
                     );
