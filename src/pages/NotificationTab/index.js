@@ -25,7 +25,6 @@ export default function NotificationTab() {
     }), [employee_id]);
 
   useEffect(() => {
-    console.log('socket is listening...');
     socket.on('notification', () => {
       addNewNotification();
     });
