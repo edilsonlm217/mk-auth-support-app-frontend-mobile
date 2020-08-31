@@ -76,7 +76,7 @@ const NotificationStateProvider = ({ children }) => {
         },
       );
     } catch (error) {
-      console.warn(error);
+      Alert.alert('Erro', 'Erro ao marcar notificações como lidas');
     }
   }
 
