@@ -18,7 +18,7 @@ import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
-import NotificationScreen from './pages/NotificationScreen/index';
+import NotificationTab from './pages/NotificationTab/index';
 
 import { fonts } from './styles/index';
 
@@ -57,7 +57,7 @@ function HomeTabs() {
       />
       <Tab.Screen
         name="Notification"
-        component={NotificationScreen}
+        component={NotificationTab}
         options={{
           tabBarBadge: NotificationStore.state.notification_count,
           tabBarLabel: 'Notificações',

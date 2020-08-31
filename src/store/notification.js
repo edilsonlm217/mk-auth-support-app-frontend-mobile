@@ -1,7 +1,7 @@
 import React, { createContext, useReducer, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
+import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 
 import { store } from '../store/store';
@@ -18,7 +18,9 @@ const notification_store = createContext(initialState);
 const { Provider } = notification_store;
 
 const NotificationStateProvider = ({ children }) => {
-  const [state, dispatch] = useReducer((prevState, action) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  function reducer(state, action) {
     switch (action.type) {
       case 'setNotifications':
         return {
@@ -30,15 +32,15 @@ const NotificationStateProvider = ({ children }) => {
 
       case 'setAllAsViewed':
         return {
-          notification_count: action.payload.notification_count,
-          new_notifications: action.payload.new_notifications,
-          today_notifications: action.payload.today_notifications,
-          previous_notifications: action.payload.previous_notifications,
+          notification_count: 0,
+          new_notifications: state.new_notifications,
+          today_notifications: state.today_notifications,
+          previous_notifications: state.previous_notifications,
         }
 
       case 'setAllAsRead':
         return {
-          ...prevState,
+          ...state,
           new_notifications: action.payload.new_notifications,
           today_notifications: action.payload.today_notifications,
           previous_notifications: action.payload.previous_notifications,
@@ -47,9 +49,36 @@ const NotificationStateProvider = ({ children }) => {
       default:
         throw new Error();
     };
-  }, initialState);
+  }
 
   const GlobalStore = useContext(store);
+
+  async function markAsViewed() {
+    dispatch({
+      type: 'setAllAsViewed'
+    });
+
+    try {
+      const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
+
+      await axios.put(
+        `http://${server_ip}:${server_port}/notification`,
+        {
+          action: 'markAsViewed',
+          viewedAt: new Date(),
+          employee_id: employee_id,
+        },
+        {
+          timeout: 5000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+    } catch (error) {
+      Alert.alert('Erro', 'Erro ao marcar notificações como lidas');
+    }
+  }
 
   async function fetchNotifications() {
     try {
@@ -128,33 +157,11 @@ const NotificationStateProvider = ({ children }) => {
           }
         });
       },
-      setAllAsViewed: (
-        new_notifications,
-        today_notifications,
-        previous_notifications
-      ) => {
-        const new_notifications_updated = [];
-
-        new_notifications.map(item => {
-          item.viewed = true;
-          new_notifications_updated.push(item);
-        });
-
-        let count_unread = 0;
-        new_notifications_updated.map(item => {
-          if (item.viewed === false) {
-            count_unread++;
-          }
-        });
-
-        dispatch({
-          type: 'setAllAsViewed', payload: {
-            notification_count: count_unread,
-            new_notifications,
-            today_notifications,
-            previous_notifications,
-          }
-        });
+      addNewNotification: () => {
+        fetchNotifications();
+      },
+      setAllAsViewed: () => {
+        markAsViewed();
       },
       setAsRead: (
         new_notifications,
