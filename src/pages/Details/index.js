@@ -87,10 +87,6 @@ export default function Details({ route, navigation }) {
     loadAPI();
   }, []);
 
-  useEffect(() => {
-    loadAPI();
-  }, [isFocused]);
-
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
       setIsDatePickerVisible(false);
