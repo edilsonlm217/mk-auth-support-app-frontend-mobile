@@ -1,6 +1,8 @@
-import React, { useContext, useEffect, useMemo } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import { AppState } from 'react-native'
 import socketio from 'socket.io-client';
 import { useIsFocused } from '@react-navigation/native';
+import BackgroundTimer from 'react-native-background-timer';
 
 import NotificationScreen from '../NotificationScreen/index';
 
@@ -15,6 +17,18 @@ export default function NotificationTab() {
   const { addNewNotification, setAllAsViewed } = NotificationStore.methods;
 
   const isFocused = useIsFocused(false);
+
+  const appState = useRef(AppState.currentState);
+
+  var interval;
+
+  useEffect(() => {
+    AppState.addEventListener("change", _handleAppStateChange);
+
+    return () => {
+      AppState.removeEventListener("change", _handleAppStateChange);
+    };
+  }, []);
 
   const socket = useMemo(() =>
     socketio(`http://${server_ip}:${server_port}`, {
@@ -36,6 +50,22 @@ export default function NotificationTab() {
       setAllAsViewed();
     }
   }, [isFocused]);
+
+
+
+  function _handleAppStateChange(nextAppState) {
+    if (
+      appState.current.match(/inactive|background/) && nextAppState === "active"
+    ) {
+      BackgroundTimer.clearInterval(interval);
+    } else {
+      interval = BackgroundTimer.setInterval(() => {
+        socket.emit('online')
+      }, 5000)
+
+      appState.current = nextAppState;
+    }
+  };
 
   return (
     <NotificationScreen isFocused={isFocused} />

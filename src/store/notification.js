@@ -59,13 +59,16 @@ const NotificationStateProvider = ({ children }) => {
     });
 
     try {
-      const { userToken, server_ip, server_port, employee_id } = GlobalStore.state;
+      const userToken = await AsyncStorage.getItem('@auth_token');
+      const server_ip = await AsyncStorage.getItem('@server_ip');
+      const server_port = await AsyncStorage.getItem('@server_port');
+      const employee_id = await AsyncStorage.getItem('@employee_id');
 
       await axios.put(
         `http://${server_ip}:${server_port}/notification`,
         {
           action: 'markAsViewed',
-          viewedAt: new Date(),
+          viewed_at: new Date(),
           employee_id: employee_id,
         },
         {
@@ -77,6 +80,7 @@ const NotificationStateProvider = ({ children }) => {
       );
     } catch (error) {
       Alert.alert('Erro', 'Erro ao marcar notificações como lidas');
+      console.warn(error);
     }
   }
 
@@ -105,19 +109,19 @@ const NotificationStateProvider = ({ children }) => {
         let count_unread = 0;
         response.data.notifications.map(item => {
           const notificationAge =
-            differenceInMinutes(new Date(), parseISO(item.viewedAt));
+            differenceInMinutes(new Date(), parseISO(item.viewed_at));
 
-          if (item.viewedAt === null || notificationAge <= 5) {
+          if (item.viewed_at === null || notificationAge <= 5) {
             new_notifications.push(item);
           } else {
-            if (isToday(parseISO(item.viewedAt))) {
+            if (isToday(parseISO(item.viewed_at))) {
               today_notifications.push(item);
             } else {
               previous_notifications.push(item);
             }
           }
 
-          if (item.viewed === false) {
+          if (item.is_viewed === false) {
             count_unread++;
           }
         });

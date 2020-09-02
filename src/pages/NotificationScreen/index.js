@@ -45,19 +45,19 @@ export default function NotificationScreen(props) {
       let count_unread = 0;
       response.data.notifications.map(item => {
         const notificationAge =
-          differenceInMinutes(new Date(), parseISO(item.viewedAt));
+          differenceInMinutes(new Date(), parseISO(item.viewed_at));
 
-        if (item.viewedAt === null || notificationAge <= 5) {
+        if (item.viewed_at === null || notificationAge <= 5) {
           temp_new_notifications.push(item);
         } else {
-          if (isToday(parseISO(item.viewedAt))) {
+          if (isToday(parseISO(item.viewed_at))) {
             temp_today_notifications.push(item);
           } else {
             temp_previous_notifications.push(item);
           }
         }
 
-        if (item.viewed === false) {
+        if (item.is_viewed === false) {
           count_unread++;
         }
       });
@@ -102,6 +102,8 @@ export default function NotificationScreen(props) {
           },
         },
       );
+
+
     } catch (error) {
       Alert.alert('Erro', 'Falha ao marcar notificação como lida (notification_screen)');
     }
@@ -109,17 +111,20 @@ export default function NotificationScreen(props) {
 
   useEffect(() => {
     if (props.isFocused && selectedNotificationID !== null) {
-      markNotificationsAsRead(selectedNotificationID);
+      fetchNotifications();
       setSelectedNotificationID(null);
     }
 
   }, [props.isFocused]);
 
   async function handleNotificationPress(notification) {
-    const { id, nome, tipo, ip, plano } = notification.data.request_data;
+    const request_data = JSON.parse(notification.data.request_data);
+    const { id, nome, tipo, ip, plano } = request_data;
 
-    setSelectedNotificationID(notification.data._id);
+    setSelectedNotificationID(notification.data.id);
     navigation.navigate('Details', { id, nome, tipo, ip, plano });
+
+    markNotificationsAsRead(notification.data.id);
   }
 
   const NotificationAge = (date) => {
@@ -146,7 +151,7 @@ export default function NotificationScreen(props) {
   const NotificationComponent = (notification) => {
     return (
       <TouchableOpacity onPress={() => handleNotificationPress(notification)}
-        style={notification.data.isRead
+        style={notification.data.is_read
           ? styles.notification_container_read
           : styles.notification_container_unread
         }
@@ -159,7 +164,7 @@ export default function NotificationScreen(props) {
             {notification.data.header}
           </Text>
           <Text style={styles.notification_sub_text}>
-            {`${notification.data.content}: há ${NotificationAge(notification.data.createdAt)}`}
+            {`${notification.data.content}: há ${NotificationAge(notification.data.created_at)}`}
           </Text>
         </View>
       </TouchableOpacity>
