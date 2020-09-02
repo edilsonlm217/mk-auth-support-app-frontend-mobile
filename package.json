@@ -25,6 +25,7 @@
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-android-location-services-dialog-box": "^2.8.2",
+    "react-native-background-timer": "^2.4.0",
     "react-native-chart-kit": "^6.4.1",
     "react-native-collapsible": "^1.5.3",
     "react-native-config": "^1.0.0",
