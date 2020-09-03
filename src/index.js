@@ -48,6 +48,7 @@ export default function App() {
     console.log('Data: ', openResult.notification.payload.additionalData);
     console.log('isActive: ', openResult.notification.isAppInFocus);
     console.log('openResult: ', openResult);
+    OneSignal.clearOneSignalNotifications();
   }
 
   async function onIds(device) {
@@ -61,7 +62,7 @@ export default function App() {
     <StateProvider>
       <NotificationStateProvider>
         <ClientStateProvider>
-          <NavigationContainer>
+          <NavigationContainer linking={linking}>
             <Route />
           </NavigationContainer>
         </ClientStateProvider>
