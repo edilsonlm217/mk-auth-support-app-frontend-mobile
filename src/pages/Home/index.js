@@ -5,6 +5,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
+import socketio from 'socket.io-client';
 import axios from 'axios';
 
 import { store } from '../../store/store';
@@ -20,7 +21,9 @@ import NoConnection from '../../assets/broken-link.png';
 import styles from './styles';
 import { icons } from '../../styles/index';
 
-export default function Home({ navigation }) {
+var socket;
+
+function Home({ navigation }) {
   const [date, setDate] = useState(new Date());
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
@@ -46,6 +49,14 @@ export default function Home({ navigation }) {
 
   // Estado que verificar se houve erro no carregamento dos dados da API
   const [isOutOfConnection, setIsOutOfConnection] = useState(false);
+
+  socket = useMemo(() =>
+    socketio(`http://${globalState.state.server_ip}:${globalState.state.server_port}`, {
+      query: {
+        employee_id: globalState.state.employee_id,
+        oneSignalUserId: globalState.state.oneSignalUserId,
+      }
+    }), [globalState.state.employee_id]);
 
   async function onRefresh() {
     loadAPI();
@@ -274,7 +285,7 @@ export default function Home({ navigation }) {
   return (
     <>
       <View style={styles.container}>
-      <AppHeader navigation={navigation} label="Chamados" altura="15%" iconFor="settings"/>
+        <AppHeader navigation={navigation} label="Chamados" altura="15%" iconFor="settings" />
         <View style={styles.date_selector}>
           <TouchableOpacity onPress={handlePrevDay}>
             <Icon name="chevron-left" size={icons.large} color="#FFF" />
@@ -319,3 +330,5 @@ export default function Home({ navigation }) {
     </>
   );
 }
+
+export { socket, Home }
