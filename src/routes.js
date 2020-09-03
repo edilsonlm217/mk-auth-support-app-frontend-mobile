@@ -9,7 +9,7 @@ import { store } from './store/store';
 import { notification_store } from './store/notification';
 import { icons } from './styles/index';
 
-import Home from './pages/Home/index';
+import { Home } from './pages/Home/index';
 import Details from './pages/Details/index';
 import InitialConfig from './pages/InitialConfig/index';
 import AuthScreen from './pages/AuthScreen/index';
@@ -100,7 +100,7 @@ function AuthStack() {
   );
 }
 
-function MainStack() {
+export default function MainStack() {
   const globalState = useContext(store);
   
   return (
@@ -205,12 +205,3 @@ function MainStack() {
   );
 }
 
-const RootStack = createStackNavigator();
-
-export default function App() {
-  return (
-    <RootStack.Navigator mode="modal" headerMode="none">
-      <RootStack.Screen name="Main" component={MainStack} />
-    </RootStack.Navigator>
-  );
-}
