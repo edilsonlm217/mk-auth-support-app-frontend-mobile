@@ -1,18 +1,14 @@
-import React, { useContext, useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { AppState } from 'react-native'
-import socketio from 'socket.io-client';
 import { useIsFocused } from '@react-navigation/native';
 import BackgroundTimer from 'react-native-background-timer';
 
 import NotificationScreen from '../NotificationScreen/index';
 
 import { notification_store } from '../../store/notification';
-import { store } from '../../store/store';
+import { socket } from '../Home/index';
 
 export default function NotificationTab() {
-  const GlobalStore = useContext(store);
-  const { server_ip, server_port, employee_id, oneSignalUserId } = GlobalStore.state;
-
   const NotificationStore = useContext(notification_store);
   const { addNewNotification, setAllAsViewed } = NotificationStore.methods;
 
@@ -30,14 +26,6 @@ export default function NotificationTab() {
     };
   }, []);
 
-  const socket = useMemo(() =>
-    socketio(`http://${server_ip}:${server_port}`, {
-      query: {
-        employee_id,
-        oneSignalUserId: oneSignalUserId,
-      }
-    }), [employee_id]);
-
   useEffect(() => {
     socket.on('notification', () => {
       addNewNotification();
@@ -50,8 +38,6 @@ export default function NotificationTab() {
       setAllAsViewed();
     }
   }, [isFocused]);
-
-
 
   function _handleAppStateChange(nextAppState) {
     if (
