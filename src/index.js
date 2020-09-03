@@ -62,7 +62,7 @@ export default function App() {
     <StateProvider>
       <NotificationStateProvider>
         <ClientStateProvider>
-          <NavigationContainer linking={linking}>
+          <NavigationContainer>
             <Route />
           </NavigationContainer>
         </ClientStateProvider>
