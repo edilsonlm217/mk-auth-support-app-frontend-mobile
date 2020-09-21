@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions
+} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -27,14 +34,25 @@ export default function SearchScreen() {
 
         <View style={styles.search_container}>
           <View style={styles.search_bar}>
-            <TextInput placeholder="O que deseja buscar?" style={styles.search_input} />
+            <TextInput
+              placeholder="O que deseja buscar?"
+              style={styles.search_input}
+            />
             <TouchableOpacity>
-              <SearchBtn icon_color="#F9F9F9" bg_color='#004C8F' icon_name="search" />
+              <SearchBtn
+                icon_color="#F9F9F9"
+                bg_color='#004C8F'
+                icon_name="search"
+              />
             </TouchableOpacity>
           </View>
 
           <TouchableOpacity style={{ marginLeft: 5, marginRight: 5 }}>
-            <SearchBtn icon_color="#004C8F" bg_color='#F7F7F7' icon_name="tune" />
+            <SearchBtn
+              icon_color="#004C8F"
+              bg_color='#F7F7F7'
+              icon_name="tune"
+            />
           </TouchableOpacity>
         </View>
       </View>
