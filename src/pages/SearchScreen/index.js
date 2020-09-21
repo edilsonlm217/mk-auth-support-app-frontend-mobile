@@ -7,16 +7,56 @@ import {
   TouchableOpacity,
   Dimensions,
   Image,
+  FlatList,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
 
 import search_illustration from '../../assets/search.png'
 
 export default function SearchScreen() {
+  const data = [
+    {
+      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
+      name: 'Edilson Rocha Lima',
+      status: 'online',
+    },
+    {
+      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
+      name: 'Moany Rocha Lima',
+      status: 'online',
+    },
+    {
+      id: '58694a0f-3da1-471f-bd96-145571e29d72',
+      name: 'Dona Joana da Silva',
+      status: 'online',
+    },
+  ];
+
   const headerHeight = Dimensions.get('window').height * 23 / 100;
+
+  const renderItem = ({ item }) => {
+    return (
+      <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12 }}>
+        <Text numberOfLines={1} style={{ flex: 1 }}>Edilson Rocha Lima</Text>
+        <View style={styles.search_result_row}>
+          <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
+          <MaterialIcon name='chevron-right' color="#000000" size={20} />
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const renderSeparator = () => {
+    return (
+      <View
+        style={{ borderWidth: StyleSheet.hairlineWidth, borderColor: '#CBCBCB' }}
+      />
+    );
+  };
 
   const SearchBtn = ({ icon_color, bg_color, icon_name }) => {
     return (
@@ -60,12 +100,22 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      <View style={styles.illustration_container}>
+      <View>
+        <FlatList
+          style={styles.scrollview_container}
+          ItemSeparatorComponent={renderSeparator}
+          data={data}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+        />
+      </View>
+
+      {/* <View style={styles.illustration_container}>
         <Image source={search_illustration} />
         <Text
           style={styles.illustration_subtitle}
         >Informe o nome ou CPF do cliente para começar</Text>
-      </View>
+      </View> */}
     </View>
   );
 }
@@ -126,6 +176,24 @@ const styles = StyleSheet.create({
 
   illustration_subtitle: {
     fontFamily: 'Roboto-Light',
-    color: '#004C8F'
+    color: '#004C8F',
+    textAlign: 'center',
+  },
+
+  scrollview_container: {
+    marginTop: 50,
+    backgroundColor: '#F7F7F7',
+    marginLeft: 10,
+    marginRight: 10,
+    borderColor: '#707070',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 5,
+  },
+
+  search_result_row: {
+    flexDirection: 'row',
+    width: '20%',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
 });
