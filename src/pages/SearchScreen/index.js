@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -9,15 +9,51 @@ import {
   Image,
   FlatList,
 } from 'react-native';
+import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { fonts } from '../../styles/index';
+import { store } from '../../store/store';
 
 import search_illustration from '../../assets/search.png'
 
 export default function SearchScreen() {
+  const globalStore = useContext(store);
+  const { server_ip, server_port, userToken } = globalStore.state
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [filterMode, setFilterMode] = useState('enable');
+
+  const [searchResult, setSearchResult] = useState([]);
+
+  async function searchFor(term) {
+    const response = await axios.get(
+      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}`,
+      {
+        timeout: 2500,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      }
+    );
+
+    if (response.data) {
+      response.data.map(item => {
+        item.nome = capitalize(item.nome);
+      });
+
+      console.log(response.data);
+      setSearchResult(response.data);
+    }
+  }
+
+  function capitalize(string) {
+    return string.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+  }
+
   const data = [
     {
       id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
@@ -41,7 +77,7 @@ export default function SearchScreen() {
   const renderItem = ({ item }) => {
     return (
       <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12 }}>
-        <Text numberOfLines={1} style={{ flex: 1 }}>Edilson Rocha Lima</Text>
+        <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
         <View style={styles.search_result_row}>
           <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
           <MaterialIcon name='chevron-right' color="#000000" size={20} />
@@ -58,12 +94,25 @@ export default function SearchScreen() {
     );
   };
 
-  const SearchBtn = ({ icon_color, bg_color, icon_name }) => {
-    return (
-      <View style={[styles.search_btn, { backgroundColor: bg_color }]}>
-        <Icon name={icon_name} color={icon_color} size={22} />
-      </View>
-    );
+  const SearchBtn = ({ btn_for, icon_color, bg_color, icon_name }) => {
+    if (btn_for === 'search') {
+      return (
+        <TouchableOpacity
+          onPress={() => searchFor(searchTerm)}
+          style={[styles.search_btn, { backgroundColor: bg_color }]}
+        >
+          <Icon name={icon_name} color={icon_color} size={22} />
+        </TouchableOpacity>
+      );
+    };
+
+    if (btn_for === 'search_tunning') {
+      return (
+        <TouchableOpacity style={[styles.search_btn, { backgroundColor: bg_color }]}>
+          <Icon name={icon_name} color={icon_color} size={22} />
+        </TouchableOpacity>
+      );
+    }
   };
 
   return (
@@ -79,10 +128,12 @@ export default function SearchScreen() {
           <View style={styles.search_bar}>
             <TextInput
               placeholder="O que deseja buscar?"
+              onChangeText={text => setSearchTerm(text)}
               style={styles.search_input}
             />
             <TouchableOpacity>
               <SearchBtn
+                btn_for="search"
                 icon_color="#F9F9F9"
                 bg_color='#004C8F'
                 icon_name="search"
@@ -92,6 +143,7 @@ export default function SearchScreen() {
 
           <TouchableOpacity style={{ marginLeft: 5, marginRight: 5 }}>
             <SearchBtn
+              btn_for="search_tunning"
               icon_color="#004C8F"
               bg_color='#F7F7F7'
               icon_name="tune"
@@ -100,22 +152,27 @@ export default function SearchScreen() {
         </View>
       </View>
 
-      <View>
-        <FlatList
-          style={styles.scrollview_container}
-          ItemSeparatorComponent={renderSeparator}
-          data={data}
-          renderItem={renderItem}
-          keyExtractor={item => item.id}
-        />
-      </View>
+      {searchResult.length !== 0 &&
+        <View>
+          <FlatList
+            style={styles.scrollview_container}
+            ItemSeparatorComponent={renderSeparator}
+            data={searchResult}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+          />
+        </View>
+      }
 
-      {/* <View style={styles.illustration_container}>
-        <Image source={search_illustration} />
-        <Text
-          style={styles.illustration_subtitle}
-        >Informe o nome ou CPF do cliente para começar</Text>
-      </View> */}
+      {searchResult.length === 0 &&
+        <View style={styles.illustration_container}>
+          <Image source={search_illustration} />
+          <Text
+            style={styles.illustration_subtitle}
+          >Informe o nome ou CPF do cliente para começar</Text>
+        </View>
+      }
+
     </View>
   );
 }
@@ -188,6 +245,7 @@ const styles = StyleSheet.create({
     borderColor: '#707070',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
+    marginBottom: 190,
   },
 
   search_result_row: {
