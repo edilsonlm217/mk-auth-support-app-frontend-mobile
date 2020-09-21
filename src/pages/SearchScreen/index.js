@@ -5,15 +5,18 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Dimensions
+  Dimensions,
+  Image,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import { fonts } from '../../styles/index';
 
+import search_illustration from '../../assets/search.png'
+
 export default function SearchScreen() {
-  const headerHeight = Dimensions.get('window').height * 21 / 100;
+  const headerHeight = Dimensions.get('window').height * 23 / 100;
 
   const SearchBtn = ({ icon_color, bg_color, icon_name }) => {
     return (
@@ -24,7 +27,7 @@ export default function SearchScreen() {
   };
 
   return (
-    <>
+    <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       <View style={[styles.container, { height: headerHeight }]}>
         <View style={styles.header_container}>
           <Text numberOfLines={1} style={styles.header_title}>
@@ -56,13 +59,22 @@ export default function SearchScreen() {
           </TouchableOpacity>
         </View>
       </View>
-    </>
+
+      <View style={styles.illustration_container}>
+        <Image source={search_illustration} />
+        <Text
+          style={styles.illustration_subtitle}
+        >Informe o nome ou CPF do cliente para começar</Text>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#337AB7',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
 
   header_title: {
@@ -104,5 +116,16 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 0,
     paddingLeft: 10,
+  },
+
+  illustration_container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  illustration_subtitle: {
+    fontFamily: 'Roboto-Light',
+    color: '#004C8F'
   },
 });
