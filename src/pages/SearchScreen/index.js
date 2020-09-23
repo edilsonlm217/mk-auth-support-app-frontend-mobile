@@ -11,6 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import axios from 'axios';
+import Modal from 'react-native-modal';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -28,7 +29,23 @@ export default function SearchScreen() {
 
   const [filterMode, setFilterMode] = useState('enable');
 
+  const [filterOP] = useState([
+    { id: 1, label: 'Clientes ativados' },
+    { id: 2, label: 'Clientes desativados' },
+  ]);
+
+  const [filterBY] = useState([
+    { id: 1, label: 'Nome ou CPF' },
+    { id: 2, label: 'Caixa Hermética' },
+    { id: 3, label: 'Endereço' },
+    { id: 4, label: 'Vencimento' },
+    { id: 5, label: 'SSID' },
+  ]);
+
+
   const [searchResult, setSearchResult] = useState([]);
+
+  const [isVisible, setIsVisible] = useState(false);
 
   async function searchFor(term) {
     const response = await axios.get(
@@ -109,12 +126,16 @@ export default function SearchScreen() {
 
     if (btn_for === 'search_tunning') {
       return (
-        <TouchableOpacity style={[styles.search_btn, { backgroundColor: bg_color }]}>
+        <TouchableOpacity onPress={() => setIsVisible(true)} style={[styles.search_btn, { backgroundColor: bg_color }]}>
           <Icon name={icon_name} color={icon_color} size={22} />
         </TouchableOpacity>
       );
     }
   };
+
+  function handleModalClosing() {
+    setIsVisible(false);
+  }
 
   return (
     <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
@@ -197,6 +218,75 @@ export default function SearchScreen() {
           >Informe o nome ou CPF do cliente para começar</Text>
         </View>
       }
+
+      <Modal
+        onBackButtonPress={handleModalClosing}
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_style}>
+            <View style={{ alignItems: 'flex-end' }}>
+              <Icon name="close" size={18} color="#000" />
+            </View>
+
+            <Text style={{
+              fontFamily: 'Roboto-Medium',
+              fontSize: 16,
+              marginBottom: 20,
+            }}>Buscar em</Text>
+
+            <FlatList
+              style={{ marginBottom: 20 }}
+              ItemSeparatorComponent={renderSeparator}
+              data={filterOP}
+              renderItem={({ item }) => (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 35 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ backgroundColor: '#337AB7', width: 5, height: '100%' }} />
+                    <Text style={{ fontFamily: 'Roboto-Light', marginLeft: 40 }}>{item.label}</Text>
+                  </View>
+                  <View style={{ alignSelf: 'flex-end' }}>
+                    <Icon name="check" color="#337AB7" size={22} />
+                  </View>
+                </View>
+              )}
+              keyExtractor={item => item.id}
+            />
+
+            <Text style={{
+              fontFamily: 'Roboto-Medium',
+              fontSize: 16,
+              marginBottom: 10,
+            }}>Buscar por</Text>
+
+            <FlatList
+              ItemSeparatorComponent={renderSeparator}
+              data={filterBY}
+              renderItem={({ item }) => (
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 35 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={{ backgroundColor: '#337AB7', width: 5, height: '100%' }} />
+                    <Text style={{ fontFamily: 'Roboto-Light', marginLeft: 40 }}>{item.label}</Text>
+                  </View>
+                  <View style={{ alignSelf: 'flex-end' }}>
+                    <Icon name="check" color="#337AB7" size={22} />
+                  </View>
+                </View>
+              )}
+              keyExtractor={item => item.id}
+            />
+
+            <View style={{ marginTop: 20, marginBottom: 10, borderWidth: 2, borderRadius: 5, borderColor: '#337AB7', alignItems: 'center' }}>
+              <Text style={{ fontFamily: 'Roboto-Medium', color: "#337AB7", padding: 7 }}>Aplicar filtros</Text>
+            </View>
+
+          </View>
+        }
+        isVisible={isVisible}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
 
     </View>
   );
@@ -314,5 +404,17 @@ const styles = StyleSheet.create({
 
   flex_filter_container: {
     width: '100%',
+  },
+
+  modal_style: {
+    position: "absolute",
+    width: '100%',
+    backgroundColor: "#FFF",
+    bottom: 0,
+    padding: 20,
+    paddingTop: 10,
+    paddingBottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 });
