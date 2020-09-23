@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import axios from 'axios';
 import Modal from 'react-native-modal';
@@ -26,8 +27,6 @@ export default function SearchScreen() {
   const { server_ip, server_port, userToken } = globalStore.state;
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  const [filterMode, setFilterMode] = useState('enable');
 
   const [preFilter, setPreFilter] = useState({
     filterOP: 'Clientes ativados',
@@ -52,8 +51,23 @@ export default function SearchScreen() {
   const [isVisible, setIsVisible] = useState(false);
 
   async function searchFor(term) {
+    var filterByID;
+    var filterMode = 'enable';
+
+    filterOP.map(item => {
+      if (item.isActive && item.id !== 1) {
+        filterMode = 'disable';
+      }
+    });
+
+    filterBY.map(item => {
+      if (item.isActive) {
+        filterByID = item.id;
+      }
+    });
+
     const response = await axios.get(
-      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}`,
+      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
       {
         timeout: 2500,
         headers: {
