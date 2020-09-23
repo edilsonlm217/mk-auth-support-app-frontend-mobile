@@ -73,7 +73,7 @@ export default function SearchScreen() {
     const response = await axios.get(
       `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
       {
-        timeout: 2500,
+        timeout: 7000,
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
@@ -107,7 +107,11 @@ export default function SearchScreen() {
       }}>
         <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
         <View style={styles.search_result_row}>
-          <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
+          <MaterialIcon
+            name='checkbox-blank-circle'
+            color={item.equipment_array === 'Online' ? 'green' : 'red'}
+            size={12}
+          />
           <MaterialIcon name='chevron-right' color="#000000" size={20} />
         </View>
       </TouchableOpacity>
