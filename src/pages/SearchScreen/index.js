@@ -34,16 +34,16 @@ export default function SearchScreen() {
     filterBY: 'Nome ou CPF',
   });
 
-  const [filterOP] = useState([
+  const [filterOP, setFilterOP] = useState([
     { id: 1, label: 'Clientes ativados', isActive: true },
     { id: 2, label: 'Clientes desativados', isActive: false },
   ]);
 
-  const [filterBY] = useState([
+  const [filterBY, setFilterBY] = useState([
     { id: 1, label: 'Nome ou CPF', isActive: true },
     { id: 2, label: 'Caixa Hermética', isActive: false },
-    { id: 3, label: 'Endereço', isActive: false },
-    { id: 4, label: 'Vencimento', isActive: false },
+    // { id: 3, label: 'Endereço', isActive: false },
+    // { id: 4, label: 'Vencimento', isActive: false },
     { id: 5, label: 'SSID', isActive: false },
   ]);
 
@@ -170,6 +170,48 @@ export default function SearchScreen() {
     setIsVisible(false);
   }
 
+  function setDefaultFilerOP() {
+    const new_filterOP = [];
+
+    filterOP.map(item => {
+      if (item.id === 1) {
+        item.isActive = true;
+
+        setPreFilter({
+          filterOP: item.label,
+          filterBY: preFilter.filterBY,
+        });
+      } else {
+        item.isActive = false;
+      }
+
+      new_filterOP.push(item);
+    });
+
+    setFilterOP(new_filterOP);
+  }
+
+  function setDefaultFilerBY() {
+    const new_filterBY = [];
+
+    filterBY.map(item => {
+      if (item.id === 1) {
+        item.isActive = true;
+
+        setPreFilter({
+          filterBY: item.label,
+          filterOP: preFilter.filterOP,
+        });
+      } else {
+        item.isActive = false;
+      }
+
+      new_filterBY.push(item);
+    });
+
+    setFilterBY(new_filterBY);
+  }
+
   return (
     <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       <View style={[styles.container, { height: headerHeight }]}>
@@ -214,18 +256,36 @@ export default function SearchScreen() {
             contentContainerStyle={{ minWidth: '100%', justifyContent: 'center' }}
             showsHorizontalScrollIndicator={false}
           >
-            <View style={styles.filter_card}>
-              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
-                Apenas clientes desativados
-              </Text>
-              <Icon name="close" size={16} color="#004C8F" />
-            </View>
-            <View style={styles.filter_card}>
-              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
-                Caixa Hermética
-              </Text>
-              <Icon name="close" size={16} color="#004C8F" />
-            </View>
+            {filterOP.map(item => {
+              if (item.isActive && item.label !== "Clientes ativados") {
+                return (
+                  <View style={styles.filter_card} >
+                    <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                      {item.label}
+                    </Text>
+                    <TouchableOpacity onPress={() => setDefaultFilerOP()}>
+                      <Icon name="close" size={16} color="#004C8F" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })}
+
+            {filterBY.map(item => {
+              if (item.isActive && item.label !== "Nome ou CPF") {
+                return (
+                  <View style={styles.filter_card}>
+                    <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                      {item.label}
+                    </Text>
+                    <TouchableOpacity onPress={() => setDefaultFilerBY()}>
+                      <Icon name="close" size={16} color="#004C8F" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })}
+
           </ScrollView>
         </View>
 
