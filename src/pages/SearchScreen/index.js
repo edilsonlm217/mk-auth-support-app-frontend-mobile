@@ -8,6 +8,7 @@ import {
   Dimensions,
   Image,
   FlatList,
+  ScrollView,
 } from 'react-native';
 import axios from 'axios';
 
@@ -21,7 +22,7 @@ import search_illustration from '../../assets/search.png'
 
 export default function SearchScreen() {
   const globalStore = useContext(store);
-  const { server_ip, server_port, userToken } = globalStore.state
+  const { server_ip, server_port, userToken } = globalStore.state;
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -150,6 +151,30 @@ export default function SearchScreen() {
             />
           </TouchableOpacity>
         </View>
+
+        <View style={styles.filter_container}>
+          <ScrollView
+            style={styles.flex_filter_container}
+            horizontal={true}
+            centerContent={true}
+            contentContainerStyle={{ minWidth: '100%', justifyContent: 'center' }}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={styles.filter_card}>
+              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                Apenas clientes desativados
+              </Text>
+              <Icon name="close" size={16} color="#004C8F" />
+            </View>
+            <View style={styles.filter_card}>
+              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                Caixa Hermética
+              </Text>
+              <Icon name="close" size={16} color="#004C8F" />
+            </View>
+          </ScrollView>
+        </View>
+
       </View>
 
       {searchResult.length !== 0 &&
@@ -216,7 +241,7 @@ const styles = StyleSheet.create({
   search_container: {
     flexDirection: 'row',
     marginLeft: 5,
-    marginTop: 30
+    marginTop: 15,
   },
 
   search_input: {
@@ -253,5 +278,41 @@ const styles = StyleSheet.create({
     width: '20%',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+
+  filter_container: {
+    position: 'absolute',
+    bottom: -15,
+    width: '100%',
+    height: 30,
+  },
+
+  filter_card: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
+    backgroundColor: '#FFF',
+    borderRadius: 3,
+    height: 28,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 5,
+  },
+
+  flex_filter_container: {
+    width: '100%',
   },
 });
