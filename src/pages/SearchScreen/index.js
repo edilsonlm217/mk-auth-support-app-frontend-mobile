@@ -1,352 +1,527 @@
-import React, { useRef, useContext, useReducer, useEffect, useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
-  TextInput,
   Text,
+  TextInput,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
+  Image,
   FlatList,
-  RefreshControl
+  ScrollView,
 } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import axios from 'axios';
+import Modal from 'react-native-modal';
 
-import { searchUtil } from '../../utils/search';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
-import { fonts, icons } from '../../styles/index';
 
-import SearchIcon from 'react-native-vector-icons/Ionicons';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import search_illustration from '../../assets/search.png'
 
-export default function ClientsScreen({ navigation }) {
-  const globalState = useContext(store);
+export default function SearchScreen() {
+  const globalStore = useContext(store);
+  const { server_ip, server_port, userToken } = globalStore.state;
 
-  const refInput = useRef(null);
-
-  // Hook para verificar se a tela atual está focada
-  const isFocused = useIsFocused(false);
-
-  const [state, dispatch] = useReducer(reducer, {
-    clients: [],
-    loading: false,
-    search_term: '',
-  });
-
-  function reducer(state, action) {
-    switch (action.type) {
-      case 'clearState':
-        return {
-          ...state,
-          clients: [],
-          search_term: '',
-        }
-
-      case 'setSearchResult':
-        return {
-          ...state,
-          loading: false,
-          clients: action.payload.clients
-        }
-
-      case 'setSearchTerm':
-        return {
-          ...state,
-          search_term: action.payload.search_term,
-        }
-
-      case 'loadingInit':
-        return {
-          ...state,
-          loading: true,
-        }
-
-      default:
-        break;
-    }
-  }
+  const [searchTerm, setSearchTerm] = useState('');
 
   const [filterMode, setFilterMode] = useState('enable');
 
-  useEffect(() => {
-    if (isFocused) {
-      setTimeout(() => {
-        refInput.current.focus();
-      }, 250);
-    }
-  }, [isFocused]);
+  const [preFilter, setPreFilter] = useState({
+    filterOP: 'Clientes ativados',
+    filterBY: 'Nome ou CPF',
+  });
 
-  function onChangeHandler(text) {
-    search(text);
+  const [filterOP] = useState([
+    { id: 1, label: 'Clientes ativados', isActive: true },
+    { id: 2, label: 'Clientes desativados', isActive: false },
+  ]);
 
-    dispatch({
-      type: 'setSearchTerm',
-      payload: {
-        search_term: text,
-      },
-    });
-  }
+  const [filterBY] = useState([
+    { id: 1, label: 'Nome ou CPF', isActive: true },
+    { id: 2, label: 'Caixa Hermética', isActive: false },
+    { id: 3, label: 'Endereço', isActive: false },
+    { id: 4, label: 'Vencimento', isActive: false },
+    { id: 5, label: 'SSID', isActive: false },
+  ]);
 
-  useEffect(() => {
-    search(state.search_term);
-  }, [filterMode]);
+  const [searchResult, setSearchResult] = useState([]);
 
-  async function search(term) {
-    dispatch({
-      type: 'loadingInit',
-    });
+  const [isVisible, setIsVisible] = useState(false);
 
-    const response = await searchUtil(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/search?term=${term}&searchmode=${filterMode}`,
+  async function searchFor(term) {
+    const response = await axios.get(
+      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}`,
       {
         timeout: 2500,
         headers: {
-          Authorization: `Bearer ${globalState.state.userToken}`,
+          Authorization: `Bearer ${userToken}`,
         },
       }
     );
 
-    if (response) {
-      response.map(item => {
+    if (response.data) {
+      response.data.map(item => {
         item.nome = capitalize(item.nome);
       });
 
-      dispatch({
-        type: 'setSearchResult',
-        payload: {
-          clients: response,
-        },
-      });
+      console.log(response.data);
+      setSearchResult(response.data);
     }
   }
 
-  function capitalize(input) {
-    return input.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
+  function capitalize(string) {
+    return string.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
   }
 
-  function navigateToClient(client_id, client_name) {
-    navigation.navigate('ClientScreen', {
-      client_id,
-      client_name,
-    });
-  }
+  const headerHeight = Dimensions.get('window').height * 23 / 100;
 
-  function renderItem({ item }) {
+  const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity onPress={() => navigateToClient(item.id, item.nome)} style={styles.client_btn}>
-        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Text numberOfLines={1} style={styles.search_result_label}>{item.nome}</Text>
+      <TouchableOpacity style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 12
+      }}>
+        <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
+        <View style={styles.search_result_row}>
+          <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
+          <MaterialIcon name='chevron-right' color="#000000" size={20} />
         </View>
-        <Icon name={'chevron-right'} size={icons.super_tiny} color={'#000'} />
       </TouchableOpacity>
     );
-  }
+  };
 
-  function FlatListItemSeparator() {
+  const renderSeparator = () => {
     return (
       <View
-        style={styles.separator}
+        style={{ borderWidth: StyleSheet.hairlineWidth, borderColor: '#CBCBCB' }}
       />
     );
-  }
+  };
 
-  function handleClearInputText() {
-    refInput.current.clear();
+  const SearchBtn = ({ btn_for, icon_color, bg_color, icon_name }) => {
+    if (btn_for === 'search') {
+      return (
+        <TouchableOpacity
+          onPress={() => searchFor(searchTerm)}
+          style={[styles.search_btn, { backgroundColor: bg_color }]}
+        >
+          <Icon name={icon_name} color={icon_color} size={22} />
+        </TouchableOpacity>
+      );
+    };
 
-    dispatch({
-      type: 'clearState'
+    if (btn_for === 'search_tunning') {
+      return (
+        <TouchableOpacity
+          onPress={() => setIsVisible(true)}
+          style={[styles.search_btn, { backgroundColor: bg_color }]}
+        >
+          <Icon name={icon_name} color={icon_color} size={22} />
+        </TouchableOpacity>
+      );
+    }
+  };
+
+  function handleModalClosing() {
+    var prev_filterOP;
+    var prev_filterBY;
+
+    filterOP.map(item => {
+      if (item.isActive) {
+        prev_filterOP = item.label;
+      }
     });
+
+    filterBY.map(item => {
+      if (item.isActive) {
+        prev_filterBY = item.label;
+      }
+    });
+
+    setPreFilter({
+      filterOP: prev_filterOP,
+      filterBY: prev_filterBY,
+    });
+
+    setIsVisible(false);
   }
 
-  function switchFilter(filterValue) {
-    setFilterMode(filterValue);
+  function applyFilter() {
+    filterOP.map(item => {
+      if (item.label === preFilter.filterOP) {
+        item.isActive = true;
+      } else {
+        item.isActive = false;
+      }
+    });
+
+    filterBY.map(item => {
+      if (item.label === preFilter.filterBY) {
+        item.isActive = true;
+      } else {
+        item.isActive = false;
+      }
+    });
+
+    setIsVisible(false);
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.search_area} >
-        <View style={styles.icon_container}>
-          <SearchIcon name='search' size={18} color='#b0b0b0' />
+    <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
+      <View style={[styles.container, { height: headerHeight }]}>
+        <View style={styles.header_container}>
+          <Text numberOfLines={1} style={styles.header_title}>
+            Buscar clientes
+          </Text>
         </View>
-        <View style={{ flex: 1 }}>
-          <TextInput
-            ref={refInput}
-            onChangeText={text => onChangeHandler(text)}
-            style={styles.input_style}
-            placeholder="Ex: João Carlos"
+
+        <View style={styles.search_container}>
+          <View style={styles.search_bar}>
+            <TextInput
+              placeholder="O que deseja buscar?"
+              onChangeText={text => setSearchTerm(text)}
+              style={styles.search_input}
+            />
+            <TouchableOpacity>
+              <SearchBtn
+                btn_for="search"
+                icon_color="#F9F9F9"
+                bg_color='#004C8F'
+                icon_name="search"
+              />
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={{ marginLeft: 5, marginRight: 5 }}>
+            <SearchBtn
+              btn_for="search_tunning"
+              icon_color="#004C8F"
+              bg_color='#F7F7F7'
+              icon_name="tune"
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.filter_container}>
+          <ScrollView
+            style={styles.flex_filter_container}
+            horizontal={true}
+            centerContent={true}
+            contentContainerStyle={{ minWidth: '100%', justifyContent: 'center' }}
+            showsHorizontalScrollIndicator={false}
+          >
+            <View style={styles.filter_card}>
+              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                Apenas clientes desativados
+              </Text>
+              <Icon name="close" size={16} color="#004C8F" />
+            </View>
+            <View style={styles.filter_card}>
+              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                Caixa Hermética
+              </Text>
+              <Icon name="close" size={16} color="#004C8F" />
+            </View>
+          </ScrollView>
+        </View>
+
+      </View>
+
+      {
+        searchResult.length !== 0 &&
+        <View>
+          <FlatList
+            style={styles.scrollview_container}
+            ItemSeparatorComponent={renderSeparator}
+            data={searchResult}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
           />
         </View>
-        <TouchableOpacity
-          style={styles.icon_container}
-          onPress={() => handleClearInputText()}
-        >
-          <Icon name="close" size={18} color={'#b0b0b0'} />
-        </TouchableOpacity>
-      </View>
+      }
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          alignSelf: 'center',
-          backgroundColor: '#FFF',
-          borderRadius: 3,
-          padding: 2,
-        }}
-      >
-        <TouchableOpacity
-          onPress={() => switchFilter('enable')}
-          style={filterMode === 'enable' && {
-            borderColor: 'blue',
-            borderWidth: StyleSheet.hairlineWidth,
-            borderRadius: 3,
-            color: '#b0b0b0',
-            alignItems: 'center',
-          }}
-        >
+      {
+        searchResult.length === 0 &&
+        <View style={styles.illustration_container}>
+          <Image source={search_illustration} />
           <Text
-            style={filterMode === 'enable'
-              ? {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#000',
-              }
-              : {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#b0b0b0',
-              }
-            }
-          >
-            Ativados
-          </Text>
-        </TouchableOpacity>
+            style={styles.illustration_subtitle}
+          >Informe o nome ou CPF do cliente para começar</Text>
+        </View>
+      }
 
-        <TouchableOpacity
-          onPress={() => switchFilter('disable')}
-          style={filterMode === 'disable' && {
-            borderColor: 'blue',
-            borderWidth: StyleSheet.hairlineWidth,
-            borderRadius: 3,
-            color: '#b0b0b0'
-          }}
-        >
-          <Text
-            style={filterMode === 'disable'
-              ? {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#000',
-              }
-              : {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#b0b0b0',
-              }
-            }
-          >
-            Desativados
-          </Text>
-        </TouchableOpacity>
+      <Modal
+        onBackButtonPress={handleModalClosing}
+        onBackdropPress={handleModalClosing}
+        children={
+          <View style={styles.modal_style}>
+            <TouchableOpacity
+              onPress={() => handleModalClosing()}
+              style={{ alignItems: 'flex-end' }}
+            >
+              <Icon name="close" size={22} color="#000" />
+            </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => switchFilter('all')}
-          style={filterMode === 'all' && {
-            borderColor: 'blue',
-            borderWidth: StyleSheet.hairlineWidth,
-            borderRadius: 3,
-            color: '#b0b0b0'
-          }}
-        >
-          <Text
-            style={filterMode === 'all'
-              ? {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#000',
-              }
-              : {
-                padding: 3,
-                paddingLeft: 10,
-                paddingRight: 10,
-                color: '#b0b0b0',
-              }
-            }
-          >
-            Todos
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <Text style={{
+              fontFamily: 'Roboto-Medium',
+              fontSize: 16,
+              marginBottom: 20,
+            }}>Buscar em</Text>
 
-      <View style={styles.flatlist_container}>
-        <FlatList
-          keyboardShouldPersistTaps="always"
-          data={state.clients}
-          renderItem={renderItem}
-          keyExtractor={item => item.id.toString()}
-          ItemSeparatorComponent={FlatListItemSeparator}
-          refreshControl={
-            <RefreshControl refreshing={state.loading} />
-          }
-        />
-      </View>
-    </View>
+            <FlatList
+              style={{ marginBottom: 20 }}
+              ItemSeparatorComponent={renderSeparator}
+              data={filterOP}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => setPreFilter({
+                    filterOP: item.label,
+                    filterBY: preFilter.filterBY
+                  })}
+                  style={styles.filter_row}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={[
+                      styles.filter_pipeline,
+                      {
+                        backgroundColor: preFilter.filterOP === item.label
+                          ? '#337AB7'
+                          : '#FFF'
+                      }
+                    ]} />
+                    <Text style={styles.filter_label}>{item.label}</Text>
+                  </View>
+                  <View style={{ alignSelf: 'flex-end' }}>
+                    <Icon
+                      name="check"
+                      color={preFilter.filterOP === item.label
+                        ? '#337AB7'
+                        : '#FFF'
+                      }
+                      size={22}
+                    />
+                  </View>
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.label}
+            />
+
+            <Text style={{
+              fontFamily: 'Roboto-Medium',
+              fontSize: 16,
+              marginBottom: 10,
+            }}>Buscar por</Text>
+
+            <FlatList
+              ItemSeparatorComponent={renderSeparator}
+              data={filterBY}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => setPreFilter({
+                  filterBY: item.label,
+                  filterOP: preFilter.filterOP
+                })} style={styles.filter_row}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={[
+                      styles.filter_pipeline,
+                      {
+                        backgroundColor: preFilter.filterBY === item.label
+                          ? '#337AB7'
+                          : '#FFF'
+                      }
+                    ]} />
+                    <Text style={styles.filter_label}>{item.label}</Text>
+                  </View>
+                  <View style={{ alignSelf: 'flex-end' }}>
+                    <Icon
+                      name="check"
+                      color={preFilter.filterBY === item.label
+                        ? '#337AB7'
+                        : '#FFF'
+                      }
+                      size={22} />
+                  </View>
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.label}
+            />
+
+            <TouchableOpacity
+              onPress={() => applyFilter()}
+              style={styles.apply_btn}
+            >
+              <Text style={styles.apply_label}>Aplicar filtros</Text>
+            </TouchableOpacity>
+
+          </View>
+        }
+        isVisible={isVisible}
+        style={{ margin: 0 }}
+        animationInTiming={500}
+        animationOutTiming={500}
+        useNativeDriver={true}
+      />
+
+    </View >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#337AB7',
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
   },
 
-  search_area: {
-    backgroundColor: '#FFF',
-    margin: 20,
-    borderRadius: 20,
-    height: 40,
-    flexDirection: 'row',
+  header_title: {
+    fontSize: fonts.huge,
+    fontWeight: 'bold',
+    color: '#FFF',
+  },
+
+  header_container: {
+    marginTop: 15,
+    marginLeft: 15,
+    justifyContent: "center",
+    height: '30%',
+  },
+
+  search_btn: {
     alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 5,
+    height: 40,
+    width: 40
   },
 
-  input_style: {
-    fontSize: fonts.medium,
-    paddingTop: 1,
-    paddingBottom: 1,
+  search_bar: {
+    flex: 1,
+    backgroundColor: '#F7F7F7',
+    borderRadius: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  search_container: {
+    flexDirection: 'row',
+    marginLeft: 5,
+    marginTop: 15,
+  },
+
+  search_input: {
+    flex: 1,
+    padding: 0,
+    paddingLeft: 10,
+  },
+
+  illustration_container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  illustration_subtitle: {
+    fontFamily: 'Roboto-Light',
+    color: '#004C8F',
+    textAlign: 'center',
+  },
+
+  scrollview_container: {
+    marginTop: 50,
+    backgroundColor: '#F7F7F7',
+    marginLeft: 10,
+    marginRight: 10,
+    borderColor: '#707070',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 5,
+    marginBottom: 190,
+  },
+
+  search_result_row: {
+    flexDirection: 'row',
+    width: '20%',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+
+  filter_container: {
+    position: 'absolute',
+    bottom: -15,
+    width: '100%',
+    height: 30,
+  },
+
+  filter_card: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    paddingLeft: 5,
+    paddingRight: 5,
+    marginLeft: 10,
+    marginRight: 10,
+
+    backgroundColor: '#FFF',
+    borderRadius: 3,
+    height: 28,
+
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.32,
+    shadowRadius: 5.46,
+
+    elevation: 5,
+  },
+
+  flex_filter_container: {
     width: '100%',
   },
 
-  icon_container: {
-    paddingLeft: 10,
-    paddingRight: 10
+  modal_style: {
+    position: "absolute",
+    width: '100%',
+    backgroundColor: "#FFF",
+    bottom: 0,
+    padding: 20,
+    paddingTop: 10,
+    paddingBottom: 0,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
 
-  client_btn: {
-    backgroundColor: '#FFF',
-    padding: 9,
-    margin: 1,
+  filter_label: {
+    fontFamily: 'Roboto-Light',
+    marginLeft: 40
+  },
+
+  filter_pipeline: {
+    width: 5,
+    height: '100%'
+  },
+
+  filter_row: {
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    height: 35
   },
 
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    width: "100%",
-    backgroundColor: "#000",
+  apply_btn: {
+    marginTop: 20,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: '#337AB7',
+    alignItems: 'center'
   },
 
-  flatlist_container: {
-    backgroundColor: '#FFF',
-    margin: 20,
-    borderRadius: 6
-  },
-
-  search_result_label: {
-    fontSize: fonts.medium,
-    width: '90%',
+  apply_label: {
+    fontFamily: 'Roboto-Medium',
+    color: "#337AB7",
+    padding: 7
   },
 });

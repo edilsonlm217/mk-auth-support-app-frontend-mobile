@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,8 @@ import {
   ScrollView,
   Platform,
   Linking,
-  Dimensions
+  Dimensions,
+  Animated,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RefreshIcon from 'react-native-vector-icons/SimpleLineIcons';
@@ -38,6 +39,22 @@ export default function ClientDetails(props) {
 
   const [isResetMacDialogVisible, setIsResetMacDialogVisible] = useState(false);
 
+  const swipeAnim = useRef(new Animated.Value(0)).current;
+
+  const swipeOut = () => {
+    Animated.timing(swipeAnim, {
+      toValue: 150,
+      duration: 200
+    }).start();
+  };
+
+  const swipeIn = () => {
+    Animated.timing(swipeAnim, {
+      toValue: 0,
+      duration: 200
+    }).start();
+  };
+
   async function loadAPI() {
     try {
       setIsLoading();
@@ -64,7 +81,30 @@ export default function ClientDetails(props) {
     }
   }
 
+  function FloatActionBar(option, number) {
+    if (number === null) {
+      return Alert.alert('Erro', 'Número não informado');
+    }
+
+    if (option === 'open') {
+      swipeOut();
+    } else {
+      swipeIn();
+    }
+  }
+
+  function openWhatsapp(number) {
+    if (number === null) {
+      return Alert.alert('Erro', 'Número não informado');
+    }
+    FloatActionBar('close');
+
+    Linking.openURL(`https://api.whatsapp.com/send?phone=55${number}`);
+  }
+
   function dialCall(number) {
+    FloatActionBar('close');
+
     if (number === null) {
       return Alert.alert('Erro', 'Número não informado');
     }
@@ -135,6 +175,7 @@ export default function ClientDetails(props) {
   return (
     <>
       <ScrollView
+        onScrollBeginDrag={() => FloatActionBar('close')}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={clientState.state.isLoading} onRefresh={() => loadAPI()} />
@@ -250,21 +291,41 @@ export default function ClientDetails(props) {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => dialCall(clientState.state.client.celular)}>
-              <View style={styles.clickable_line}>
-                <View>
-                  <Text style={styles.sub_text}>Celular</Text>
-                  <Text style={styles.main_text}>
-                    {clientState.state.client.celular ? clientState.state.client.celular : 'Não informado'}
-                  </Text>
-                </View>
-                {clientState.state.client.celular &&
-                  <View style={{ justifyContent: 'center' }}>
-                    <CallIcon name="call" size={icons.tiny} color="#000" />
+            <View>
+              <TouchableOpacity onPress={() => FloatActionBar('open', clientState.state.client.celular)}>
+                <View style={styles.clickable_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Celular</Text>
+                    <Text style={styles.main_text}>
+                      {clientState.state.client.celular ? clientState.state.client.celular : 'Não informado'}
+                    </Text>
                   </View>
-                }
-              </View>
-            </TouchableOpacity>
+                  {clientState.state.client.celular &&
+                    <View style={{ justifyContent: 'center' }}>
+                      <CallIcon name="call" size={icons.tiny} color="#000" />
+                    </View>
+                  }
+                </View>
+              </TouchableOpacity>
+              <Animated.View style={[styles.swiped_options, { width: swipeAnim }]}>
+                <TouchableOpacity
+                  onPress={() => openWhatsapp(clientState.state.client.celular)}
+                >
+                  <Icon name="whatsapp" color="green" size={26} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => dialCall(clientState.state.client.celular)}
+                >
+                  <CallIcon name="call" size={26} color="green" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => FloatActionBar('close')}
+                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}
+                >
+                  <Icon name="close" size={18} color="#000" />
+                </TouchableOpacity>
+              </Animated.View>
+            </View>
 
             <TouchableOpacity onPress={handleModalOpening}>
               <View style={styles.clickable_line}>
@@ -542,5 +603,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5e642',
     borderRadius: 20,
     alignItems: 'center',
+  },
+  swiped_options: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    zIndex: 3,
+
+    height: '100%',
+    backgroundColor: '#f2f2f2',
+
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+
   }
 });
