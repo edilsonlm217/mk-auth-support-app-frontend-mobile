@@ -312,7 +312,9 @@ export default function SearchScreen() {
       </View>
 
       {isLoading
-        ? <ActivityIndicator size="large" color="#004C8F" />
+        ? <ActivityIndicator
+          style={{ marginTop: 30 }}
+          size="large" color="#004C8F" />
         : <>
           {
             searchResult.length !== 0 &&
