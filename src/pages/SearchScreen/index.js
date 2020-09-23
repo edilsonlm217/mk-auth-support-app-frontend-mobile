@@ -72,24 +72,6 @@ export default function SearchScreen() {
     return string.toLowerCase().split(' ').map(s => s.charAt(0).toUpperCase() + s.substring(1)).join(' ');
   }
 
-  const data = [
-    {
-      id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-      name: 'Edilson Rocha Lima',
-      status: 'online',
-    },
-    {
-      id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-      name: 'Moany Rocha Lima',
-      status: 'online',
-    },
-    {
-      id: '58694a0f-3da1-471f-bd96-145571e29d72',
-      name: 'Dona Joana da Silva',
-      status: 'online',
-    },
-  ];
-
   const headerHeight = Dimensions.get('window').height * 23 / 100;
 
   const renderItem = ({ item }) => {
@@ -239,10 +221,10 @@ export default function SearchScreen() {
               ItemSeparatorComponent={renderSeparator}
               data={filterOP}
               renderItem={({ item }) => (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 35 }}>
+                <View style={styles.filter_row}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ backgroundColor: '#337AB7', width: 5, height: '100%' }} />
-                    <Text style={{ fontFamily: 'Roboto-Light', marginLeft: 40 }}>{item.label}</Text>
+                    <View style={styles.filter_pipeline} />
+                    <Text style={styles.filter_label}>{item.label}</Text>
                   </View>
                   <View style={{ alignSelf: 'flex-end' }}>
                     <Icon name="check" color="#337AB7" size={22} />
@@ -262,10 +244,10 @@ export default function SearchScreen() {
               ItemSeparatorComponent={renderSeparator}
               data={filterBY}
               renderItem={({ item }) => (
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', height: 35 }}>
+                <View style={styles.filter_row}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={{ backgroundColor: '#337AB7', width: 5, height: '100%' }} />
-                    <Text style={{ fontFamily: 'Roboto-Light', marginLeft: 40 }}>{item.label}</Text>
+                    <View style={styles.filter_pipeline} />
+                    <Text style={styles.filter_label}>{item.label}</Text>
                   </View>
                   <View style={{ alignSelf: 'flex-end' }}>
                     <Icon name="check" color="#337AB7" size={22} />
@@ -275,8 +257,8 @@ export default function SearchScreen() {
               keyExtractor={item => item.id}
             />
 
-            <View style={{ marginTop: 20, marginBottom: 10, borderWidth: 2, borderRadius: 5, borderColor: '#337AB7', alignItems: 'center' }}>
-              <Text style={{ fontFamily: 'Roboto-Medium', color: "#337AB7", padding: 7 }}>Aplicar filtros</Text>
+            <View style={styles.apply_btn}>
+              <Text style={styles.apply_label}>Aplicar filtros</Text>
             </View>
 
           </View>
@@ -416,5 +398,37 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+  },
+
+  filter_label: {
+    fontFamily: 'Roboto-Light',
+    marginLeft: 40
+  },
+
+  filter_pipeline: {
+    backgroundColor: '#337AB7',
+    width: 5,
+    height: '100%'
+  },
+
+  filter_row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    height: 35
+  },
+
+  apply_btn: {
+    marginTop: 20,
+    marginBottom: 10,
+    borderWidth: 2,
+    borderRadius: 5,
+    borderColor: '#337AB7',
+    alignItems: 'center'
+  },
+
+  apply_label: {
+    fontFamily: 'Roboto-Medium',
+    color: "#337AB7",
+    padding: 7
   },
 });
