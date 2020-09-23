@@ -108,7 +108,10 @@ export default function SearchScreen() {
 
     if (btn_for === 'search_tunning') {
       return (
-        <TouchableOpacity onPress={() => setIsVisible(true)} style={[styles.search_btn, { backgroundColor: bg_color }]}>
+        <TouchableOpacity
+          onPress={() => setIsVisible(true)}
+          style={[styles.search_btn, { backgroundColor: bg_color }]}
+        >
           <Icon name={icon_name} color={icon_color} size={22} />
         </TouchableOpacity>
       );
