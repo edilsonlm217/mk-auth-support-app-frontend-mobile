@@ -29,19 +29,23 @@ export default function SearchScreen() {
 
   const [filterMode, setFilterMode] = useState('enable');
 
+  const [preFilter, setPreFilter] = useState({
+    filterOP: 'Clientes ativados',
+    filterBY: 'Nome ou CPF',
+  });
+
   const [filterOP] = useState([
-    { id: 1, label: 'Clientes ativados' },
-    { id: 2, label: 'Clientes desativados' },
+    { id: 1, label: 'Clientes ativados', isActive: true },
+    { id: 2, label: 'Clientes desativados', isActive: false },
   ]);
 
   const [filterBY] = useState([
-    { id: 1, label: 'Nome ou CPF' },
-    { id: 2, label: 'Caixa Hermética' },
-    { id: 3, label: 'Endereço' },
-    { id: 4, label: 'Vencimento' },
-    { id: 5, label: 'SSID' },
+    { id: 1, label: 'Nome ou CPF', isActive: true },
+    { id: 2, label: 'Caixa Hermética', isActive: false },
+    { id: 3, label: 'Endereço', isActive: false },
+    { id: 4, label: 'Vencimento', isActive: false },
+    { id: 5, label: 'SSID', isActive: false },
   ]);
-
 
   const [searchResult, setSearchResult] = useState([]);
 
@@ -76,7 +80,11 @@ export default function SearchScreen() {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{ flexDirection: 'row', justifyContent: 'space-between', padding: 12 }}>
+      <TouchableOpacity style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 12
+      }}>
         <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
         <View style={styles.search_result_row}>
           <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
@@ -119,6 +127,46 @@ export default function SearchScreen() {
   };
 
   function handleModalClosing() {
+    var prev_filterOP;
+    var prev_filterBY;
+
+    filterOP.map(item => {
+      if (item.isActive) {
+        prev_filterOP = item.label;
+      }
+    });
+
+    filterBY.map(item => {
+      if (item.isActive) {
+        prev_filterBY = item.label;
+      }
+    });
+
+    setPreFilter({
+      filterOP: prev_filterOP,
+      filterBY: prev_filterBY,
+    });
+
+    setIsVisible(false);
+  }
+
+  function applyFilter() {
+    filterOP.map(item => {
+      if (item.label === preFilter.filterOP) {
+        item.isActive = true;
+      } else {
+        item.isActive = false;
+      }
+    });
+
+    filterBY.map(item => {
+      if (item.label === preFilter.filterBY) {
+        item.isActive = true;
+      } else {
+        item.isActive = false;
+      }
+    });
+
     setIsVisible(false);
   }
 
@@ -183,7 +231,8 @@ export default function SearchScreen() {
 
       </View>
 
-      {searchResult.length !== 0 &&
+      {
+        searchResult.length !== 0 &&
         <View>
           <FlatList
             style={styles.scrollview_container}
@@ -195,7 +244,8 @@ export default function SearchScreen() {
         </View>
       }
 
-      {searchResult.length === 0 &&
+      {
+        searchResult.length === 0 &&
         <View style={styles.illustration_container}>
           <Image source={search_illustration} />
           <Text
@@ -209,9 +259,12 @@ export default function SearchScreen() {
         onBackdropPress={handleModalClosing}
         children={
           <View style={styles.modal_style}>
-            <View style={{ alignItems: 'flex-end' }}>
-              <Icon name="close" size={18} color="#000" />
-            </View>
+            <TouchableOpacity
+              onPress={() => handleModalClosing()}
+              style={{ alignItems: 'flex-end' }}
+            >
+              <Icon name="close" size={22} color="#000" />
+            </TouchableOpacity>
 
             <Text style={{
               fontFamily: 'Roboto-Medium',
@@ -224,17 +277,36 @@ export default function SearchScreen() {
               ItemSeparatorComponent={renderSeparator}
               data={filterOP}
               renderItem={({ item }) => (
-                <View style={styles.filter_row}>
+                <TouchableOpacity
+                  onPress={() => setPreFilter({
+                    filterOP: item.label,
+                    filterBY: preFilter.filterBY
+                  })}
+                  style={styles.filter_row}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={styles.filter_pipeline} />
+                    <View style={[
+                      styles.filter_pipeline,
+                      {
+                        backgroundColor: preFilter.filterOP === item.label
+                          ? '#337AB7'
+                          : '#FFF'
+                      }
+                    ]} />
                     <Text style={styles.filter_label}>{item.label}</Text>
                   </View>
                   <View style={{ alignSelf: 'flex-end' }}>
-                    <Icon name="check" color="#337AB7" size={22} />
+                    <Icon
+                      name="check"
+                      color={preFilter.filterOP === item.label
+                        ? '#337AB7'
+                        : '#FFF'
+                      }
+                      size={22}
+                    />
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.label}
             />
 
             <Text style={{
@@ -247,22 +319,41 @@ export default function SearchScreen() {
               ItemSeparatorComponent={renderSeparator}
               data={filterBY}
               renderItem={({ item }) => (
-                <View style={styles.filter_row}>
+                <TouchableOpacity onPress={() => setPreFilter({
+                  filterBY: item.label,
+                  filterOP: preFilter.filterOP
+                })} style={styles.filter_row}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <View style={styles.filter_pipeline} />
+                    <View style={[
+                      styles.filter_pipeline,
+                      {
+                        backgroundColor: preFilter.filterBY === item.label
+                          ? '#337AB7'
+                          : '#FFF'
+                      }
+                    ]} />
                     <Text style={styles.filter_label}>{item.label}</Text>
                   </View>
                   <View style={{ alignSelf: 'flex-end' }}>
-                    <Icon name="check" color="#337AB7" size={22} />
+                    <Icon
+                      name="check"
+                      color={preFilter.filterBY === item.label
+                        ? '#337AB7'
+                        : '#FFF'
+                      }
+                      size={22} />
                   </View>
-                </View>
+                </TouchableOpacity>
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={item => item.label}
             />
 
-            <View style={styles.apply_btn}>
+            <TouchableOpacity
+              onPress={() => applyFilter()}
+              style={styles.apply_btn}
+            >
               <Text style={styles.apply_label}>Aplicar filtros</Text>
-            </View>
+            </TouchableOpacity>
 
           </View>
         }
@@ -273,7 +364,7 @@ export default function SearchScreen() {
         useNativeDriver={true}
       />
 
-    </View>
+    </View >
   );
 }
 
@@ -409,7 +500,6 @@ const styles = StyleSheet.create({
   },
 
   filter_pipeline: {
-    backgroundColor: '#337AB7',
     width: 5,
     height: '100%'
   },
