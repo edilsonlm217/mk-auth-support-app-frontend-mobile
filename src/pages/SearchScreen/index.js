@@ -50,7 +50,11 @@ export default function SearchScreen() {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   async function searchFor(term) {
+    setIsLoading(true);
+
     var filterByID;
     var filterMode = 'enable';
 
@@ -83,6 +87,8 @@ export default function SearchScreen() {
 
       console.log(response.data);
       setSearchResult(response.data);
+
+      setIsLoading(false);
     }
   }
 
@@ -305,17 +311,22 @@ export default function SearchScreen() {
 
       </View>
 
-      {
-        searchResult.length !== 0 &&
-        <View>
-          <FlatList
-            style={styles.scrollview_container}
-            ItemSeparatorComponent={renderSeparator}
-            data={searchResult}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-          />
-        </View>
+      {isLoading
+        ? <ActivityIndicator size="large" color="#004C8F" />
+        : <>
+          {
+            searchResult.length !== 0 &&
+            <View>
+              <FlatList
+                style={styles.scrollview_container}
+                ItemSeparatorComponent={renderSeparator}
+                data={searchResult}
+                renderItem={renderItem}
+                keyExtractor={item => item.id}
+              />
+            </View>
+          }
+        </>
       }
 
       {
