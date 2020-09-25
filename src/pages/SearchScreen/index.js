@@ -276,9 +276,11 @@ export default function SearchScreen({ navigation }) {
         <View style={styles.search_container}>
           <View style={styles.search_bar}>
             <TextInput
+              style={styles.search_input}
               placeholder="O que deseja buscar?"
               onChangeText={text => setSearchTerm(text)}
-              style={styles.search_input}
+              returnKeyType="search"
+              onSubmitEditing={() => searchFor(searchTerm)}
             />
             <TouchableOpacity>
               <SearchBtn
@@ -560,19 +562,18 @@ const styles = StyleSheet.create({
   },
 
   scrollview_container: {
-    marginTop: 50,
+    marginTop: 30,
     backgroundColor: '#F7F7F7',
     marginLeft: 10,
     marginRight: 10,
     borderColor: '#707070',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
-    marginBottom: 190,
   },
 
   search_result_row: {
     flexDirection: 'row',
-    width: '20%',
+    width: '12%',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
