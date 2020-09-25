@@ -9,6 +9,7 @@ import {
   Image,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import axios from 'axios';
 import Modal from 'react-native-modal';
@@ -20,30 +21,29 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 
 import search_illustration from '../../assets/search.png'
+import no_search_illustration from '../../assets/no-search-result.png';
 
-export default function SearchScreen() {
+export default function SearchScreen({ navigation }) {
   const globalStore = useContext(store);
   const { server_ip, server_port, userToken } = globalStore.state;
 
   const [searchTerm, setSearchTerm] = useState('');
-
-  const [filterMode, setFilterMode] = useState('enable');
 
   const [preFilter, setPreFilter] = useState({
     filterOP: 'Clientes ativados',
     filterBY: 'Nome ou CPF',
   });
 
-  const [filterOP] = useState([
+  const [filterOP, setFilterOP] = useState([
     { id: 1, label: 'Clientes ativados', isActive: true },
     { id: 2, label: 'Clientes desativados', isActive: false },
   ]);
 
-  const [filterBY] = useState([
+  const [filterBY, setFilterBY] = useState([
     { id: 1, label: 'Nome ou CPF', isActive: true },
     { id: 2, label: 'Caixa Hermética', isActive: false },
-    { id: 3, label: 'Endereço', isActive: false },
-    { id: 4, label: 'Vencimento', isActive: false },
+    // { id: 3, label: 'Endereço', isActive: false },
+    // { id: 4, label: 'Vencimento', isActive: false },
     { id: 5, label: 'SSID', isActive: false },
   ]);
 
@@ -51,25 +51,64 @@ export default function SearchScreen() {
 
   const [isVisible, setIsVisible] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [noContent, setNoContent] = useState(false);
+
   async function searchFor(term) {
-    const response = await axios.get(
-      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}`,
-      {
-        timeout: 2500,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+    setIsLoading(true);
+
+    var filterByID;
+    var filterMode = 'enable';
+
+
+    filterOP.map(item => {
+      if (item.isActive && item.id !== 1) {
+        filterMode = 'disable';
       }
-    );
+    });
 
-    if (response.data) {
-      response.data.map(item => {
-        item.nome = capitalize(item.nome);
-      });
+    filterBY.map(item => {
+      if (item.isActive) {
+        filterByID = item.id;
+      }
+    });
 
-      console.log(response.data);
-      setSearchResult(response.data);
+    try {
+      const response = await axios.get(
+        `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
+        {
+          timeout: 7000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        response.data.map(item => {
+          item.nome = capitalize(item.nome);
+        });
+
+        setSearchResult(response.data);
+        setNoContent(false);
+        setIsLoading(false);
+      }
+
+      if (response.data.length === 0) {
+        setNoContent(true);
+      }
+    } catch (error) {
+      console.warn('Erro na chamada a API. Está impresso no console!');
+      console.log(error);
+      setIsLoading(false);
+
+      // se error for timeout, é um tratamento.
+      // se for 204, é outro tratamento
+
     }
+
+
   }
 
   function capitalize(string) {
@@ -80,14 +119,20 @@ export default function SearchScreen() {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 12
-      }}>
+      <TouchableOpacity
+        onPress={() => navigateToClient(item.id, item.nome)}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          padding: 12
+        }}>
         <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
         <View style={styles.search_result_row}>
-          <MaterialIcon name='checkbox-blank-circle' color="green" size={12} />
+          <MaterialIcon
+            name='checkbox-blank-circle'
+            color={item.equipment_array === 'Online' ? 'green' : 'red'}
+            size={12}
+          />
           <MaterialIcon name='chevron-right' color="#000000" size={20} />
         </View>
       </TouchableOpacity>
@@ -125,6 +170,13 @@ export default function SearchScreen() {
       );
     }
   };
+
+  function navigateToClient(client_id, client_name) {
+    navigation.navigate('ClientScreen', {
+      client_id,
+      client_name,
+    });
+  }
 
   function handleModalClosing() {
     var prev_filterOP;
@@ -170,6 +222,48 @@ export default function SearchScreen() {
     setIsVisible(false);
   }
 
+  function setDefaultFilerOP() {
+    const new_filterOP = [];
+
+    filterOP.map(item => {
+      if (item.id === 1) {
+        item.isActive = true;
+
+        setPreFilter({
+          filterOP: item.label,
+          filterBY: preFilter.filterBY,
+        });
+      } else {
+        item.isActive = false;
+      }
+
+      new_filterOP.push(item);
+    });
+
+    setFilterOP(new_filterOP);
+  }
+
+  function setDefaultFilerBY() {
+    const new_filterBY = [];
+
+    filterBY.map(item => {
+      if (item.id === 1) {
+        item.isActive = true;
+
+        setPreFilter({
+          filterBY: item.label,
+          filterOP: preFilter.filterOP,
+        });
+      } else {
+        item.isActive = false;
+      }
+
+      new_filterBY.push(item);
+    });
+
+    setFilterBY(new_filterBY);
+  }
+
   return (
     <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       <View style={[styles.container, { height: headerHeight }]}>
@@ -182,9 +276,11 @@ export default function SearchScreen() {
         <View style={styles.search_container}>
           <View style={styles.search_bar}>
             <TextInput
+              style={styles.search_input}
               placeholder="O que deseja buscar?"
               onChangeText={text => setSearchTerm(text)}
-              style={styles.search_input}
+              returnKeyType="search"
+              onSubmitEditing={() => searchFor(searchTerm)}
             />
             <TouchableOpacity>
               <SearchBtn
@@ -214,38 +310,75 @@ export default function SearchScreen() {
             contentContainerStyle={{ minWidth: '100%', justifyContent: 'center' }}
             showsHorizontalScrollIndicator={false}
           >
-            <View style={styles.filter_card}>
-              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
-                Apenas clientes desativados
-              </Text>
-              <Icon name="close" size={16} color="#004C8F" />
-            </View>
-            <View style={styles.filter_card}>
-              <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
-                Caixa Hermética
-              </Text>
-              <Icon name="close" size={16} color="#004C8F" />
-            </View>
+            {filterOP.map((item, index) => {
+              if (item.isActive && item.label !== "Clientes ativados") {
+                return (
+                  <View key={index} style={styles.filter_card} >
+                    <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                      {item.label}
+                    </Text>
+                    <TouchableOpacity onPress={() => setDefaultFilerOP()}>
+                      <Icon name="close" size={16} color="#004C8F" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })}
+
+            {filterBY.map((item, index) => {
+              if (item.isActive && item.label !== "Nome ou CPF") {
+                return (
+                  <View key={index} style={styles.filter_card}>
+                    <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
+                      {item.label}
+                    </Text>
+                    <TouchableOpacity onPress={() => setDefaultFilerBY()}>
+                      <Icon name="close" size={16} color="#004C8F" />
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })}
+
           </ScrollView>
         </View>
 
       </View>
 
-      {
-        searchResult.length !== 0 &&
-        <View>
-          <FlatList
-            style={styles.scrollview_container}
-            ItemSeparatorComponent={renderSeparator}
-            data={searchResult}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-          />
-        </View>
+      {isLoading
+        ? <ActivityIndicator
+          style={{ marginTop: 30 }}
+          size="large" color="#004C8F" />
+        : <>
+          {noContent
+            ? <>
+              <View style={styles.illustration_container}>
+                <Image source={no_search_illustration} />
+                <Text
+                  style={styles.illustration_subtitle}
+                >Nenhum resultado encontrado</Text>
+              </View>
+            </>
+            : <>
+              {
+                searchResult.length !== 0 &&
+                <View>
+                  <FlatList
+                    style={styles.scrollview_container}
+                    ItemSeparatorComponent={renderSeparator}
+                    data={searchResult}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => `list-item-${index}`}
+                  />
+                </View>
+              }
+            </>
+          }
+        </>
       }
 
       {
-        searchResult.length === 0 &&
+        searchResult.length === 0 && noContent === false &&
         <View style={styles.illustration_container}>
           <Image source={search_illustration} />
           <Text
@@ -429,19 +562,18 @@ const styles = StyleSheet.create({
   },
 
   scrollview_container: {
-    marginTop: 50,
+    marginTop: 30,
     backgroundColor: '#F7F7F7',
     marginLeft: 10,
     marginRight: 10,
     borderColor: '#707070',
     borderWidth: StyleSheet.hairlineWidth,
     borderRadius: 5,
-    marginBottom: 190,
   },
 
   search_result_row: {
     flexDirection: 'row',
-    width: '20%',
+    width: '12%',
     justifyContent: 'space-between',
     alignItems: 'center'
   },

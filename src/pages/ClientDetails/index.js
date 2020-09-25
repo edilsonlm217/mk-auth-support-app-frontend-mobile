@@ -266,14 +266,19 @@ export default function ClientDetails(props) {
               </View>
             </View>
 
-            <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Caixa atual</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={styles.main_text_login_senha}>
-                  {clientState.state.client.caixa_herm !== null ? clientState.state.client.caixa_herm : 'Nenhuma'}
-                </Text>
+            <TouchableOpacity onPress={() => props.navigation.navigate('CTO_Details')}>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Caixa atual</Text>
+                  <Text style={styles.main_text_login_senha}>
+                    {clientState.state.client.caixa_herm !== null ? clientState.state.client.caixa_herm : 'Nenhuma'}
+                  </Text>
+                </View>
+                <View style={{ justifyContent: 'center' }}>
+                  <Icon name="chevron-right" color="#000" size={26} />
+                </View>
               </View>
-            </View>
+            </TouchableOpacity>
 
             <TouchableOpacity onPress={() => dialCall(clientState.state.client.fone)}>
               <View style={styles.clickable_line}>
