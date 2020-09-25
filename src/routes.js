@@ -19,6 +19,7 @@ import PickNewLocation from './pages/PickNewLocation/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
 import NotificationTab from './pages/NotificationTab/index';
+import CTODetails from './pages/CTODetails/index';
 
 import { fonts } from './styles/index';
 
@@ -102,7 +103,7 @@ function AuthStack() {
 
 export default function MainStack() {
   const globalState = useContext(store);
-  
+
   return (
     <>
       {globalState.state.userToken !== null
@@ -184,6 +185,25 @@ export default function MainStack() {
             options={{
               headerShown: true,
               title: 'Pesquisar',
+              headerStyle: {
+                backgroundColor: '#FFF',
+              },
+              headerTintColor: '#337AB7',
+              headerTransparent: true,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: fonts.huge,
+                marginLeft: -20,
+              },
+            }}
+          />
+
+          <Stack.Screen
+            name="CTO_Details"
+            component={CTODetails}
+            options={{
+              headerShown: true,
+              title: 'CTO-9999',
               headerStyle: {
                 backgroundColor: '#FFF',
               },
