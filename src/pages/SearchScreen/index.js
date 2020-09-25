@@ -21,8 +21,9 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 
 import search_illustration from '../../assets/search.png'
+import no_search_illustration from '../../assets/no-search-result.png';
 
-export default function SearchScreen() {
+export default function SearchScreen({ navigation }) {
   const globalStore = useContext(store);
   const { server_ip, server_port, userToken } = globalStore.state;
 
@@ -52,11 +53,14 @@ export default function SearchScreen() {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const [noContent, setNoContent] = useState(false);
+
   async function searchFor(term) {
     setIsLoading(true);
 
     var filterByID;
     var filterMode = 'enable';
+
 
     filterOP.map(item => {
       if (item.isActive && item.id !== 1) {
@@ -70,26 +74,41 @@ export default function SearchScreen() {
       }
     });
 
-    const response = await axios.get(
-      `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
-      {
-        timeout: 7000,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+    try {
+      const response = await axios.get(
+        `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
+        {
+          timeout: 7000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        }
+      );
+
+      if (response.data) {
+        response.data.map(item => {
+          item.nome = capitalize(item.nome);
+        });
+
+        setSearchResult(response.data);
+        setNoContent(false);
+        setIsLoading(false);
       }
-    );
 
-    if (response.data) {
-      response.data.map(item => {
-        item.nome = capitalize(item.nome);
-      });
-
-      console.log(response.data);
-      setSearchResult(response.data);
-
+      if (response.data.length === 0) {
+        setNoContent(true);
+      }
+    } catch (error) {
+      console.warn('Erro na chamada a API. Está impresso no console!');
+      console.log(error);
       setIsLoading(false);
+
+      // se error for timeout, é um tratamento.
+      // se for 204, é outro tratamento
+
     }
+
+
   }
 
   function capitalize(string) {
@@ -100,11 +119,13 @@ export default function SearchScreen() {
 
   const renderItem = ({ item }) => {
     return (
-      <TouchableOpacity style={{
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        padding: 12
-      }}>
+      <TouchableOpacity
+        onPress={() => navigateToClient(item.id, item.nome)}
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          padding: 12
+        }}>
         <Text numberOfLines={1} style={{ flex: 1 }}>{item.nome}</Text>
         <View style={styles.search_result_row}>
           <MaterialIcon
@@ -149,6 +170,13 @@ export default function SearchScreen() {
       );
     }
   };
+
+  function navigateToClient(client_id, client_name) {
+    navigation.navigate('ClientScreen', {
+      client_id,
+      client_name,
+    });
+  }
 
   function handleModalClosing() {
     var prev_filterOP;
@@ -280,10 +308,10 @@ export default function SearchScreen() {
             contentContainerStyle={{ minWidth: '100%', justifyContent: 'center' }}
             showsHorizontalScrollIndicator={false}
           >
-            {filterOP.map(item => {
+            {filterOP.map((item, index) => {
               if (item.isActive && item.label !== "Clientes ativados") {
                 return (
-                  <View style={styles.filter_card} >
+                  <View key={index} style={styles.filter_card} >
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
@@ -295,10 +323,10 @@ export default function SearchScreen() {
               }
             })}
 
-            {filterBY.map(item => {
+            {filterBY.map((item, index) => {
               if (item.isActive && item.label !== "Nome ou CPF") {
                 return (
-                  <View style={styles.filter_card}>
+                  <View key={index} style={styles.filter_card}>
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
@@ -320,23 +348,35 @@ export default function SearchScreen() {
           style={{ marginTop: 30 }}
           size="large" color="#004C8F" />
         : <>
-          {
-            searchResult.length !== 0 &&
-            <View>
-              <FlatList
-                style={styles.scrollview_container}
-                ItemSeparatorComponent={renderSeparator}
-                data={searchResult}
-                renderItem={renderItem}
-                keyExtractor={item => item.id}
-              />
-            </View>
+          {noContent
+            ? <>
+              <View style={styles.illustration_container}>
+                <Image source={no_search_illustration} />
+                <Text
+                  style={styles.illustration_subtitle}
+                >Nenhum resultado encontrado</Text>
+              </View>
+            </>
+            : <>
+              {
+                searchResult.length !== 0 &&
+                <View>
+                  <FlatList
+                    style={styles.scrollview_container}
+                    ItemSeparatorComponent={renderSeparator}
+                    data={searchResult}
+                    renderItem={renderItem}
+                    keyExtractor={(item, index) => `list-item-${index}`}
+                  />
+                </View>
+              }
+            </>
           }
         </>
       }
 
       {
-        searchResult.length === 0 &&
+        searchResult.length === 0 && noContent === false &&
         <View style={styles.illustration_container}>
           <Image source={search_illustration} />
           <Text
