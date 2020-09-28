@@ -121,19 +121,6 @@ export default function ClientDetails(props) {
     Linking.openURL(phoneNumber);
   };
 
-  function handleNavigateNewLocationPicker() {
-    setIsVisible(false);
-    props.navigation.navigate('UpdateClienteLocation', {
-      data: {
-        id: clientState.state.client.client_id,
-      }
-    });
-  }
-
-  function handleModalClosing() {
-    setIsVisible(false);
-  }
-
   function copyToClipboard(text) {
     Clipboard.setString(text);
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
@@ -332,7 +319,9 @@ export default function ClientDetails(props) {
               </Animated.View>
             </View>
 
-            <TouchableOpacity onPress={handleModalOpening}>
+            <TouchableOpacity
+              onPress={() => LocationService.navigateToCoordinate(clientState.state.client.coordenadas)}
+            >
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
@@ -435,27 +424,6 @@ export default function ClientDetails(props) {
 
         </Dialog.Container>
       </View>
-
-      <Modal
-        onBackButtonPress={handleModalClosing}
-        onBackdropPress={handleModalClosing}
-        children={
-          <View style={styles.modal_style}>
-            <Text style={styles.modal_header}>Selecione uma opção...</Text>
-            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(clientState.state.client.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Navegar até cliente</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleNavigateNewLocationPicker(clientState.state.client.coordenadas)} style={styles.modal_btn}>
-              <Text style={styles.modal_btn_style}>Atualizar coordenadas</Text>
-            </TouchableOpacity>
-          </View>
-        }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
     </>
   );
 }
