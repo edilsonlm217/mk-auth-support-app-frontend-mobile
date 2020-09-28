@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useRef } from 'react';
 import {
   View,
   Text,
@@ -54,6 +54,8 @@ export default function SearchScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [noContent, setNoContent] = useState(false);
+
+  const refInput = useRef(null);
 
   async function searchFor(term) {
     setIsLoading(true);
@@ -264,6 +266,12 @@ export default function SearchScreen({ navigation }) {
     setFilterBY(new_filterBY);
   }
 
+  function handleClearInputText() {
+    refInput.current.clear();
+
+    setSearchTerm('');
+  }
+
   return (
     <View style={{ backgroundColor: '#FFFFFF', flex: 1 }}>
       <View style={[styles.container, { height: headerHeight }]}>
@@ -276,12 +284,25 @@ export default function SearchScreen({ navigation }) {
         <View style={styles.search_container}>
           <View style={styles.search_bar}>
             <TextInput
+              ref={refInput}
               style={styles.search_input}
               placeholder="O que deseja buscar?"
               onChangeText={text => setSearchTerm(text)}
               returnKeyType="search"
               onSubmitEditing={() => searchFor(searchTerm)}
             />
+            {searchTerm !== '' &&
+              <TouchableOpacity
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginRight: 10
+                }}
+                onPress={() => handleClearInputText()}
+              >
+                <Icon name="close" size={18} color="#004C8F" />
+              </TouchableOpacity>
+            }
             <TouchableOpacity>
               <SearchBtn
                 btn_for="search"
@@ -345,36 +366,37 @@ export default function SearchScreen({ navigation }) {
 
       </View>
 
-      {isLoading
-        ? <ActivityIndicator
-          style={{ marginTop: 30 }}
-          size="large" color="#004C8F" />
-        : <>
-          {noContent
-            ? <>
-              <View style={styles.illustration_container}>
-                <Image source={no_search_illustration} />
-                <Text
-                  style={styles.illustration_subtitle}
-                >Nenhum resultado encontrado</Text>
-              </View>
-            </>
-            : <>
-              {
-                searchResult.length !== 0 &&
-                <View>
-                  <FlatList
-                    style={styles.scrollview_container}
-                    ItemSeparatorComponent={renderSeparator}
-                    data={searchResult}
-                    renderItem={renderItem}
-                    keyExtractor={(item, index) => `list-item-${index}`}
-                  />
+      {
+        isLoading
+          ? <ActivityIndicator
+            style={{ marginTop: 30 }}
+            size="large" color="#004C8F" />
+          : <>
+            {noContent
+              ? <>
+                <View style={styles.illustration_container}>
+                  <Image source={no_search_illustration} />
+                  <Text
+                    style={styles.illustration_subtitle}
+                  >Nenhum resultado encontrado</Text>
                 </View>
-              }
-            </>
-          }
-        </>
+              </>
+              : <>
+                {
+                  searchResult.length !== 0 &&
+                  <View>
+                    <FlatList
+                      style={styles.scrollview_container}
+                      ItemSeparatorComponent={renderSeparator}
+                      data={searchResult}
+                      renderItem={renderItem}
+                      keyExtractor={(item, index) => `list-item-${index}`}
+                    />
+                  </View>
+                }
+              </>
+            }
+          </>
       }
 
       {
