@@ -6,38 +6,39 @@ import {
   TextInput,
   Switch,
   TouchableOpacity,
-  Alert, ActivityIndicator
+  Alert,
+  ActivityIndicator
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import Modal from 'react-native-modal';
+import LinearGradient from 'react-native-linear-gradient';
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { store } from '../../store/store';
 
 import app_logo from '../../assets/mk-edge-logo.png';
 
-import { icons } from '../../styles/index';
+import { icons, fonts } from '../../styles/index';
 
 export default function AuthScreen({ route }) {
+  const [key, setKey] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
+
+  const [isVisible, setIsVisible] = useState(false);
+  const [neverForget, setNeverForget] = useState(true);
 
   const globalState = useContext(store);
   const { signIn } = globalState.methods;
 
-  // Estado que controla a visibilidade do modal de confirmação da alteração de CTO
-  const [isVisible, setIsVisible] = useState(false);
-
   async function handleSignIn() {
-    if (login !== '' && password !== '') {
+    if (login !== '' && password !== '' && key !== '') {
       setIsVisible(true);
 
       const isDone = await signIn({
         login,
         password,
-        server_ip: route.params.server_ip,
-        server_port: route.params.server_port,
+        tenant_id: key,
       });
 
       if (isDone) {
@@ -89,10 +90,6 @@ export default function AuthScreen({ route }) {
           >
             <Icon name="key" size={icons.tiny} color="#555555" />
             <TextInput
-              autoCorrect={false}
-              autoCapitalize="none"
-              placeholder="Chave de acesso"
-              placeholderTextColor='#555555'
               style={{
                 fontSize: 16,
                 flex: 1,
@@ -101,6 +98,11 @@ export default function AuthScreen({ route }) {
                 padding: 0,
                 height: '100%',
               }}
+              placeholder="Chave de acesso"
+              autoCorrect={false}
+              onChangeText={text => setKey(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
             />
           </View>
 
@@ -122,7 +124,8 @@ export default function AuthScreen({ route }) {
               trackColor={{ false: "#767577", true: "#81b0ff" }}
               thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              value={true}
+              value={neverForget}
+              onValueChange={() => setNeverForget(!neverForget)}
               style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }] }}
             />
           </View>
@@ -138,10 +141,6 @@ export default function AuthScreen({ route }) {
           >
             <Icon name="account" size={icons.tiny} color="#555555" />
             <TextInput
-              autoCorrect={false}
-              autoCapitalize="none"
-              placeholder="Login"
-              placeholderTextColor='#555555'
               style={{
                 fontSize: 16,
                 flex: 1,
@@ -150,6 +149,11 @@ export default function AuthScreen({ route }) {
                 padding: 0,
                 height: '100%',
               }}
+              placeholder="Login"
+              autoCorrect={false}
+              onChangeText={text => setLogin(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
             />
           </View>
 
@@ -165,10 +169,6 @@ export default function AuthScreen({ route }) {
           >
             <Icon name="lock" size={icons.tiny} color="#555555" />
             <TextInput
-              autoCorrect={false}
-              autoCapitalize="none"
-              placeholder="Sua senha secreta"
-              placeholderTextColor='#555555'
               style={{
                 fontSize: 16,
                 flex: 1,
@@ -177,6 +177,11 @@ export default function AuthScreen({ route }) {
                 padding: 0,
                 height: '100%',
               }}
+              autoCorrect={false}
+              placeholder="Sua senha secreta"
+              onChangeText={text => setPassword(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
             />
           </View>
 
@@ -191,7 +196,8 @@ export default function AuthScreen({ route }) {
               width: '100%',
             }}
           >
-            <View
+            <TouchableOpacity
+              onPress={() => handleSignIn()}
               style={{
                 flexDirection: 'row',
                 width: '100%',
@@ -209,7 +215,7 @@ export default function AuthScreen({ route }) {
                 }}
               >Autenticar</Text>
               <Icon name="login" size={icons.tiny} color="#FFF" style={{ marginLeft: 10 }} />
-            </View>
+            </TouchableOpacity>
           </TouchableOpacity>
 
           <HideWithKeyboard>
@@ -220,6 +226,37 @@ export default function AuthScreen({ route }) {
           </HideWithKeyboard>
 
         </View>
+
+        <Modal
+          children={
+            <View
+              style={{
+                width: 300,
+                backgroundColor: "#FFF",
+                alignSelf: "center",
+                borderWidth: 0,
+                borderRadius: 5,
+                padding: 20,
+                paddingTop: 10,
+              }}>
+              <ActivityIndicator size="small" color="#0000ff" />
+              <Text
+                style={{
+                  fontSize: fonts.regular,
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Carregando...
+            </Text>
+            </View>
+          }
+          isVisible={isVisible}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
       </LinearGradient>
     </View>
   );
