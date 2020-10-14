@@ -1,6 +1,6 @@
 import React, { createContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import axios from 'axios';
+import api from '../services/api';
 import { Alert } from 'react-native';
 
 const initialState = {
@@ -30,6 +30,7 @@ const StateProvider = ({ children }) => {
           server_port: action.payload.server_port,
           employee_id: action.payload.employee_id,
           isAdmin: action.payload.isAdmin,
+          tenantID: action.payload.tenantID,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
@@ -113,14 +114,14 @@ const StateProvider = ({ children }) => {
   const methods = React.useMemo(
     () => ({
       signIn: async data => {
-        const { login, password, server_ip, server_port } = data;
+        const { login, password, tenant_id } = data;
 
         try {
-          const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
+          const response = await api.post(`sessions?tenant_id=${tenant_id}`, {
             login,
             password,
           }, {
-            timeout: 5000,
+            timeout: 10000,
           });
 
           const { token, user } = response.data;
@@ -130,6 +131,7 @@ const StateProvider = ({ children }) => {
           const server_port_key = ['@server_port', server_port];
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
           const isAdmin = ['@isAdmin', user.isAdmin.toString()];
+          const tenantID = ['@tenantID', tenant_id];
 
           const oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
@@ -140,6 +142,7 @@ const StateProvider = ({ children }) => {
               server_port_key,
               employee_id_key,
               isAdmin,
+              tenantID,
             ]);
 
           } catch (e) {
@@ -153,6 +156,7 @@ const StateProvider = ({ children }) => {
               server_port,
               employee_id: user.employee_id,
               isAdmin: user.isAdmin,
+              tenantID: tenant_id,
               oneSignalUserId,
             }
           });
