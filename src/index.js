@@ -40,14 +40,14 @@ export default function App() {
   }, []);
 
   function onReceived(notification) {
-    console.log("Notification received: ", notification);
+    // console.log("Notification received: ", notification);
   }
 
   function onOpened(openResult) {
-    console.log('Message: ', openResult.notification.payload.body);
-    console.log('Data: ', openResult.notification.payload.additionalData);
-    console.log('isActive: ', openResult.notification.isAppInFocus);
-    console.log('openResult: ', openResult);
+    // console.log('Message: ', openResult.notification.payload.body);
+    // console.log('Data: ', openResult.notification.payload.additionalData);
+    // console.log('isActive: ', openResult.notification.isAppInFocus);
+    // console.log('openResult: ', openResult);
     OneSignal.clearOneSignalNotifications();
   }
 
@@ -55,7 +55,7 @@ export default function App() {
     const { userId } = device;
 
     await AsyncStorage.setItem('@OneSignalUserId', userId);
-    console.log('Device info: ', device);
+    // console.log('Device info: ', device);
   }
 
   return (
