@@ -21,7 +21,7 @@ import CallIcon from 'react-native-vector-icons/Zocial';
 import { BarChart } from "react-native-chart-kit";
 import Dialog from "react-native-dialog";
 import Modal from 'react-native-modal';
-import axios from 'axios';
+import api from '../../services/api';
 
 import LocationService from '../../services/location';
 
@@ -59,10 +59,9 @@ export default function ClientDetails(props) {
     try {
       setIsLoading();
 
-      const response = await axios.get(
-        `http://${server_ip}:${server_port}/client/${client.id}`,
+      const response = await api.get(`client/${client.id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
@@ -141,13 +140,12 @@ export default function ClientDetails(props) {
   }
 
   async function handleMACRefreshing() {
-    await axios.post(
-      `http://${server_ip}:${server_port}/client/${client.id}`,
+    await api.post(`client/${client.id}?tenant_id=${globalState.state.tenantID}`,
       {
         automac: true,
       },
       {
-        timeout: 2500,
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${userToken}`,
         },

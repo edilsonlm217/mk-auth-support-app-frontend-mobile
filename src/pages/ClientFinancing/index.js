@@ -3,7 +3,7 @@ import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, Toas
 import Accordion from 'react-native-collapsible/Accordion';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { format, parseISO } from 'date-fns';
-import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -51,10 +51,9 @@ export default function ClientFinancing(props) {
   async function loadAPI() {
     try {
       setRefreshing(true);
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/invoices/${client_id}`,
+      const response = await api.get(`invoices/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 3500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -91,14 +90,13 @@ export default function ClientFinancing(props) {
       });
 
       try {
-        const response_update = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
           {
             observacao: 'nao',
             date: null,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },
@@ -238,14 +236,13 @@ export default function ClientFinancing(props) {
       });
 
       try {
-        const response_update = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+        const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
           {
             observacao: 'sim',
             date: selectedDate,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },

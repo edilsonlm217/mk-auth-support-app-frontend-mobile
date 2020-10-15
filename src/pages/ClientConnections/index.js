@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert, StyleSheet, RefreshControl, TouchableOpacity, Dimensions } from 'react-native';
 import { Table, Row, Rows } from 'react-native-table-component';
 import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -23,10 +24,9 @@ export default function ClientConnections(props) {
     try {
       setRefreshing(true);
 
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/connections/${client_id}`,
+      const response = await api.get(`connections/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },

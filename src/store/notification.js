@@ -2,7 +2,7 @@ import React, { createContext, useReducer, useEffect, useContext } from 'react';
 import { Alert } from 'react-native';
 import { differenceInMinutes, parseISO, isToday } from 'date-fns';
 import AsyncStorage from '@react-native-community/async-storage';
-import axios from 'axios';
+import api from '../services/api';
 
 import { store } from '../store/store';
 
@@ -60,19 +60,16 @@ const NotificationStateProvider = ({ children }) => {
 
     try {
       const userToken = await AsyncStorage.getItem('@auth_token');
-      const server_ip = await AsyncStorage.getItem('@server_ip');
-      const server_port = await AsyncStorage.getItem('@server_port');
       const employee_id = await AsyncStorage.getItem('@employee_id');
 
-      await axios.put(
-        `http://${server_ip}:${server_port}/notification`,
+      await api.put(`notification?tenant_id=${globalState.state.tenantID}`,
         {
           action: 'markAsViewed',
           viewed_at: new Date(),
           employee_id: employee_id,
         },
         {
-          timeout: 5000,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
@@ -92,10 +89,9 @@ const NotificationStateProvider = ({ children }) => {
       const employee_id = await AsyncStorage.getItem('@employee_id');
 
       if (employee_id) {
-        const response = await axios.get(
-          `http://${server_ip}:${server_port}/notification/${employee_id}`,
+        const response = await api.get(`notification/${employee_id}`,
           {
-            timeout: 5000,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${userToken}`,
             },

@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
-import axios from 'axios';
+import api from '../../services/api';
 
 import LocationService from '../../services/location';
 
@@ -65,10 +65,9 @@ export default function Details({ route, navigation }) {
     const { id: request_id } = route.params;
 
     try {
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+      const response = await api.get(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 3000,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -94,14 +93,13 @@ export default function Details({ route, navigation }) {
       try {
         const { id: request_id } = route.params;
 
-        const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_date",
             new_visita_date: selectedDate,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },
@@ -126,14 +124,13 @@ export default function Details({ route, navigation }) {
       try {
         const { id: request_id } = route.params;
 
-        const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_time",
             new_visita_time: time,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },
@@ -217,15 +214,14 @@ export default function Details({ route, navigation }) {
       try {
         const { id: request_id } = route.params;
 
-        const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "close_request",
             closingNote,
             employee_id: globalState.state.employee_id,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },
@@ -279,10 +275,9 @@ export default function Details({ route, navigation }) {
   async function getEmployees() {
     try {
       setEmployeeRefreshing(true);
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/employees`,
+      const response = await api.get(`employees?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -309,14 +304,13 @@ export default function Details({ route, navigation }) {
       try {
         const { id: request_id } = route.params;
 
-        const response = await axios.post(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/request/${request_id}`,
+        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_employee",
             employee_id: newEmployee.id,
           },
           {
-            timeout: 2500,
+            timeout: 10000,
             headers: {
               Authorization: `Bearer ${globalState.state.userToken}`,
             },

@@ -4,6 +4,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert, ToastAndroid, RefreshC
 import MapViewDirections from 'react-native-maps-directions';
 import Modal from 'react-native-modal';
 import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { store } from '../../store/store';
@@ -85,14 +86,13 @@ export default function CTOMapping({ route, navigation }) {
   }
 
   async function handleUpdateCTO() {
-    const response_update = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+    const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
       {
         action: "update_client_location",
         new_cto: selectedBtn,
       },
       {
-        timeout: 2500,
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${globalState.state.userToken}`,
         },
@@ -123,9 +123,8 @@ export default function CTOMapping({ route, navigation }) {
 
   useEffect(() => {
     async function loadSuggestedCTOData() {
-      const client = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`, {
-        timeout: 2500,
+      const client = await api.get(`client/${client_id}?tenant_id=${globalState.state.tenantID}`, {
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${globalState.state.userToken}`,
         },
@@ -135,9 +134,8 @@ export default function CTOMapping({ route, navigation }) {
       const { caixa_herm } = client.data;
 
       if (caixa_herm) {
-        const current_client_cto = await axios.get(
-          `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${caixa_herm}`, {
-          timeout: 2500,
+        const current_client_cto = await api.get(`cto/${caixa_herm}?tenant_id=${globalState.state.tenantID}`, {
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -159,9 +157,8 @@ export default function CTOMapping({ route, navigation }) {
   useEffect(() => {
     async function getCTOs() {
       setRefreshing(true);
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/cto/${client_latitude}/${client_longitude}`, {
-        timeout: 2500,
+      const response = await api.get(`cto/${client_latitude}/${client_longitude}?tenant_id=${globalState.state.tenantID}`, {
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${globalState.state.userToken}`,
         },

@@ -1,10 +1,10 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
   Image,
   TextInput,
-  Switch,
+  // Switch,
   TouchableOpacity,
   Alert,
   ActivityIndicator
@@ -20,16 +20,20 @@ import app_logo from '../../assets/mk-edge-logo.png';
 
 import { icons, fonts } from '../../styles/index';
 
-export default function AuthScreen({ route }) {
+export default function AuthScreen() {
+  const globalState = useContext(store);
+  const { signIn } = globalState.methods;
+
   const [key, setKey] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
   const [isVisible, setIsVisible] = useState(false);
-  const [neverForget, setNeverForget] = useState(true);
+  // const [rememberPassword, setRememberPassword] = useState(globalState.state.rememberPassword);
 
-  const globalState = useContext(store);
-  const { signIn } = globalState.methods;
+  // useEffect(() => {
+  //   setRememberPassword(globalState.state.rememberPassword);
+  // }, [globalState.state.rememberPassword]);
 
   async function handleSignIn() {
     if (login !== '' && password !== '' && key !== '') {
@@ -39,6 +43,7 @@ export default function AuthScreen({ route }) {
         login,
         password,
         tenant_id: key,
+        // remember_password: rememberPassword,
       });
 
       if (isDone) {
@@ -47,7 +52,6 @@ export default function AuthScreen({ route }) {
     } else {
       Alert.alert('Erro', 'Por favor informe todos os campos');
     }
-
   }
 
   return (
@@ -106,13 +110,15 @@ export default function AuthScreen({ route }) {
             />
           </View>
 
-          <View style={{
-            marginBottom: 5,
-            marginTop: 5,
-            flexDirection: 'row',
-            alignItems: 'center',
-            alignSelf: 'flex-end',
-          }}>
+          {/* <View
+            style={{
+              marginBottom: 5,
+              marginTop: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              alignSelf: 'flex-end',
+            }}
+          >
             <Text
               style={{
                 fontFamily: "Roboto-Light",
@@ -124,11 +130,11 @@ export default function AuthScreen({ route }) {
               trackColor={{ false: "#767577", true: "#81b0ff" }}
               thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              value={neverForget}
-              onValueChange={() => setNeverForget(!neverForget)}
+              value={rememberPassword}
+              onValueChange={() => setRememberPassword(!rememberPassword)}
               style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }] }}
             />
-          </View>
+          </View> */}
 
           <View style={{
             backgroundColor: '#EAEAEA',

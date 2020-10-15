@@ -11,7 +11,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
-import axios from 'axios';
+import api from '../../services/api';
 import Modal from 'react-native-modal';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -25,7 +25,7 @@ import no_search_illustration from '../../assets/no-search-result.png';
 
 export default function SearchScreen({ navigation }) {
   const globalStore = useContext(store);
-  const { server_ip, server_port, userToken } = globalStore.state;
+  const { userToken } = globalStore.state;
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -77,10 +77,9 @@ export default function SearchScreen({ navigation }) {
     });
 
     try {
-      const response = await axios.get(
-        `http://${server_ip}:${server_port}/search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}`,
+      const response = await api.get(`search?term=${term}&searchmode=${filterMode}&filterBy=${filterByID}&tenant_id=${globalStore.state.tenantID}`,
         {
-          timeout: 7000,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
