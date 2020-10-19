@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
-import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -19,15 +19,14 @@ export default function ModalEditAddress(props) {
   const [newNeighborhood, setNewNeighborhood] = useState(clientState.state.client.bairro_res);
 
   async function handleNewAddress() {
-    const response_update = await axios.post(
-      `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+    const response_update = await api.post(`/client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
       {
         endereco_res: newAddress,
         numero_res: newNo,
         bairro_res: newNeighborhood,
       },
       {
-        timeout: 2500,
+        timeout: 10000,
         headers: {
           Authorization: `Bearer ${globalState.state.userToken}`,
         },

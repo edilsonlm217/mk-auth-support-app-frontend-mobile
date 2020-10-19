@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, StyleSheet, Dimensions, Text, Alert } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
-import axios from 'axios';
+import api from '../../services/api';
 
 import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
@@ -49,10 +49,9 @@ export default function ClientScreen({ navigation, route }) {
     try {
       setIsLoading();
 
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+      const response = await api.get(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },

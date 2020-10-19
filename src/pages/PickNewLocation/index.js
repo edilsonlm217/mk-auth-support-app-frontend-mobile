@@ -3,7 +3,7 @@ import MapView from 'react-native-maps';
 import { View, PermissionsAndroid, ActivityIndicator, Alert, Text, TouchableOpacity, ToastAndroid } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
-import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { store } from '../../store/store';
@@ -63,15 +63,14 @@ export default function PickNewLocation({ route, navigation }) {
     const client_id = route.params.data.id;
 
     try {
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${client_id}`,
+      const response = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
           action: "update_client_location",
           latitude: latitude,
           longitude: longitude,
         },
         {
-          timeout: 3000,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`
           },

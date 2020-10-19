@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import Dialog from "react-native-dialog";
-import axios from 'axios';
+import api from '../../services/api';
 
 import { store } from '../../store/store';
 import AppHeader from '../../components/AppHeader/index';
@@ -41,10 +41,9 @@ export default function SettingsScreen({ navigation }) {
 
   async function loadAPI() {
     try {
-      const response = await axios.get(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/employee/${globalState.state.employee_id}`,
+      const response = await api.get(`employee/${globalState.state.employee_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },

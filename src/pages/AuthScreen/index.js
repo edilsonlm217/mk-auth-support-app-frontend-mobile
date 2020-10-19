@@ -1,43 +1,49 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
   Image,
   TextInput,
+  // Switch,
   TouchableOpacity,
-  Alert, ActivityIndicator
+  Alert,
+  ActivityIndicator
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import Modal from 'react-native-modal';
+import LinearGradient from 'react-native-linear-gradient';
+import HideWithKeyboard from 'react-native-hide-with-keyboard';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { store } from '../../store/store';
 
-import lock from '../../assets/unlocked.png';
+import app_logo from '../../assets/mk-edge-logo.png';
 
-import styles from './styles';
-import { icons } from '../../styles/index';
+import { icons, fonts } from '../../styles/index';
 
-export default function AuthScreen({ route, navigation }) {
-  const [login, setLogin] = useState('');
-  const [password, setPassword] = useState('');
-
+export default function AuthScreen() {
   const globalState = useContext(store);
   const { signIn } = globalState.methods;
 
-  // Estado que controla a visibilidade do modal de confirmação da alteração de CTO
+  const [key, setKey] = useState('');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+
   const [isVisible, setIsVisible] = useState(false);
+  // const [rememberPassword, setRememberPassword] = useState(globalState.state.rememberPassword);
+
+  // useEffect(() => {
+  //   setRememberPassword(globalState.state.rememberPassword);
+  // }, [globalState.state.rememberPassword]);
 
   async function handleSignIn() {
-    if (login !== '' && password !== '') {
+    if (login !== '' && password !== '' && key !== '') {
       setIsVisible(true);
 
       const isDone = await signIn({
         login,
         password,
-        server_ip: route.params.server_ip,
-        server_port: route.params.server_port,
+        tenant_id: key,
+        // remember_password: rememberPassword,
       });
 
       if (isDone) {
@@ -46,96 +52,218 @@ export default function AuthScreen({ route, navigation }) {
     } else {
       Alert.alert('Erro', 'Por favor informe todos os campos');
     }
-
-  }
-
-  function handlePrevScreen() {
-    navigation.goBack();
   }
 
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
-        colors={['#002f58', '#337ab7']}
-        style={styles.initial_config_linearGradient}
+        colors={['#002F58', '#001C34']}
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
       >
-        <View style={styles.initial_config_container}>
-          <Image source={lock} style={styles.initial_config_logo_style} />
+        <View style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: 20,
+        }}
+        >
+          <Image
+            source={app_logo}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              borderWidth: 3,
+              borderColor: '#D5D5D5',
+              marginBottom: 45,
+              marginTop: 10,
+            }}
+          />
 
-          <Text style={styles.initial_config_main_title} >Quase lá</Text>
+          <View style={{
+            backgroundColor: '#EAEAEA',
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 5,
+            paddingLeft: 10,
+            height: 45,
+          }}
+          >
+            <Icon name="key" size={icons.tiny} color="#555555" />
+            <TextInput
+              style={{
+                fontSize: 16,
+                flex: 1,
+                fontFamily: "Roboto-Light",
+                paddingLeft: 15,
+                padding: 0,
+                height: '100%',
+              }}
+              placeholder="Chave de acesso"
+              autoCorrect={false}
+              onChangeText={text => setKey(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
+            />
+          </View>
+
+          {/* <View
+            style={{
+              marginBottom: 5,
+              marginTop: 5,
+              flexDirection: 'row',
+              alignItems: 'center',
+              alignSelf: 'flex-end',
+            }}
+          >
+            <Text
+              style={{
+                fontFamily: "Roboto-Light",
+                fontSize: 12,
+                color: '#EAEAEA',
+              }}
+            >Nunca esquecer</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              value={rememberPassword}
+              onValueChange={() => setRememberPassword(!rememberPassword)}
+              style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }] }}
+            />
+          </View> */}
+
+          <View style={{
+            backgroundColor: '#EAEAEA',
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 5,
+            paddingLeft: 10,
+            height: 45,
+          }}
+          >
+            <Icon name="account" size={icons.tiny} color="#555555" />
+            <TextInput
+              style={{
+                fontSize: 16,
+                flex: 1,
+                fontFamily: "Roboto-Light",
+                paddingLeft: 15,
+                padding: 0,
+                height: '100%',
+              }}
+              placeholder="Login"
+              autoCorrect={false}
+              onChangeText={text => setLogin(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
+            />
+          </View>
+
+          <View style={{
+            backgroundColor: '#EAEAEA',
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderRadius: 5,
+            paddingLeft: 10,
+            height: 45,
+            marginTop: 10,
+          }}
+          >
+            <Icon name="lock" size={icons.tiny} color="#555555" />
+            <TextInput
+              style={{
+                fontSize: 16,
+                flex: 1,
+                fontFamily: "Roboto-Light",
+                paddingLeft: 15,
+                padding: 0,
+                height: '100%',
+              }}
+              autoCorrect={false}
+              placeholder="Sua senha secreta"
+              onChangeText={text => setPassword(text)}
+              autoCapitalize="none"
+              placeholderTextColor='#555555'
+            />
+          </View>
+
+          <TouchableOpacity
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#4B60C7',
+              borderRadius: 5,
+              height: 45,
+              marginTop: 80,
+              width: '100%',
+            }}
+          >
+            <TouchableOpacity
+              onPress={() => handleSignIn()}
+              style={{
+                flexDirection: 'row',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  marginLeft: 10,
+                  fontFamily: "Roboto-Medium",
+                  color: '#FFFFFF',
+                  padding: 0,
+                }}
+              >Autenticar</Text>
+              <Icon name="login" size={icons.tiny} color="#FFF" style={{ marginLeft: 10 }} />
+            </TouchableOpacity>
+          </TouchableOpacity>
 
           <HideWithKeyboard>
-            <Text style={styles.initial_config_sub_title} >
-              Agora informe seu usuário e senha para carregar chamados
-          </Text>
+            <TouchableOpacity style={{ flexDirection: 'row', marginTop: 50, }}>
+              <Text style={{ color: '#FFF' }}>Sem chave de acesso?</Text>
+              <Text style={{ fontFamily: 'Roboto-Bold', color: '#FFF' }}> Registrar.</Text>
+            </TouchableOpacity>
           </HideWithKeyboard>
 
-          <View style={[styles.initial_config_input_container]}>
-            <View style={styles.initial_config_icon_container}>
-              <Icon name="account" size={icons.small} color="#002f58" />
-            </View>
-            <TextInput
-              autoCorrect={false}
-              autoCapitalize="none"
-              placeholder="Login do técnico"
-              style={styles.initial_config_text_input_style}
-              onChangeText={login => setLogin(login)}
-            />
-          </View>
-
-          <View style={[styles.initial_config_input_container]}>
-            <View style={styles.initial_config_icon_container}>
-              <Icon name="lock" size={icons.small} color="#002f58" />
-            </View>
-            <TextInput
-              placeholder="Sua senha secreta"
-              style={styles.initial_config_text_input_style}
-              onChangeText={password => setPassword(password)}
-              secureTextEntry={true}
-            />
-          </View>
         </View>
 
-        <TouchableOpacity
-          onPress={handlePrevScreen}
-          style={styles.initial_config_prev_btn_style}
-        >
-          <HideWithKeyboard style={{ flexDirection: 'row' }}>
-            <Icon name="chevron-left" size={icons.small} color="#FFF" />
-            <Text style={styles.initial_config_navigators_text_style}>
-              Voltar
-          </Text>
-          </HideWithKeyboard>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          onPress={handleSignIn}
-          style={styles.initial_config_next_btn_style}
-        >
-          <HideWithKeyboard style={{ flexDirection: 'row' }}>
-            <Text style={styles.initial_config_navigators_text_style}>
-              Conectar
+        <Modal
+          children={
+            <View
+              style={{
+                width: 300,
+                backgroundColor: "#FFF",
+                alignSelf: "center",
+                borderWidth: 0,
+                borderRadius: 5,
+                padding: 20,
+                paddingTop: 10,
+              }}>
+              <ActivityIndicator size="small" color="#0000ff" />
+              <Text
+                style={{
+                  fontSize: fonts.regular,
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Carregando...
             </Text>
-            <Icon name="chevron-right" size={icons.small} color="#FFF" />
-          </HideWithKeyboard>
-        </TouchableOpacity>
+            </View>
+          }
+          isVisible={isVisible}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
       </LinearGradient>
-
-      <Modal
-        children={
-          <View style={styles.modal_style}>
-            <ActivityIndicator size="small" color="#0000ff" />
-            <Text style={styles.modal_text_style}>
-              Carregando...
-            </Text>
-          </View>
-        }
-        isVisible={isVisible}
-        style={{ margin: 0 }}
-        animationInTiming={500}
-        animationOutTiming={500}
-        useNativeDriver={true}
-      />
     </View>
   );
 }

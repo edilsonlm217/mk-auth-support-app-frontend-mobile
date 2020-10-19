@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, A
 import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import api from '../../services/api';
 
 import AppHeader from '../../components/AppHeader/index';
 
@@ -28,10 +28,9 @@ export default function NotificationScreen(props) {
     try {
       setRefreshing(true);
 
-      const response = await axios.get(
-        `http://${server_ip}:${server_port}/notification/${employee_id}`,
+      const response = await api.get(`notification/${employee_id}?tenant_id=${GlobalStore.state.tenantID}`,
         {
-          timeout: 5000,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${userToken}`,
           },
@@ -89,14 +88,13 @@ export default function NotificationScreen(props) {
     );
 
     try {
-      await axios.put(
-        `http://${server_ip}:${server_port}/notification`,
+      await api.put(`notification`,
         {
           action: 'markAsRead',
           notification_id,
         },
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${userToken}`,
           },

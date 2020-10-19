@@ -6,9 +6,9 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import socketio from 'socket.io-client';
-import axios from 'axios';
 
 import { store } from '../../store/store';
+import api from '../../services/api';
 
 import pt from 'date-fns/locale/pt';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -66,14 +66,13 @@ function Home({ navigation }) {
     try {
       setRefreshing(true);
 
-      const response = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/requests`,
+      const response = await api.post(`requests?tenant_id=${globalState.state.tenantID}`,
         {
           tecnico: globalState.state.isAdmin === true ? null : globalState.state.employee_id,
           date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
         },
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -90,6 +89,7 @@ function Home({ navigation }) {
       setRefreshing(false);
       setIsOutOfConnection(false);
     } catch (error) {
+      console.log(error);
       setRefreshing(false);
       if (error.message.includes('401')) {
         handleLogout();

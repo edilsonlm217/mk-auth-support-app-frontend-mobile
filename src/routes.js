@@ -11,7 +11,6 @@ import { icons } from './styles/index';
 
 import { Home } from './pages/Home/index';
 import Details from './pages/Details/index';
-import InitialConfig from './pages/InitialConfig/index';
 import AuthScreen from './pages/AuthScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
@@ -28,6 +27,7 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   const NotificationStore = useContext(notification_store);
+  
   return (
     <Tab.Navigator
       lazy={false}
@@ -87,12 +87,6 @@ function AuthStack() {
       screenOptions={{ gestureEnabled: true, headerShown: true }}
     >
       <Stack.Screen
-        name="InitialConfig"
-        component={InitialConfig}
-        options={{ headerShown: false }}
-      />
-
-      <Stack.Screen
         name="AuthScreen"
         component={AuthScreen}
         options={{ headerShown: false }}
@@ -113,7 +107,7 @@ export default function MainStack() {
         >
           <Stack.Screen
             name="Chamados"
-            component={HomeTabs}
+            component={(HomeTabs)}
             options={{ headerShown: false }}
           />
 

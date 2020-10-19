@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
-import axios from 'axios';
+import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -28,13 +28,12 @@ export default function ModalEditContact(props) {
 
   async function handleSaveNewNumber() {
     if (props.for === 'editCelular') {
-      const response_update = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+      const response_update = await api.post(`client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
         {
           celular: newNumber,
         },
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },
@@ -49,13 +48,12 @@ export default function ModalEditContact(props) {
       props.goBack();
       ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
     } else {
-      const response_update = await axios.post(
-        `http://${globalState.state.server_ip}:${globalState.state.server_port}/client/${clientState.state.client.id}`,
+      const response_update = await api.post(`client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
         {
           fone: newNumber,
         },
         {
-          timeout: 2500,
+          timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
           },

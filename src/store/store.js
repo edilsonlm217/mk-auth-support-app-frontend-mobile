@@ -1,16 +1,16 @@
 import React, { createContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
-import axios from 'axios';
+import api from '../services/api';
 import { Alert } from 'react-native';
 
 const initialState = {
   isLoading: true,
   isSignout: false,
   userToken: null,
-  server_ip: null,
-  server_port: null,
   employee_id: null,
   isAdmin: false,
+  tenantID: null,
+  // rememberPassword: true,
   notification_count: 0,
   oneSignalUserId: null,
 };
@@ -26,10 +26,10 @@ const StateProvider = ({ children }) => {
           ...prevState,
           isSignout: false,
           userToken: action.payload.token,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
           employee_id: action.payload.employee_id,
           isAdmin: action.payload.isAdmin,
+          tenantID: action.payload.tenantID,
+          // rememberPassword: action.payload.rememberPassword,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
@@ -37,11 +37,11 @@ const StateProvider = ({ children }) => {
         return {
           ...prevState,
           userToken: action.payload.userToken,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
           employee_id: action.payload.employee_id,
           isLoading: false,
           isAdmin: action.payload.isAdmin,
+          tenantID: action.payload.tenantID,
+          // rememberPassword: action.payload.rememberPassword,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
@@ -56,8 +56,6 @@ const StateProvider = ({ children }) => {
       case 'CHANGE_SERVER_CONFIG':
         const changedState = {
           ...prevState,
-          server_ip: action.payload.server_ip,
-          server_port: action.payload.server_port,
         }
 
         return changedState;
@@ -79,10 +77,10 @@ const StateProvider = ({ children }) => {
 
       try {
         userToken = await AsyncStorage.getItem('@auth_token');
-        server_ip = await AsyncStorage.getItem('@server_ip');
-        server_port = await AsyncStorage.getItem('@server_port');
         employee_id = await AsyncStorage.getItem('@employee_id');
         isAdmin = await AsyncStorage.getItem('@isAdmin');
+        // rememberPassword = await AsyncStorage.getItem('@rememberPassword');
+        tenantID = await AsyncStorage.getItem('@tenantID');
         oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
         if (isAdmin === "false") {
@@ -91,6 +89,17 @@ const StateProvider = ({ children }) => {
           isAdmin = true;
         }
 
+        // if (rememberPassword) {
+        //   if (rememberPassword === "true") {
+        //     rememberPassword = true;
+        //   } else {
+        //     rememberPassword = false;
+        //   }
+        // } else {
+        //   rememberPassword = true;
+        // }
+
+
       } catch (e) {
         // Restoring token failed
       }
@@ -98,10 +107,10 @@ const StateProvider = ({ children }) => {
       dispatch({
         type: 'RESTORE_TOKEN', payload: {
           userToken,
-          server_ip,
-          server_port,
           employee_id,
           isAdmin,
+          // rememberPassword,
+          tenantID,
           oneSignalUserId,
         }
       });
@@ -113,46 +122,47 @@ const StateProvider = ({ children }) => {
   const methods = React.useMemo(
     () => ({
       signIn: async data => {
-        const { login, password, server_ip, server_port } = data;
+        const { login, password, tenant_id } = data;
 
         try {
-          const response = await axios.post(`http://${server_ip}:${server_port}/sessions`, {
+          const response = await api.post(`sessions?tenant_id=${tenant_id}`, {
             login,
             password,
           }, {
-            timeout: 5000,
+            timeout: 10000,
           });
 
           const { token, user } = response.data;
 
           const auth_token_key = ['@auth_token', response.data.token.toString()];
-          const server_ip_key = ['@server_ip', server_ip];
-          const server_port_key = ['@server_port', server_port];
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
           const isAdmin = ['@isAdmin', user.isAdmin.toString()];
+          const tenantID = ['@tenantID', tenant_id];
+          // const rememberPassword = ['@rememberPassword', remember_password.toString()];
 
           const oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
           try {
             await AsyncStorage.multiSet([
               auth_token_key,
-              server_ip_key,
-              server_port_key,
               employee_id_key,
               isAdmin,
+              tenantID,
+              // rememberPassword,
             ]);
 
           } catch (e) {
+            console.warn(e);
             Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
           }
 
           dispatch({
             type: 'SIGN_IN', payload: {
               token,
-              server_ip,
-              server_port,
               employee_id: user.employee_id,
               isAdmin: user.isAdmin,
+              tenantID: tenant_id,
+              // rememberPassword: remember_password === "true" ? true : false,
               oneSignalUserId,
             }
           });
@@ -160,6 +170,7 @@ const StateProvider = ({ children }) => {
           return true;
 
         } catch (err) {
+          console.warn(err);
           if (err.message.includes('401')) {
             Alert.alert('Erro', 'Usuário ou senha inválidos');
           } else {
