@@ -4,7 +4,7 @@ import {
   Text,
   Image,
   TextInput,
-  // Switch,
+  Switch,
   TouchableOpacity,
   Alert,
   ActivityIndicator
@@ -22,20 +22,28 @@ import { icons, fonts } from '../../styles/index';
 
 export default function AuthScreen() {
   const globalState = useContext(store);
-  const { signIn } = globalState.methods;
+  const { signIn, saveTenantKey } = globalState.methods;
 
   const [key, setKey] = useState('');
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
 
   const [isVisible, setIsVisible] = useState(false);
-  // const [rememberPassword, setRememberPassword] = useState(globalState.state.rememberPassword);
+  const [restoreKey, setRestoreKey] = useState(true);
 
-  // useEffect(() => {
-  //   setRememberPassword(globalState.state.rememberPassword);
-  // }, [globalState.state.rememberPassword]);
+  useEffect(() => {
+    setRestoreKey(globalState.state.restoreKey);
+  }, [globalState.state.restoreKey]);
+
+  async function savePreferences() {
+    // Aqui será chamado um método da store para salvar as preferencias
+    // do usuário na Storage e na GlobalStore 
+
+    saveTenantKey(restoreKey);
+  }
 
   async function handleSignIn() {
+    console.log(`chamei o handleSignIN`);
     if (login !== '' && password !== '' && key !== '') {
       setIsVisible(true);
 
@@ -47,6 +55,7 @@ export default function AuthScreen() {
       });
 
       if (isDone) {
+        savePreferences();
         setIsVisible(false);
       }
     } else {
@@ -110,7 +119,7 @@ export default function AuthScreen() {
             />
           </View>
 
-          {/* <View
+          <View
             style={{
               marginBottom: 5,
               marginTop: 5,
@@ -127,14 +136,14 @@ export default function AuthScreen() {
               }}
             >Nunca esquecer</Text>
             <Switch
+              value={restoreKey}
               trackColor={{ false: "#767577", true: "#81b0ff" }}
               thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
-              value={rememberPassword}
-              onValueChange={() => setRememberPassword(!rememberPassword)}
+              onValueChange={() => setRestoreKey(!restoreKey)}
               style={{ transform: [{ scaleX: .8 }, { scaleY: .8 }] }}
             />
-          </View> */}
+          </View>
 
           <View style={{
             backgroundColor: '#EAEAEA',
