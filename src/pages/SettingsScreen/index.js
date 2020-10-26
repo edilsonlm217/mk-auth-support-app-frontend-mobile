@@ -138,7 +138,7 @@ export default function SettingsScreen({ navigation }) {
       <AppHeader navigation={navigation} label="Ajustes" altura="21%" />
       <View style={{ backgroundColor: '#337AB7' }}>
         <View style={styles.container}>
-          <TouchableOpacity onPress={() => setIsIPDialogVisible(true)}>
+          {/* <TouchableOpacity onPress={() => setIsIPDialogVisible(true)}>
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Endereço IP</Text>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -159,7 +159,7 @@ export default function SettingsScreen({ navigation }) {
                 <Icon name="chevron-right" size={25} color="#000" />
               </View>
             </View>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity onPress={() => setIsConfirmLogoutVisible(true)}>
             <View style={styles.line_container}>
