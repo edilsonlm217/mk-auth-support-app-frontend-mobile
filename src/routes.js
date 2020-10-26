@@ -17,7 +17,7 @@ import CTOMapping from './pages/CTOMapping/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
-import NotificationTab from './pages/NotificationTab/index';
+// import NotificationTab from './pages/NotificationTab/index';
 import CTODetails from './pages/CTODetails/index';
 
 import { fonts } from './styles/index';
@@ -56,7 +56,7 @@ function HomeTabs() {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Notification"
         component={NotificationTab}
         options={{
@@ -66,7 +66,7 @@ function HomeTabs() {
             <Icon name="bell" size={icons.tiny} color={color} />
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name="Settings"
         component={SettingsScreen}

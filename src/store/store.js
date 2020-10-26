@@ -10,7 +10,7 @@ const initialState = {
   employee_id: null,
   isAdmin: false,
   tenantID: null,
-  // rememberPassword: true,
+  restoreKey: true,
   notification_count: 0,
   oneSignalUserId: null,
 };
@@ -29,11 +29,12 @@ const StateProvider = ({ children }) => {
           employee_id: action.payload.employee_id,
           isAdmin: action.payload.isAdmin,
           tenantID: action.payload.tenantID,
-          // rememberPassword: action.payload.rememberPassword,
+          // restoreKey: action.payload.rememberPassword,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
       case 'RESTORE_TOKEN':
+        console.log(`RESTORE: ${action.payload.restoreKey}`);
         return {
           ...prevState,
           userToken: action.payload.userToken,
@@ -41,7 +42,7 @@ const StateProvider = ({ children }) => {
           isLoading: false,
           isAdmin: action.payload.isAdmin,
           tenantID: action.payload.tenantID,
-          // rememberPassword: action.payload.rememberPassword,
+          restoreKey: action.payload.restoreKey == "true" ? true : false,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
@@ -51,6 +52,12 @@ const StateProvider = ({ children }) => {
           isSignout: true,
           userToken: null,
           isAdmin: null,
+        };
+
+      case 'SAVE_KEY_PREFERENCES':
+        return {
+          ...prevState,
+          restoreKey: action.payload.restoreKeyStatus,
         };
 
       case 'CHANGE_SERVER_CONFIG':
@@ -79,7 +86,7 @@ const StateProvider = ({ children }) => {
         userToken = await AsyncStorage.getItem('@auth_token');
         employee_id = await AsyncStorage.getItem('@employee_id');
         isAdmin = await AsyncStorage.getItem('@isAdmin');
-        // rememberPassword = await AsyncStorage.getItem('@rememberPassword');
+        restoreKey = await AsyncStorage.getItem('@restore_key_status');
         tenantID = await AsyncStorage.getItem('@tenantID');
         oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
@@ -88,17 +95,6 @@ const StateProvider = ({ children }) => {
         } else if (isAdmin === "true") {
           isAdmin = true;
         }
-
-        // if (rememberPassword) {
-        //   if (rememberPassword === "true") {
-        //     rememberPassword = true;
-        //   } else {
-        //     rememberPassword = false;
-        //   }
-        // } else {
-        //   rememberPassword = true;
-        // }
-
 
       } catch (e) {
         // Restoring token failed
@@ -109,7 +105,7 @@ const StateProvider = ({ children }) => {
           userToken,
           employee_id,
           isAdmin,
-          // rememberPassword,
+          restoreKey,
           tenantID,
           oneSignalUserId,
         }
@@ -178,6 +174,26 @@ const StateProvider = ({ children }) => {
           }
           return true;
         }
+      },
+
+      saveTenantKey: async (data) => {
+        const restoreKeyStatus = data;
+
+        try {
+          const saveToStorage = ['@restore_key_status', restoreKeyStatus.toString()];
+
+          await AsyncStorage.multiSet([
+            saveToStorage,
+          ]);
+        } catch (error) {
+          console.log('Deu erro na hora de salvar no AsyncStorage');
+        }
+
+        dispatch({
+          type: 'SAVE_KEY_PREFERENCES', payload: {
+            restoreKeyStatus,
+          }
+        });
       },
 
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
