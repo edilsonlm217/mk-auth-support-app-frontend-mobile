@@ -10,6 +10,7 @@ import {
   ActivityIndicator
 } from 'react-native';
 import Modal from 'react-native-modal';
+import { useIsFocused } from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,6 +31,19 @@ export default function AuthScreen() {
 
   const [isVisible, setIsVisible] = useState(false);
   const [restoreKey, setRestoreKey] = useState(true);
+
+  const isFocused = useIsFocused(false);
+
+  useEffect(() => {
+    if (isFocused === true) {
+      const { restoreKey } = globalState.state;
+
+      if (restoreKey) {
+        const restored_key = globalState.state.tenantID;
+        setKey(restored_key);
+      }
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     setRestoreKey(globalState.state.restoreKey);
@@ -112,6 +126,7 @@ export default function AuthScreen() {
                 height: '100%',
               }}
               placeholder="Chave de acesso"
+              value={key}
               autoCorrect={false}
               onChangeText={text => setKey(text)}
               autoCapitalize="none"
