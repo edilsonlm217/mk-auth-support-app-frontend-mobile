@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect, useReducer } from 'react';
 import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
-import Accordion from 'react-native-collapsible/Accordion';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Accordion from 'react-native-collapsible/Accordion';
 import { format, parseISO } from 'date-fns';
 import api from '../../services/api';
 
