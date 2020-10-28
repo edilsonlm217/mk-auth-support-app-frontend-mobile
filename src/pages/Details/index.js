@@ -127,7 +127,7 @@ export default function Details({ route, navigation }) {
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_time",
-            new_visita_time: time,
+            new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
           },
           {
             timeout: 10000,
