@@ -385,6 +385,7 @@ export default function SearchScreen({ navigation }) {
                   searchResult.length !== 0 &&
                   <View>
                     <FlatList
+                      keyboardShouldPersistTaps={true}
                       style={styles.scrollview_container}
                       ItemSeparatorComponent={renderSeparator}
                       data={searchResult}
