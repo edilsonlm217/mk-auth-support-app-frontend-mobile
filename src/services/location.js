@@ -58,12 +58,12 @@ class LocationService {
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         Geolocation.getCurrentPosition(geo_success => {
-          const current_longitude = geo_success.coords.longitude;
-          const current_latitude = geo_success.coords.latitude;
+          // const current_longitude = geo_success.coords.longitude;
+          // const current_latitude = geo_success.coords.latitude;
 
           openMap({
             provider: 'google',
-            start: `${current_latitude},${current_longitude}`,
+            // start: `${current_latitude},${current_longitude}`,
             end: `${latitude},${longitude}`
           });
         }, geo_error => {
