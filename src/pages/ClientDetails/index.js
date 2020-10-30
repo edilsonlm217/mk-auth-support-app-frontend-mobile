@@ -323,7 +323,7 @@ export default function ClientDetails(props) {
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
-                  <Text style={styles.main_text}>
+                  <Text style={[styles.main_text, { maxWidth: '90%'}]}>
                     {`${clientState.state.client.endereco_res}, ${clientState.state.client.numero_res} - ${clientState.state.client.bairro_res}`}
                   </Text>
                 </View>
