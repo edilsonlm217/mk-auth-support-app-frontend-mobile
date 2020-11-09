@@ -68,7 +68,8 @@ function Home({ navigation }) {
 
       const response = await api.post(`requests?tenant_id=${globalState.state.tenantID}`,
         {
-          tecnico: globalState.state.isAdmin === true ? null : globalState.state.employee_id,
+          tecnico: globalState.state.employee_id,
+          isAdmin: globalState.state.isAdmin,
           date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
         },
         {
