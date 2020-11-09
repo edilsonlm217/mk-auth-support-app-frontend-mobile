@@ -60,12 +60,14 @@ export default function Details({ route, navigation }) {
 
   const [closingNote, setClosingNote] = useState('');
 
+  const request_type = 'Suporte';
+
   async function loadAPI() {
     setRefreshing(true);
     const { id: request_id } = route.params;
 
     try {
-      const response = await api.get(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(`request/${request_id}/${request_type}?tenant_id=${globalState.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -97,6 +99,7 @@ export default function Details({ route, navigation }) {
           {
             action: "update_visita_date",
             new_visita_date: selectedDate,
+            request_type: request_type,
           },
           {
             timeout: 10000,
@@ -128,6 +131,7 @@ export default function Details({ route, navigation }) {
           {
             action: "update_visita_time",
             new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
+            request_type: request_type,
           },
           {
             timeout: 10000,
@@ -140,7 +144,7 @@ export default function Details({ route, navigation }) {
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
         onRefresh();
-      } catch {
+      } catch (e) {
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -308,6 +312,7 @@ export default function Details({ route, navigation }) {
           {
             action: "update_employee",
             employee_id: newEmployee.id,
+            request_type: request_type,
           },
           {
             timeout: 10000,
