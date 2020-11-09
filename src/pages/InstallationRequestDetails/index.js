@@ -8,11 +8,10 @@ import {
   RefreshControl,
   ToastAndroid,
   Dimensions,
-  TextInput,
+  Switch,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
-import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
 import api from '../../services/api';
 
@@ -24,7 +23,7 @@ import { store } from '../../store/store';
 import styles from './styles';
 import { icons } from '../../styles/index';
 
-export default function Details({ route, navigation }) {
+export default function InstallationRequestDetails({ route, navigation }) {
   const [state, setState] = useState({});
 
   const [refreshing, setRefreshing] = useState(false);
@@ -39,9 +38,6 @@ export default function Details({ route, navigation }) {
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
 
   const [time] = useState(new Date());
-
-  // Hook para verificar se a tela atual está focada
-  const isFocused = useIsFocused(false);
 
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
@@ -58,9 +54,11 @@ export default function Details({ route, navigation }) {
 
   const [isDialogVisible, setIsDialogVisible] = useState(false);
 
-  const [closingNote, setClosingNote] = useState('');
+  const [isVisited, setIsVisited] = useState(true);
+  const [isInstalled, setIsInstalled] = useState(true);
+  const [isAvailable, setIsAvailable] = useState(true);
 
-  const request_type = 'Suporte';
+  const request_type = 'Ativação';
 
   async function loadAPI() {
     setRefreshing(true);
@@ -145,6 +143,7 @@ export default function Details({ route, navigation }) {
 
         onRefresh();
       } catch (e) {
+        console.log(e);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -192,10 +191,20 @@ export default function Details({ route, navigation }) {
   }
 
   function navigateToClient(client_id, client_name) {
-    navigation.navigate('ClientScreen', {
-      client_id,
-      client_name,
-    });
+    // Chamados de instalação não permitem abrir os detalhes do cliente
+    // porque quando alguém solicita a ativação do serviço, ele ainda não é
+    // de fato um cliente
+    if (client_id) {
+      navigation.navigate('ClientScreen', {
+        client_id,
+        client_name,
+      });
+    }
+    else {
+      const [firstName] = client_name.split(' ');
+      ToastAndroid.show(`${firstName} ainda não é um cliente`, ToastAndroid.SHORT);
+    }
+
   }
 
   function handleNavigateCTOMap(coordinate) {
@@ -214,32 +223,31 @@ export default function Details({ route, navigation }) {
   }
 
   async function closeRequest() {
-    if (!(closingNote === '')) {
-      try {
-        const { id: request_id } = route.params;
+    try {
+      const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
-          {
-            action: "close_request",
-            closingNote,
-            employee_id: globalState.state.employee_id,
+      const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        {
+          action: "close_request",
+          employee_id: globalState.state.employee_id,
+          request_type: request_type,
+          isVisited: isVisited,
+          isInstalled: isInstalled,
+          isAvailable: isAvailable,
+        },
+        {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
           },
-          {
-            timeout: 10000,
-            headers: {
-              Authorization: `Bearer ${globalState.state.userToken}`,
-            },
-          },
-        );
+        },
+      );
 
-        onRefresh();
-        setIsDialogVisible(false);
-      } catch (error) {
-        console.log(error);
-        Alert.alert('Erro', 'Não foi possível fechar chamado');
-      }
-    } else {
-      Alert.alert('Erro', 'É obrigatório informar o motivo do fechamento');
+      onRefresh();
+      setIsDialogVisible(false);
+    } catch (error) {
+      console.log(error);
+      Alert.alert('Erro', 'Não foi possível fechar chamado');
     }
   }
 
@@ -344,7 +352,7 @@ export default function Details({ route, navigation }) {
         <Text style={[styles.sub_text, { textAlign: 'center' }]}>
           {`${route.params.plano === 'nenhum'
             ? 'Nenhum'
-            : route.params.plano} | ${route.params.tipo ? route.params.tipo.toUpperCase() : route.params.tipo} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
+            : route.params.plano} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
           }
         </Text>
         {state.equipment_status &&
@@ -527,7 +535,7 @@ export default function Details({ route, navigation }) {
               </TouchableOpacity>
             </View>
 
-            {state.status === 'aberto' &&
+            {state.instalado !== 'sim' &&
               <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
                 <Text style={styles.btn_label}>Fechar Chamado</Text>
               </TouchableOpacity>
@@ -610,26 +618,47 @@ export default function Details({ route, navigation }) {
           onBackdropPress={() => setIsDialogVisible(false)}
           children={
             <View style={styles.modal_style}>
-              <Text style={styles.modal_header}>
-                Fechar chamado
-              </Text>
-              <Text style={{ marginTop: 10 }}>Nota de fechamento:</Text>
-              <TextInput
-                onChangeText={text => setClosingNote(text)}
-                textAlignVertical="top"
-                multiline={true}
-                style={styles.text_input_style}
+              <View style={{ height: 35, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                <Text style={styles.modal_header}>
+                  Fechar chamado
+                </Text>
+                <TouchableOpacity
+                  style={{ backgroundColor: '#337AB7', borderRadius: 5, height: '100%', justifyContent: 'center' }}
+                  onPress={() => closeRequest()}
+                >
+                  <Text style={{ marginLeft: 10, marginRight: 10, color: '#FFF', fontFamily: 'Roboto-Bold' }}>Concluir</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={{ marginTop: 30 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                  <Text>Visitado</Text>
+                  <Switch
+                    value={isVisited}
+                    trackColor={{ false: "#767577", true: "#337AB7" }}
+                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    onValueChange={() => setIsVisited(!isVisited)}
+                  />
+                </View>
 
-              />
-              <View style={styles.modal_btn_container}>
-                <TouchableOpacity onPress={() => setIsDialogVisible(false)}>
-                  <Text>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => closeRequest()} style={{ marginLeft: 15 }}>
-                  <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>
-                    Confirmar
-                  </Text>
-                </TouchableOpacity>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                  <Text>Instalado</Text>
+                  <Switch
+                    value={isInstalled}
+                    trackColor={{ false: "#767577", true: "#337AB7" }}
+                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    onValueChange={() => setIsInstalled(!isInstalled)}
+                  />
+                </View>
+
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 10 }}>
+                  <Text>Disponível</Text>
+                  <Switch
+                    value={isAvailable}
+                    trackColor={{ false: "#767577", true: "#337AB7" }}
+                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    onValueChange={() => setIsAvailable(!isAvailable)}
+                  />
+                </View>
               </View>
             </View>
           }

@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -33,6 +33,9 @@ export default function AuthScreen() {
   const [restoreKey, setRestoreKey] = useState(true);
 
   const isFocused = useIsFocused(false);
+
+  const LoginInput = useRef(null);
+  const PasswordInput = useRef(null);
 
   useEffect(() => {
     if (isFocused === true) {
@@ -125,6 +128,9 @@ export default function AuthScreen() {
                 padding: 0,
                 height: '100%',
               }}
+              blurOnSubmit={false}
+              returnKeyType="next"
+              onSubmitEditing={() => LoginInput.current.focus()}
               placeholder="Chave de acesso"
               value={key}
               autoCorrect={false}
@@ -179,6 +185,10 @@ export default function AuthScreen() {
                 padding: 0,
                 height: '100%',
               }}
+              blurOnSubmit={false}
+              returnKeyType="next"
+              ref={LoginInput}
+              onSubmitEditing={() => PasswordInput.current.focus()}
               placeholder="Login"
               autoCorrect={false}
               onChangeText={text => setLogin(text)}
@@ -207,6 +217,9 @@ export default function AuthScreen() {
                 padding: 0,
                 height: '100%',
               }}
+              ref={PasswordInput}
+              onSubmitEditing={() => handleSignIn()}
+              secureTextEntry={true}
               autoCorrect={false}
               placeholder="Sua senha secreta"
               onChangeText={text => setPassword(text)}

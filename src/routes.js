@@ -2,23 +2,24 @@ import React, { useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import SettingsIcon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { store } from './store/store';
-import { notification_store } from './store/notification';
 import { icons } from './styles/index';
+import { notification_store } from './store/notification';
 
 import { Home } from './pages/Home/index';
 import Details from './pages/Details/index';
-import AuthScreen from './pages/AuthScreen/index';
-import SettingsScreen from './pages/SettingsScreen/index';
 import CTOMapping from './pages/CTOMapping/index';
-import PickNewLocation from './pages/PickNewLocation/index';
+import AuthScreen from './pages/AuthScreen/index';
+import CTODetails from './pages/CTODetails/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
+import SettingsScreen from './pages/SettingsScreen/index';
+import PickNewLocation from './pages/PickNewLocation/index';
+import InstallationRequestDetails from './pages/InstallationRequestDetails';
 // import NotificationTab from './pages/NotificationTab/index';
-import CTODetails from './pages/CTODetails/index';
 
 import { fonts } from './styles/index';
 
@@ -27,7 +28,7 @@ const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
   const NotificationStore = useContext(notification_store);
-  
+
   return (
     <Tab.Navigator
       lazy={false}
@@ -115,7 +116,25 @@ export default function MainStack() {
             name="Details"
             component={Details}
             options={{
-              title: 'Detalhes do chamado',
+              title: 'Chamado de suporte',
+              headerStyle: {
+                backgroundColor: '#FFF',
+              },
+              headerTintColor: '#337AB7',
+              headerTransparent: true,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: fonts.huge,
+                marginLeft: -20,
+              },
+            }}
+          />
+
+          <Stack.Screen
+            name="InstallationRequestDetails"
+            component={InstallationRequestDetails}
+            options={{
+              title: 'Chamado de instalação',
               headerStyle: {
                 backgroundColor: '#FFF',
               },
