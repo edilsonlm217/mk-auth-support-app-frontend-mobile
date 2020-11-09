@@ -7,6 +7,26 @@ import { fonts } from '../../styles/index';
 export default function Card(props) {
   const globalState = useContext(store);
 
+  function calcBorderColor() {
+    if (!props.item.prioridade) {
+      return '#04EF72';
+    }
+
+    if (props.item.prioridade === 'normal') {
+      return '#FFB301';
+    }
+
+    if (props.item.prioridade === 'baixa') {
+      return '#04EF72';
+    }
+
+    if (props.item.prioridade === 'alta') {
+      return '#FF0101';
+    }
+  }
+
+  const borderColor = calcBorderColor();
+
   function UserAdress() {
 
     if (props.item.endereco === null) {
@@ -27,14 +47,28 @@ export default function Card(props) {
   return (
     <>
       <TouchableOpacity
-        style={styles.card}
-        onPress={() => props.navigation.navigate('Details', {
-          id: props.item.id,
-          nome: props.item.nome,
-          tipo: props.item.tipo,
-          ip: props.item.ip,
-          plano: props.item.plano,
-        })}
+        style={[styles.card, { borderColor: borderColor }]}
+        onPress={() => {
+          if (props.item.assunto === 'Ativação') {
+            props.navigation.navigate('InstallationRequestDetails', {
+              id: props.item.id,
+              nome: props.item.nome,
+              tipo: props.item.tipo,
+              ip: props.item.ip,
+              plano: props.item.plano,
+              assunto: props.item.assunto,
+            });
+          } else {
+            props.navigation.navigate('Details', {
+              id: props.item.id,
+              nome: props.item.nome,
+              tipo: props.item.tipo,
+              ip: props.item.ip,
+              plano: props.item.plano,
+              assunto: props.item.assunto,
+            });
+          }
+        }}
       >
         <View style={styles.card_header_content_container}>
           <View style={styles.card_header}>
@@ -66,15 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#FFF',
 
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    shadowOpacity: 0.32,
-    shadowRadius: 5.46,
-
-    elevation: 10,
+    borderWidth: 1,
   },
 
   card_header_content_container: {
