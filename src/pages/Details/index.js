@@ -223,6 +223,7 @@ export default function Details({ route, navigation }) {
             action: "close_request",
             closingNote,
             employee_id: globalState.state.employee_id,
+            request_type: request_type,
           },
           {
             timeout: 10000,
