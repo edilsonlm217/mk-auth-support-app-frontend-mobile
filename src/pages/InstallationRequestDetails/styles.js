@@ -215,6 +215,27 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     marginTop: 20,
   },
+
+  swiped_options: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    zIndex: 3,
+
+    height: '100%',
+    backgroundColor: '#f2f2f2',
+
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+
+  clickable_line: {
+    padding: 5,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    flexDirection: 'row',
+    justifyContent: "space-between"
+  },
 });
 
 export default styles;
