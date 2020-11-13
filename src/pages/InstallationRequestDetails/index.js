@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,14 @@ import {
   ToastAndroid,
   Dimensions,
   Switch,
+  Animated,
+  Linking,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import Clipboard from '@react-native-community/clipboard';
 import api from '../../services/api';
+import CallIcon from 'react-native-vector-icons/Zocial';
 
 import LocationService from '../../services/location';
 
@@ -58,7 +61,63 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [isInstalled, setIsInstalled] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
 
+  const swipeAnim = useRef(new Animated.Value(0)).current;
+
+  const swipeOut = () => {
+    Animated.timing(swipeAnim, {
+      toValue: 150,
+      duration: 200
+    }).start();
+  };
+
+  const swipeIn = () => {
+    Animated.timing(swipeAnim, {
+      toValue: 0,
+      duration: 200
+    }).start();
+  };
+
   const request_type = 'Ativação';
+
+  function FloatActionBar(option, number) {
+    if (number === null) {
+      return Alert.alert('Erro', 'Número não informado');
+    }
+
+    if (option === 'open') {
+      swipeOut();
+    } else {
+      swipeIn();
+    }
+  }
+
+  function openWhatsapp(number) {
+    if (number === null) {
+      return Alert.alert('Erro', 'Número não informado');
+    }
+    FloatActionBar('close');
+
+    Linking.openURL(`https://api.whatsapp.com/send?phone=55${number}`);
+  }
+
+  function dialCall(number) {
+    FloatActionBar('close');
+
+    if (number === null) {
+      return Alert.alert('Erro', 'Número não informado');
+    }
+
+    let phoneNumber;
+
+    if (Platform.OS === 'android') {
+      phoneNumber = `tel:${number}`;
+    }
+    else {
+      phoneNumber = `telprompt:${number}`;
+    }
+
+    Linking.openURL(phoneNumber);
+  };
 
   async function loadAPI() {
     setRefreshing(true);
@@ -74,6 +133,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
         },
       );
 
+      console.log(response.data);
       setState(response.data);
       setRefreshing(false);
     } catch {
@@ -98,6 +158,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
             action: "update_visita_date",
             new_visita_date: selectedDate,
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -130,6 +191,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
             action: "update_visita_time",
             new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -460,7 +522,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
               </TouchableOpacity>
             }
             <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Serviço</Text>
+              <Text style={styles.sub_text}>Assunto</Text>
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
             <View style={styles.line_container}>
@@ -501,6 +563,58 @@ export default function InstallationRequestDetails({ route, navigation }) {
                   <Text style={styles.main_text_login_senha}>{state.senha}</Text>
                 </TouchableOpacity>
               </View>
+            </View>
+
+            <TouchableOpacity onPress={() => dialCall(state.telefone)}>
+              <View style={styles.clickable_line}>
+                <View>
+                  <Text style={styles.sub_text}>Telefone</Text>
+                  <Text style={styles.main_text}>
+                    {state.telefone ? state.telefone : 'Não informado'}
+                  </Text>
+                </View>
+                {state.telefone &&
+                  <View style={{ justifyContent: 'center' }}>
+                    <CallIcon name="call" size={icons.tiny} color="#000" />
+                  </View>
+                }
+              </View>
+            </TouchableOpacity>
+
+            <View>
+              <TouchableOpacity onPress={() => FloatActionBar('open', state.celular)}>
+                <View style={styles.clickable_line}>
+                  <View>
+                    <Text style={styles.sub_text}>Celular</Text>
+                    <Text style={styles.main_text}>
+                      {state.celular ? state.celular : 'Não informado'}
+                    </Text>
+                  </View>
+                  {state.celular &&
+                    <View style={{ justifyContent: 'center' }}>
+                      <CallIcon name="call" size={icons.tiny} color="#000" />
+                    </View>
+                  }
+                </View>
+              </TouchableOpacity>
+              <Animated.View style={[styles.swiped_options, { width: swipeAnim }]}>
+                <TouchableOpacity
+                  onPress={() => openWhatsapp(state.celular)}
+                >
+                  <Icon name="whatsapp" color="green" size={26} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => dialCall(state.celular)}
+                >
+                  <CallIcon name="call" size={26} color="green" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => FloatActionBar('close')}
+                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}
+                >
+                  <Icon name="close" size={18} color="#000" />
+                </TouchableOpacity>
+              </Animated.View>
             </View>
 
             <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(state.coordenadas)}>

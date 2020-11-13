@@ -76,7 +76,7 @@ export default function Card(props) {
             <Text style={styles.visit_time}>{props.item.visita}</Text>
           </View>
           <UserAdress />
-          <Text style={{ fontSize: fonts.small }}>{`Serviço: ${props.item.assunto}`}</Text>
+          <Text style={{ fontSize: fonts.small }}>{`Assunto: ${props.item.assunto}`}</Text>
           {globalState.state.isAdmin &&
             <Text style={{ fontSize: fonts.small }}>
               {props.item.employee_name === null

@@ -100,6 +100,7 @@ export default function Details({ route, navigation }) {
             action: "update_visita_date",
             new_visita_date: selectedDate,
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -132,6 +133,7 @@ export default function Details({ route, navigation }) {
             action: "update_visita_time",
             new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -224,6 +226,7 @@ export default function Details({ route, navigation }) {
             closingNote,
             employee_id: globalState.state.employee_id,
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -314,6 +317,7 @@ export default function Details({ route, navigation }) {
             action: "update_employee",
             employee_id: newEmployee.id,
             request_type: request_type,
+            madeBy: globalState.state.employee_id,
           },
           {
             timeout: 10000,
@@ -453,7 +457,7 @@ export default function Details({ route, navigation }) {
               </TouchableOpacity>
             }
             <View style={styles.line_container}>
-              <Text style={styles.sub_text}>Serviço</Text>
+              <Text style={styles.sub_text}>Assunto</Text>
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
             <View style={styles.line_container}>
