@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useReducer } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,10 @@ import Modal from 'react-native-modal';
 import Clipboard from '@react-native-community/clipboard';
 import api from '../../services/api';
 import CallIcon from 'react-native-vector-icons/Zocial';
+import axios from 'axios';
+import MapViewDirections from 'react-native-maps-directions';
+
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
 import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
@@ -63,6 +67,22 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [isInstalled, setIsInstalled] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
 
+  // Estado que controla todo o calculo de rotas
+  const [_state, dispatch] = useReducer(reducer, {
+    dest_latitude: null,
+    dest_longitude: null,
+  });
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'traceroute':
+        return {
+          dest_latitude: action.payload.cto_latitude,
+          dest_longitude: action.payload.cto_longitude,
+        }
+    }
+  }
+
   const swipeAnim = useRef(new Animated.Value(0)).current;
 
   // Estes dados do cliente nunca tem seus valores alterados
@@ -74,11 +94,58 @@ export default function InstallationRequestDetails({ route, navigation }) {
   // Estados para lidar com iteração do usuário com o mapa
   const [latitude, setLatitude] = useState(client_latitude);
   const [longitude, setLongitude] = useState(client_longitude);
-  const [latitudeDelta, setLatitudeDelta] = useState(0.01);
+  const [latitudeDelta, setLatitudeDelta] = useState(0.003);
   const [longitudeDelta, setLongitudeDelta] = useState(0);
 
   // Estado contendo todas as CTOs existente dentro do raio de busca
   const [arrayCTOs, setArrayCTOs] = useState([]);
+
+  useEffect(() => {
+    async function getCTOs() {
+      setRefreshing(true);
+      const response = await api.get(`cto/${client_latitude}/${client_longitude}?tenant_id=${globalState.state.tenantID}`, {
+        timeout: 10000,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
+      );
+
+      var queries_array = [];
+      var array_cto = [];
+      response.data.map(item => {
+        const latitude = parseFloat(item.latitude);
+        const longitude = parseFloat(item.longitude);
+
+        array_cto.push(item);
+        queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
+      });
+
+      await axios.all(queries_array).then(response => {
+        response.forEach((element, index) => {
+          array_cto[index].distance = element.data.rows[0].elements[0].distance.text;
+          array_cto[index].distance_value = element.data.rows[0].elements[0].distance.value;
+        });
+      });
+
+      // Ordenação do array com mais próximos primeiro
+      array_cto.sort(function (a, b) {
+        var keyA = a.distance_value,
+          keyB = b.distance_value;
+
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+
+      console.log(array_cto);
+
+      setArrayCTOs(array_cto);
+      setRefreshing(false);
+    }
+
+    getCTOs();
+  }, []);
 
   const swipeOut = () => {
     Animated.timing(swipeAnim, {
@@ -289,21 +356,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
 
   }
 
-  function handleNavigateCTOMap(coordinate) {
-    if (coordinate) {
-      const [latidude, longitude] = coordinate.split(',');
-
-      navigation.navigate('CTOs', {
-        latidude: latidude,
-        longitude: longitude,
-        client_name: state.nome,
-        client_id: state.client_id,
-      });
-    } else {
-      Alert.alert('Impossível localizar', 'Este cliente não possui coordenadas definidas');
-    }
-  }
-
   async function closeRequest() {
     try {
       const { id: request_id } = route.params;
@@ -425,6 +477,20 @@ export default function InstallationRequestDetails({ route, navigation }) {
   function copyToClipboard(text) {
     Clipboard.setString(text);
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
+  function handleTraceRoute(dest_lat, dest_lgt) {
+    if (dest_lat == null || dest_lgt == null) {
+      Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
+    } else {
+      dispatch({
+        type: 'traceroute',
+        payload: {
+          cto_latitude: dest_lat,
+          cto_longitude: dest_lgt,
+        },
+      });
+    }
   }
 
   return (
@@ -661,7 +727,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
                 </View>
                 <MapView
                   provider={PROVIDER_GOOGLE}
-                  style={{ height: 300, width: '100%' }}
+                  style={{ height: 400, width: '100%' }}
                   region={{
                     latitude: latitude,
                     longitude: longitude,
@@ -676,6 +742,43 @@ export default function InstallationRequestDetails({ route, navigation }) {
                     }}
                     title={client_name}
                   />
+
+                  {arrayCTOs.map(cto => (
+                    <Marker
+                      key={cto.id}
+                      coordinate={{
+                        latitude: parseFloat(cto.latitude),
+                        longitude: parseFloat(cto.longitude),
+                      }}
+                      onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+                    >
+                      <Icon name={"access-point-network"} size={icons.small} color="#FF0000" />
+                      <Callout tooltip={true}>
+                        <View style={{ width: 120, padding: 15, backgroundColor: '#FFF', opacity: 0.8, borderRadius: 10, alignItems: 'center' }}>
+                          <Text style={{ fontWeight: "bold", fontSize: 12, color: '#000' }}>{cto.nome}</Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>Distancia: {cto.distance}</Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>Conectados: {cto.connection_amount}</Text>
+                        </View>
+                      </Callout>
+                    </Marker>
+                  ))}
+
+                  {_state.dest_latitude !== null &&
+                    <MapViewDirections
+                      apikey={GOOGLE_MAPS_APIKEY}
+                      strokeWidth={8}
+                      strokeColor="hotpink"
+                      mode="WALKING"
+                      origin={{
+                        latitude: client_latitude,
+                        longitude: client_longitude,
+                      }}
+                      destination={{
+                        latitude: _state.dest_latitude,
+                        longitude: _state.dest_longitude,
+                      }}
+                    />
+                  }
                 </MapView>
               </View>
             }
