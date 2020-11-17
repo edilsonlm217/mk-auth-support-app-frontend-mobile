@@ -18,6 +18,8 @@ import Clipboard from '@react-native-community/clipboard';
 import api from '../../services/api';
 import CallIcon from 'react-native-vector-icons/Zocial';
 
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
+
 import LocationService from '../../services/location';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -62,6 +64,21 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [isAvailable, setIsAvailable] = useState(true);
 
   const swipeAnim = useRef(new Animated.Value(0)).current;
+
+  // Estes dados do cliente nunca tem seus valores alterados
+  const client_latitude = route.params.latitude;
+  const client_longitude = route.params.longitude;
+  const client_id = route.params.id;
+  const client_name = route.params.nome;
+
+  // Estados para lidar com iteração do usuário com o mapa
+  const [latitude, setLatitude] = useState(client_latitude);
+  const [longitude, setLongitude] = useState(client_longitude);
+  const [latitudeDelta, setLatitudeDelta] = useState(0.01);
+  const [longitudeDelta, setLongitudeDelta] = useState(0);
+
+  // Estado contendo todas as CTOs existente dentro do raio de busca
+  const [arrayCTOs, setArrayCTOs] = useState([]);
 
   const swipeOut = () => {
     Animated.timing(swipeAnim, {
@@ -144,6 +161,10 @@ export default function InstallationRequestDetails({ route, navigation }) {
   useEffect(() => {
     loadAPI();
   }, []);
+
+  useEffect(() => {
+
+  }, [state]);
 
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
@@ -633,20 +654,31 @@ export default function InstallationRequestDetails({ route, navigation }) {
               :
               <></>
             }
-
-            <View>
-              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-                <View style={styles.cto_line}>
-                  <View>
-                    <Text style={styles.sub_text}>Caixa atual</Text>
-                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-                  </View>
-                  <View style={{ justifyContent: 'center' }}>
-                    <Icon name="map-search" size={icons.tiny} color="#000" />
-                  </View>
+            {state &&
+              <View>
+                <View style={[styles.cto_line, { borderBottomWidth: 0 }]}>
+                  <Text style={styles.sub_text}>Mapa de caixas</Text>
                 </View>
-              </TouchableOpacity>
-            </View>
+                <MapView
+                  provider={PROVIDER_GOOGLE}
+                  style={{ height: 300, width: '100%' }}
+                  region={{
+                    latitude: latitude,
+                    longitude: longitude,
+                    latitudeDelta: latitudeDelta,
+                    longitudeDelta: longitudeDelta,
+                  }}
+                >
+                  <Marker
+                    coordinate={{
+                      latitude: client_latitude,
+                      longitude: client_longitude,
+                    }}
+                    title={client_name}
+                  />
+                </MapView>
+              </View>
+            }
 
             {state.instalado !== 'sim' &&
               <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
