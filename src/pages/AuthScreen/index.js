@@ -60,7 +60,6 @@ export default function AuthScreen() {
   }
 
   async function handleSignIn() {
-    console.log(`chamei o handleSignIN`);
     if (login !== '' && password !== '' && key !== '') {
       setIsVisible(true);
 
