@@ -208,6 +208,25 @@ export default function ClientFinancing(props) {
             <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.descricao}</Text>
           </View>
         </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
+          <View style={{ width: '50%', alignItems: 'center' }}>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  flex: 1, width: '50%'
+                }]}
+            >
+              Pago em
+            </Text>
+          </View>
+          <View style={{ flex: 1, marginBottom: 10 }}>
+            <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.paidAt}</Text>
+          </View>
+        </View>
       </>
     );
   };
