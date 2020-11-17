@@ -133,7 +133,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
         },
       );
 
-      console.log(response.data);
       setState(response.data);
       setRefreshing(false);
     } catch {
