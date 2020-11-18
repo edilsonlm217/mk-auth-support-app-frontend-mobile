@@ -652,6 +652,30 @@ export default function InstallationRequestDetails({ route, navigation }) {
               <Text style={styles.sub_text}>Assunto</Text>
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
+
+            {state.instalado === 'sim' &&
+              <View style={[styles.line_container, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <View>
+                  <Text style={styles.sub_text}>Visitado</Text>
+                  <TouchableOpacity
+                    onPress={() => copyToClipboard(state.login)}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                  >
+                    <Text style={[styles.main_text_login_senha, { color: state.visitado === 'sim' ? 'green' : 'red' }]}>{state.visitado === 'sim' ? 'Sim' : 'Não'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>Instalado</Text>
+                  <TouchableOpacity
+                    onPress={() => copyToClipboard(state.senha)}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                  >
+                    <Text style={[styles.main_text_login_senha, { color: state.instalado === 'sim' ? 'green' : 'red' }]}>{state.instalado === 'sim' ? 'Sim' : 'Não'}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            }
+
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Equipamento</Text>
               <Text style={styles.main_text}>
