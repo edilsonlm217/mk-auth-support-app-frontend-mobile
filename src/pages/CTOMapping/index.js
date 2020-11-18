@@ -88,7 +88,6 @@ export default function CTOMapping({ route, navigation }) {
   async function handleUpdateCTO() {
     const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
       {
-        action: "update_client_location",
         new_cto: selectedBtn,
       },
       {
