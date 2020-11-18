@@ -11,6 +11,7 @@ import {
   Switch,
   Animated,
   Linking,
+  StyleSheet
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
@@ -479,10 +480,45 @@ export default function InstallationRequestDetails({ route, navigation }) {
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
   }
 
+  function getRegionForCoordinates(points) {
+    // points should be an array of { latitude: X, longitude: Y }
+    let minX, maxX, minY, maxY;
+
+    // init first point
+    ((point) => {
+      minX = point.latitude;
+      maxX = point.latitude;
+      minY = point.longitude;
+      maxY = point.longitude;
+    })(points[0]);
+
+    // calculate rect
+    points.map((point) => {
+      minX = Math.min(minX, point.latitude);
+      maxX = Math.max(maxX, point.latitude);
+      minY = Math.min(minY, point.longitude);
+      maxY = Math.max(maxY, point.longitude);
+    });
+
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+    const deltaX = (maxX - minX);
+    const deltaY = (maxY - minY);
+
+    return {
+      latitude: midX,
+      longitude: midY,
+      latitudeDelta: deltaX,
+      longitudeDelta: deltaY
+    };
+  }
+
   function handleTraceRoute(dest_lat, dest_lgt) {
     if (dest_lat == null || dest_lgt == null) {
       Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
     } else {
+      const { latitudeDelta, longitudeDelta } = getRegionForCoordinates(arrayCTOs);
+
       dispatch({
         type: 'traceroute',
         payload: {
@@ -490,6 +526,11 @@ export default function InstallationRequestDetails({ route, navigation }) {
           cto_longitude: dest_lgt,
         },
       });
+
+      setLatitude((client_latitude + dest_lat) / 2);
+      setLongitude((client_longitude + dest_lgt) / 2);
+      setLatitudeDelta(latitudeDelta);
+      setLongitudeDelta(longitudeDelta);
     }
   }
 
