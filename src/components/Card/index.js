@@ -57,6 +57,8 @@ export default function Card(props) {
               ip: props.item.ip,
               plano: props.item.plano,
               assunto: props.item.assunto,
+              latitude: props.item.latitude,
+              longitude: props.item.longitude,
             });
           } else {
             props.navigation.navigate('Details', {
