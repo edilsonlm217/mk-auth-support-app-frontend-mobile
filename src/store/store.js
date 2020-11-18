@@ -34,7 +34,6 @@ const StateProvider = ({ children }) => {
         };
 
       case 'RESTORE_TOKEN':
-        console.log(`RESTORE: ${action.payload.restoreKey}`);
         return {
           ...prevState,
           userToken: action.payload.userToken,
