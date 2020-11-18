@@ -11,7 +11,6 @@ import {
   Switch,
   Animated,
   Linking,
-  StyleSheet
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
