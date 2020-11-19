@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import { Dimensions, View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, Image } from 'react-native';
+import { Dimensions, View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, Image, StatusBar } from 'react-native';
 import { format, subDays, addDays } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -285,6 +285,7 @@ function Home({ navigation }) {
 
   return (
     <>
+      <StatusBar backgroundColor="#337AB7" barStyle='light-content' />
       <View style={styles.container}>
         <AppHeader navigation={navigation} label="Chamados" altura="15%" iconFor="settings" />
         <View style={styles.date_selector}>
