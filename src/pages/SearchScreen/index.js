@@ -337,7 +337,10 @@ export default function SearchScreen({ navigation }) {
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
-                    <TouchableOpacity onPress={() => setDefaultFilerOP()}>
+                    <TouchableOpacity
+                      style={{ height: '100%', width: 28, justifyContent: 'center', alignItems: 'center' }}
+                      onPress={() => setDefaultFilerOP()}
+                    >
                       <Icon name="close" size={16} color="#004C8F" />
                     </TouchableOpacity>
                   </View>
@@ -352,7 +355,10 @@ export default function SearchScreen({ navigation }) {
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
-                    <TouchableOpacity onPress={() => setDefaultFilerBY()}>
+                    <TouchableOpacity
+                      style={{ height: '100%', width: 28, justifyContent: 'center', alignItems: 'center' }}
+                      onPress={() => setDefaultFilerBY()}
+                    >
                       <Icon name="close" size={16} color="#004C8F" />
                     </TouchableOpacity>
                   </View>
