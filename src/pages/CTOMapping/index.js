@@ -132,8 +132,8 @@ export default function CTOMapping({ route, navigation }) {
 
       const { caixa_herm } = client.data;
 
-      if (caixa_herm) {
-        const current_client_cto = await api.get(`cto/${caixa_herm}?tenant_id=${globalState.state.tenantID}`, {
+      if (caixa_herm !== null) {
+        const current_client_cto = await api.get(`cto?cto_name=${caixa_herm}&tenant_id=${globalState.state.tenantID}`, {
           timeout: 10000,
           headers: {
             Authorization: `Bearer ${globalState.state.userToken}`,
@@ -320,40 +320,49 @@ export default function CTOMapping({ route, navigation }) {
             <RefreshControl refreshing={refreshing} />
           }
         >
-          <View style={styles.sub_cards_container}>
-            {
-              arrayCTOs.map(cto => (
-                cto.nome === suggestedCTO?.nome ? <></> :
-                  selectedBtn !== cto.nome
-                    ?
-                    <TouchableOpacity
-                      key={cto.nome}
-                      onPress={() => handleSelection(cto)}
-                      style={styles.sub_cards}
-                    >
-                      <View style={styles.main_line}>
-                        <Text style={styles.sub_card_title}>{cto.nome}</Text>
-                        <Text numberOfLines={1} style={[styles.sub_card_title_distance]}>{cto.distance}</Text>
-                      </View>
-                      <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
-                    </TouchableOpacity>
-                    :
-                    <TouchableOpacity
-                      key={cto.nome}
-                      onPress={() => handleSelection(cto)}
-                      style={styles.sub_cards_selected}
-                    >
-                      <View style={styles.main_line_selected}>
-                        <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
-                        <View style={styles.sub_card_icon_container}>
-                          <Icon name={"checkbox-marked-circle"} size={icons.small} color="#FFF" />
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-              )
-              )
-            }
-          </View>
+          {arrayCTOs.length === 0 && refreshing === false
+            ?
+            <Text style={[styles.main_title, { marginBottom: 10, color: '#AFAFAF' }]}>
+              Não há caixas próximas a este cliente
+            </Text>
+            : (
+              <View style={styles.sub_cards_container}>
+                {
+                  arrayCTOs.map(cto => (
+                    cto.nome === suggestedCTO?.nome ? <></> :
+                      selectedBtn !== cto.nome
+                        ?
+                        <TouchableOpacity
+                          key={cto.nome}
+                          onPress={() => handleSelection(cto)}
+                          style={styles.sub_cards}
+                        >
+                          <View style={styles.main_line}>
+                            <Text style={styles.sub_card_title}>{cto.nome}</Text>
+                            <Text numberOfLines={1} style={[styles.sub_card_title_distance]}>{cto.distance}</Text>
+                          </View>
+                          <Text style={styles.sub_line}>{cto.connection_amount} Conectados</Text>
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity
+                          key={cto.nome}
+                          onPress={() => handleSelection(cto)}
+                          style={styles.sub_cards_selected}
+                        >
+                          <View style={styles.main_line_selected}>
+                            <Text style={styles.sub_card_title_selected}>{cto.nome}</Text>
+                            <View style={styles.sub_card_icon_container}>
+                              <Icon name={"checkbox-marked-circle"} size={icons.small} color="#FFF" />
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                  )
+                  )
+                }
+              </View>
+            )
+          }
+
         </ScrollView>
       </View>
       <Modal
