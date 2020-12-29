@@ -119,10 +119,10 @@ export default function MainStack() {
             options={{
               title: 'Chamado de suporte',
               headerStyle: {
-                backgroundColor: '#FFF',
+                backgroundColor: '#337AB7',
               },
-              headerTintColor: '#337AB7',
-              headerTransparent: true,
+              headerTintColor: '#FFF',
+              headerTransparent: false,
               headerTitleStyle: {
                 fontWeight: 'bold',
                 fontSize: fonts.huge,
