@@ -14,6 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
+import { subHours } from 'date-fns';
 import api from '../../services/api';
 
 import LocationService from '../../services/location';
@@ -220,10 +221,13 @@ export default function Details({ route, navigation }) {
       try {
         const { id: request_id } = route.params;
 
+        const timeZoneOffset = new Date().getTimezoneOffset() / 60;
+
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "close_request",
             closingNote,
+            closingDate: subHours(new Date(), timeZoneOffset),
             employee_id: globalState.state.employee_id,
             request_type: request_type,
             madeBy: globalState.state.employee_id,
