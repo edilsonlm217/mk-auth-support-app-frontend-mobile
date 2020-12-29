@@ -133,7 +133,6 @@ const StateProvider = ({ children }) => {
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
           const isAdmin = ['@isAdmin', user.isAdmin.toString()];
           const tenantID = ['@tenantID', tenant_id];
-          // const rememberPassword = ['@rememberPassword', remember_password.toString()];
 
           const oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
@@ -143,7 +142,6 @@ const StateProvider = ({ children }) => {
               employee_id_key,
               isAdmin,
               tenantID,
-              // rememberPassword,
             ]);
 
           } catch (e) {
@@ -157,7 +155,6 @@ const StateProvider = ({ children }) => {
               employee_id: user.employee_id,
               isAdmin: user.isAdmin,
               tenantID: tenant_id,
-              // rememberPassword: remember_password === "true" ? true : false,
               oneSignalUserId,
             }
           });
