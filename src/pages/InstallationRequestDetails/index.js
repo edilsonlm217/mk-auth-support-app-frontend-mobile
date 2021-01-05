@@ -7,6 +7,7 @@ import {
   ScrollView,
   RefreshControl,
   ToastAndroid,
+  ActivityIndicator,
   Dimensions,
   Switch,
   Animated,
@@ -31,7 +32,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { store } from '../../store/store';
 
 import styles from './styles';
-import { icons } from '../../styles/index';
+import { icons, fonts } from '../../styles/index';
 
 export default function InstallationRequestDetails({ route, navigation }) {
   const [state, setState] = useState({});
@@ -46,6 +47,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [date] = useState(new Date());
 
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [time] = useState(new Date());
 
@@ -235,9 +238,10 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setIsDatePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_date",
             new_visita_date: selectedDate,
@@ -252,10 +256,12 @@ export default function InstallationRequestDetails({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
+        
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
         onRefresh();
       } catch {
+        setIsLoading(false);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -268,6 +274,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setIsTimePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
@@ -284,11 +291,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
             },
           },
         );
-
+        
+        setIsLoading(false);
+        
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
         onRefresh();
       } catch (e) {
+        setIsLoading(false);
         console.log(e);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
@@ -445,6 +454,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
     } else {
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
@@ -461,11 +471,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         setEmployeesModal(false)
         onRefresh();
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
       } catch {
+        setIsLoading(false);
         ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
       }
     }
@@ -915,6 +927,39 @@ export default function InstallationRequestDetails({ route, navigation }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
+
+      {isLoading &&
+        <Modal
+          children={
+            <View
+              style={{
+                width: 300,
+                backgroundColor: "#FFF",
+                alignSelf: "center",
+                borderWidth: 0,
+                borderRadius: 5,
+                padding: 20,
+                paddingTop: 10,
+              }}>
+              <ActivityIndicator size="small" color="#337AB7" />
+              <Text
+                style={{
+                  fontSize: fonts.regular,
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Carregando...
+            </Text>
+            </View>
+          }
+          isVisible={isLoading}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
+      }
 
       {isDialogVisible &&
         <Modal
