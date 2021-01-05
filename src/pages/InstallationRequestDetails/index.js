@@ -88,7 +88,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
   // Estes dados do cliente nunca tem seus valores alterados
   const client_latitude = route.params.latitude;
   const client_longitude = route.params.longitude;
-  const client_id = route.params.id;
   const client_name = route.params.nome;
 
   // Estados para lidar com iteração do usuário com o mapa
@@ -137,8 +136,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
         if (keyA > keyB) return 1;
         return 0;
       });
-
-      console.log(array_cto);
 
       setArrayCTOs(array_cto);
       setRefreshing(false);
@@ -784,7 +781,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
               :
               <></>
             }
-            {state &&
+            {state && client_latitude !== null && client_longitude !== null &&
               <View>
                 <View style={[styles.cto_line, { borderBottomWidth: 0 }]}>
                   <Text style={styles.sub_text}>Mapa de caixas</Text>
