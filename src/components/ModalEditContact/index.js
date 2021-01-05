@@ -85,12 +85,14 @@ export default function ModalEditContact(props) {
       <View style={{ marginBottom: 20 }}>
         <Text>Novo número</Text>
         <View style={{ flexDirection: 'row' }}>
-          <TextInput onChangeText={text => setNewNumber(text)} editable={true} style={styles.enable_text_input} />
-          <TouchableOpacity onPress={() => handleSaveNewNumber()} style={[styles.save_btn_container]}>
+          <TextInput
+            onChangeText={text => setNewNumber(text)}
+            editable={true}
+            style={styles.enable_text_input}
+            keyboardType="number-pad"
+          />
+          <TouchableOpacity onPress={() => handleSaveNewNumber()} style={styles.save_btn_container}>
             <Icon name='check' size={20} color='#FFF' />
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.cancel_btn_container]}>
-            <Icon name='close' size={22} color='#6F6F6F' />
           </TouchableOpacity>
         </View>
       </View>
@@ -137,7 +139,6 @@ const styles = StyleSheet.create({
     borderColor: '#337AB7',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 5,
   },
 
   cancel_btn_container: {
