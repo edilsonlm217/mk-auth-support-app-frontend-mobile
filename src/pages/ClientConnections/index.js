@@ -164,17 +164,25 @@ export default function ClientConnections(props) {
         <Text style={[styles.main_text, { fontSize: 16, }]}>Conexão Atual</Text>
       </View>
 
-      <FlatList
-        data={connections}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        refreshing={refreshing}
-        onRefresh={() => loadAPI()}
-        onEndReachedThreshold={0.5}
-        onMomentumScrollBegin={() => setOnEndReachedCalledDuringMomentum(false)}
-        onEndReached={() => loadNextPages()}
-        ListFooterComponent={renderFooter}
-      />
+      {connections.length !== 0
+        ? (
+          <FlatList
+            data={connections}
+            renderItem={renderItem}
+            keyExtractor={item => item.id}
+            refreshing={refreshing}
+            onRefresh={() => loadAPI()}
+            onEndReachedThreshold={0.5}
+            onMomentumScrollBegin={() => setOnEndReachedCalledDuringMomentum(false)}
+            onEndReached={() => loadNextPages()}
+            ListFooterComponent={renderFooter}
+          />
+        )
+        : (
+          <Text>Cliente não possui nenhuma conexão</Text>
+        )
+      }
+
     </>
   );
 }
