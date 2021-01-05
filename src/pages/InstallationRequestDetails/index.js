@@ -35,7 +35,7 @@ import { icons } from '../../styles/index';
 export default function InstallationRequestDetails({ route, navigation }) {
   const [state, setState] = useState({});
 
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   const [employeeRefreshing, setEmployeeRefreshing] = useState(false);
 
@@ -138,7 +138,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
       });
 
       setArrayCTOs(array_cto);
-      setRefreshing(false);
     }
 
     getCTOs();
@@ -430,7 +429,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setEmployees(response.data);
       setEmployeeRefreshing(false);
     } catch {
-      setRefreshing(false);
+      setEmployeeRefreshing(false);
       ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
     }
   }
@@ -775,6 +774,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
                 </View>
               </View>
             </TouchableOpacity>
+
             {state.status === 'fechado'
               ?
               (<ClosingReason />)
