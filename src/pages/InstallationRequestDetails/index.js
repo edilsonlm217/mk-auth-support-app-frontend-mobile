@@ -19,6 +19,7 @@ import api from '../../services/api';
 import CallIcon from 'react-native-vector-icons/Zocial';
 import axios from 'axios';
 import MapViewDirections from 'react-native-maps-directions';
+import { parseISO, format } from 'date-fns';
 
 const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
 
@@ -313,8 +314,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
     } else {
 
       const [, closing_reason] = state.motivo_fechamento.split(': ');
-      const [date, hora] = state.fechamento.split(' ');
-      const [yyyy, mm, dd] = date.split('-');
+      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
+      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
 
       return (
         <>
@@ -327,7 +328,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
           <View style={styles.line_container}>
             <View>
               <Text style={styles.sub_text}>Data de fechamento</Text>
-              <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
+              <Text style={styles.main_text}>{date} às {hora}</Text>
             </View>
           </View>
         </>
@@ -775,12 +776,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
               </View>
             </TouchableOpacity>
 
-            {state.status === 'fechado'
-              ?
-              (<ClosingReason />)
-              :
-              <></>
-            }
             {state && client_latitude !== null && client_longitude !== null &&
               <View>
                 <View style={[styles.cto_line, { borderBottomWidth: 0 }]}>
