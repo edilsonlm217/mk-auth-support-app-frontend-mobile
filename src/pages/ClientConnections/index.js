@@ -16,6 +16,8 @@ export default function ClientConnections(props) {
 
   const [connections, setConnections] = useState([]);
 
+  const [onEndReachedCalledDuringMomentum, setOnEndReachedCalledDuringMomentum] = useState(true);
+
   async function loadAPI() {
     try {
       setRefreshing(true);
@@ -109,28 +111,31 @@ export default function ClientConnections(props) {
   };
 
   async function loadNextPages() {
-    try {
-      setRefreshing(true);
+    if (!onEndReachedCalledDuringMomentum) {
+      try {
+        setRefreshing(true);
 
-      const response = await api.get(`connections/${client_id}?tenant_id=${globalState.state.tenantID}&page=${currentPage}`,
-        {
-          timeout: 10000,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+        const response = await api.get(`connections/${client_id}?tenant_id=${globalState.state.tenantID}&page=${currentPage}`,
+          {
+            timeout: 10000,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
           },
-        },
-      );
+        );
 
-      setCurrentPage(currentPage + 1);
-      setConnections([
-        ...connections,
-        ...response.data
-      ]);
+        setCurrentPage(currentPage + 1);
+        setConnections([
+          ...connections,
+          ...response.data
+        ]);
 
-      setRefreshing(false);
-    } catch (error) {
-      setRefreshing(false);
-      Alert.alert('Erro', 'Não foi possível comunicar com a API');
+        setRefreshing(false);
+        setOnEndReachedCalledDuringMomentum(true);
+      } catch (error) {
+        setRefreshing(false);
+        Alert.alert('Erro', 'Não foi possível comunicar com a API');
+      }
     }
   }
 
@@ -165,7 +170,8 @@ export default function ClientConnections(props) {
         keyExtractor={item => item.id}
         refreshing={refreshing}
         onRefresh={() => loadAPI()}
-        onEndReachedThreshold={0.01}
+        onEndReachedThreshold={0.5}
+        onMomentumScrollBegin={() => setOnEndReachedCalledDuringMomentum(false)}
         onEndReached={() => loadNextPages()}
         ListFooterComponent={renderFooter}
       />
