@@ -14,7 +14,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
-import { subHours } from 'date-fns';
+import { subHours, parseISO, format } from 'date-fns';
 import api from '../../services/api';
 
 import LocationService from '../../services/location';
@@ -170,10 +170,10 @@ export default function Details({ route, navigation }) {
         </View>
       );
     } else {
-
       const [, closing_reason] = state.motivo_fechamento.split(': ');
-      const [date, hora] = state.fechamento.split(' ');
-      const [yyyy, mm, dd] = date.split('-');
+
+      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
+      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
 
       return (
         <>
@@ -186,7 +186,7 @@ export default function Details({ route, navigation }) {
           <View style={styles.line_container}>
             <View>
               <Text style={styles.sub_text}>Data de fechamento</Text>
-              <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
+              <Text style={styles.main_text}>{date} às {hora}</Text>
             </View>
           </View>
         </>
@@ -525,13 +525,30 @@ export default function Details({ route, navigation }) {
             <View>
               <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
                 <View style={styles.cto_line}>
-                  <View>
-                    <Text style={styles.sub_text}>Caixa atual</Text>
-                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-                  </View>
-                  <View style={{ justifyContent: 'center' }}>
-                    <Icon name="map-search" size={icons.tiny} color="#000" />
-                  </View>
+                  {state.caixa_hermetica !== null
+                    ? (
+                      <>
+                        <View>
+                          <Text style={styles.sub_text}>Caixa atual</Text>
+                          <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
+                        </View>
+                        <View style={{ justifyContent: 'center' }}>
+                          <Icon name="map-search" size={icons.tiny} color="#000" />
+                        </View>
+                      </>
+                    )
+                    : (
+                      <>
+                        <View>
+                          <Text style={styles.sub_text}>SSID</Text>
+                          <Text style={styles.main_text}>{state.ssid !== null ? state.ssid : 'Nenhum'}</Text>
+                        </View>
+                        <View style={{ justifyContent: 'center' }}>
+                          <Icon name="map-search" size={icons.tiny} color="#000" />
+                        </View>
+                      </>
+                    )
+                  }
                 </View>
               </TouchableOpacity>
             </View>
