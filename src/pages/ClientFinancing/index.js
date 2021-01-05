@@ -61,6 +61,7 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
+      console.log(response.data.invoices.paid_invoices);
       if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
 
         dispatch({
@@ -316,16 +317,26 @@ export default function ClientFinancing(props) {
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
 
         {state !== null &&
-          <Accordion
-            expandMultiple={true}
-            underlayColor="#FFF"
-            sections={state.invoices.pending_invoices}
-            activeSections={PendingActiveSections}
-            renderHeader={_renderHeader}
-            renderContent={_renderContent}
-            renderFooter={_renderFooter}
-            onChange={(activeSections) => _updateSections('pending', activeSections)}
-          />
+          <>
+            {state.invoices.pending_invoices.length === 0
+              ? (
+                <Text>Nenhuma fatura pendente</Text>
+              )
+              : (
+                <Accordion
+                  expandMultiple={true}
+                  underlayColor="#FFF"
+                  sections={state.invoices.pending_invoices}
+                  activeSections={PendingActiveSections}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={(activeSections) => _updateSections('pending', activeSections)}
+                />
+              )
+            }
+          </>
+
         }
 
       </View>
@@ -334,16 +345,26 @@ export default function ClientFinancing(props) {
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
 
         {state !== null &&
-          <Accordion
-            expandMultiple={true}
-            underlayColor="#FFF"
-            sections={state.invoices.paid_invoices}
-            activeSections={PaidActiveSections}
-            renderHeader={_renderHeader}
-            renderContent={_renderContent}
-            renderFooter={_renderFooter}
-            onChange={(activeSections) => _updateSections('paid', activeSections)}
-          />
+          <>
+            {state.invoices.paid_invoices.length === 0
+              ? (
+                <Text>Nenhuma fatura paga</Text>
+              )
+              : (
+                <Accordion
+                  expandMultiple={true}
+                  underlayColor="#FFF"
+                  sections={state.invoices.paid_invoices}
+                  activeSections={PaidActiveSections}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={(activeSections) => _updateSections('paid', activeSections)}
+                />
+              )
+            }
+
+          </>
         }
 
       </View>
