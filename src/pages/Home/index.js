@@ -70,7 +70,7 @@ function Home({ navigation }) {
         {
           tecnico: globalState.state.employee_id,
           isAdmin: globalState.state.isAdmin,
-          date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
+          date,
         },
         {
           timeout: 10000,
