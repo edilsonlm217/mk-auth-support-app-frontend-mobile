@@ -5,7 +5,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import socketio from 'socket.io-client';
 
 import { store } from '../../store/store';
 import api from '../../services/api';
@@ -21,10 +20,8 @@ import NoConnection from '../../assets/broken-link.png';
 import styles from './styles';
 import { icons } from '../../styles/index';
 
-var socket;
-
 function Home({ navigation }) {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const globalState = useContext(store);
@@ -49,14 +46,6 @@ function Home({ navigation }) {
 
   // Estado que verificar se houve erro no carregamento dos dados da API
   const [isOutOfConnection, setIsOutOfConnection] = useState(false);
-
-  socket = useMemo(() =>
-    socketio(`http://${globalState.state.server_ip}:${globalState.state.server_port}`, {
-      query: {
-        employee_id: globalState.state.employee_id,
-        oneSignalUserId: globalState.state.oneSignalUserId,
-      }
-    }), [globalState.state.employee_id]);
 
   async function onRefresh() {
     loadAPI();
@@ -333,4 +322,4 @@ function Home({ navigation }) {
   );
 }
 
-export { socket, Home }
+export { Home }
