@@ -34,7 +34,6 @@ export default function NotificationTab() {
 
   useEffect(() => {
     if (isFocused && NotificationStore.state.notification_count > 0) {
-      console.log('marcando como vista');
       setAllAsViewed();
     }
   }, [isFocused]);

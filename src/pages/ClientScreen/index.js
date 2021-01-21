@@ -26,11 +26,18 @@ export default function ClientScreen({ navigation, route }) {
 
   const [count, setCount] = useState(0);
 
-  const [routes] = useState([
+  const adminRoute = [
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
     { key: 'third', title: 'Financeiro' },
-  ]);
+  ]
+
+  const nonAdminRoute = [
+    { key: 'first', title: 'Geral' },
+    { key: 'second', title: 'Conexões' },
+  ]
+
+  const [routes] = useState(globalState.state.isAdmin ? adminRoute : nonAdminRoute);
 
   const [isVisible, setIsVisible] = useState(false);
 

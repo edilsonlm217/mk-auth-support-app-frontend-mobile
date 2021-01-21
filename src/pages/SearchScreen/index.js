@@ -48,6 +48,7 @@ export default function SearchScreen({ navigation }) {
   ]);
 
   const [searchResult, setSearchResult] = useState([]);
+  const [searchInfo, setSearchInfo] = useState({});
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -87,17 +88,21 @@ export default function SearchScreen({ navigation }) {
       );
 
       if (response.data) {
-        response.data.map(item => {
-          item.nome = capitalize(item.nome);
-        });
+        if (response.data.results && response.data.results.length !== 0) {
+          response.data.results.map(item => {
+            item.nome = capitalize(item.nome);
+          });
 
-        setSearchResult(response.data);
-        setNoContent(false);
-        setIsLoading(false);
-      }
+          setSearchResult(response.data.results);
+          setSearchInfo(response.data.info);
+          setNoContent(false);
+          setIsLoading(false);
+        }
 
-      if (response.data.length === 0) {
-        setNoContent(true);
+        if (response.data?.results?.length === 0) {
+          setNoContent(true);
+          setIsLoading(false);
+        }
       }
     } catch (error) {
       console.warn('Erro na chamada a API. Está impresso no console!');
@@ -106,10 +111,7 @@ export default function SearchScreen({ navigation }) {
 
       // se error for timeout, é um tratamento.
       // se for 204, é outro tratamento
-
     }
-
-
   }
 
   function capitalize(string) {
@@ -337,7 +339,10 @@ export default function SearchScreen({ navigation }) {
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
-                    <TouchableOpacity onPress={() => setDefaultFilerOP()}>
+                    <TouchableOpacity
+                      style={{ height: '100%', width: 28, justifyContent: 'center', alignItems: 'center' }}
+                      onPress={() => setDefaultFilerOP()}
+                    >
                       <Icon name="close" size={16} color="#004C8F" />
                     </TouchableOpacity>
                   </View>
@@ -352,7 +357,10 @@ export default function SearchScreen({ navigation }) {
                     <Text style={[styles.illustration_subtitle, { marginRight: 5 }]}>
                       {item.label}
                     </Text>
-                    <TouchableOpacity onPress={() => setDefaultFilerBY()}>
+                    <TouchableOpacity
+                      style={{ height: '100%', width: 28, justifyContent: 'center', alignItems: 'center' }}
+                      onPress={() => setDefaultFilerBY()}
+                    >
                       <Icon name="close" size={16} color="#004C8F" />
                     </TouchableOpacity>
                   </View>
@@ -365,6 +373,23 @@ export default function SearchScreen({ navigation }) {
 
       </View>
 
+      {!isLoading && noContent === false && searchResult.length !== 0 &&
+        <View style={styles.search_info_container} >
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={{ fontFamily: 'Roboto-Light' }}>Total:</Text>
+            <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{searchResult.length}</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={{ fontFamily: 'Roboto-Light', marginRight: 5 }}>Status:</Text>
+            <MaterialIcon name='checkbox-blank-circle' color='green' size={12} />
+            <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5, marginRight: 10 }}>{searchInfo.online}</Text>
+
+            <MaterialIcon name='checkbox-blank-circle' color='red' size={12} />
+            <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{searchInfo.offline}</Text>
+          </View>
+        </View>
+      }
       {
         isLoading
           ? <ActivityIndicator
@@ -385,7 +410,7 @@ export default function SearchScreen({ navigation }) {
                   searchResult.length !== 0 &&
                   <View>
                     <FlatList
-                      keyboardShouldPersistTaps={true}
+                      keyboardShouldPersistTaps="always"
                       style={styles.scrollview_container}
                       ItemSeparatorComponent={renderSeparator}
                       data={searchResult}
@@ -584,7 +609,7 @@ const styles = StyleSheet.create({
   },
 
   scrollview_container: {
-    marginTop: 30,
+    marginTop: 5,
     backgroundColor: '#F7F7F7',
     marginLeft: 10,
     marginRight: 10,
@@ -677,5 +702,13 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto-Medium',
     color: "#337AB7",
     padding: 7
+  },
+
+  search_info_container: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 25
   },
 });

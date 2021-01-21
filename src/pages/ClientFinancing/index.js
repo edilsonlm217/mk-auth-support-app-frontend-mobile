@@ -61,6 +61,7 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
+      console.log(response.data.invoices.paid_invoices);
       if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
 
         dispatch({
@@ -148,6 +149,24 @@ export default function ClientFinancing(props) {
                 }
               ]}
             >
+              Título
+            </Text>
+          </View>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.titulo}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
+          <View style={{ width: '50%', alignItems: 'center' }}>
+            <Text
+              style={[
+                styles.main_text,
+                {
+                  fontSize: fonts.medium,
+                  textAlign: 'left',
+                  width: '50%'
+                }
+              ]}
+            >
               Tipo
             </Text>
           </View>
@@ -180,24 +199,6 @@ export default function ClientFinancing(props) {
                 {
                   fontSize: fonts.medium,
                   textAlign: 'left',
-                  width: '50%'
-                }
-              ]}
-            >
-              Status
-            </Text>
-          </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.status}</Text>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
-          <View style={{ width: '50%', alignItems: 'center' }}>
-            <Text
-              style={[
-                styles.main_text,
-                {
-                  fontSize: fonts.medium,
-                  textAlign: 'left',
                   flex: 1, width: '50%'
                 }]}
             >
@@ -208,6 +209,27 @@ export default function ClientFinancing(props) {
             <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.descricao}</Text>
           </View>
         </View>
+        {section.content.paidAt &&
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
+            <View style={{ width: '50%', alignItems: 'center' }}>
+              <Text
+                style={[
+                  styles.main_text,
+                  {
+                    fontSize: fonts.medium,
+                    textAlign: 'left',
+                    flex: 1, width: '50%'
+                  }]}
+              >
+                Pago em
+            </Text>
+            </View>
+            <View style={{ flex: 1, marginBottom: 10 }}>
+              <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.paidAt}</Text>
+            </View>
+          </View>
+        }
       </>
     );
   };
@@ -295,15 +317,26 @@ export default function ClientFinancing(props) {
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
 
         {state !== null &&
-          <Accordion
-            underlayColor="#FFF"
-            sections={state.invoices.pending_invoices}
-            activeSections={PendingActiveSections}
-            renderHeader={_renderHeader}
-            renderContent={_renderContent}
-            renderFooter={_renderFooter}
-            onChange={(activeSections) => _updateSections('pending', activeSections)}
-          />
+          <>
+            {state.invoices.pending_invoices.length === 0
+              ? (
+                <Text>Nenhuma fatura pendente</Text>
+              )
+              : (
+                <Accordion
+                  expandMultiple={true}
+                  underlayColor="#FFF"
+                  sections={state.invoices.pending_invoices}
+                  activeSections={PendingActiveSections}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={(activeSections) => _updateSections('pending', activeSections)}
+                />
+              )
+            }
+          </>
+
         }
 
       </View>
@@ -312,15 +345,26 @@ export default function ClientFinancing(props) {
         <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
 
         {state !== null &&
-          <Accordion
-            underlayColor="#FFF"
-            sections={state.invoices.paid_invoices}
-            activeSections={PaidActiveSections}
-            renderHeader={_renderHeader}
-            renderContent={_renderContent}
-            renderFooter={_renderFooter}
-            onChange={(activeSections) => _updateSections('paid', activeSections)}
-          />
+          <>
+            {state.invoices.paid_invoices.length === 0
+              ? (
+                <Text>Nenhuma fatura paga</Text>
+              )
+              : (
+                <Accordion
+                  expandMultiple={true}
+                  underlayColor="#FFF"
+                  sections={state.invoices.paid_invoices}
+                  activeSections={PaidActiveSections}
+                  renderHeader={_renderHeader}
+                  renderContent={_renderContent}
+                  renderFooter={_renderFooter}
+                  onChange={(activeSections) => _updateSections('paid', activeSections)}
+                />
+              )
+            }
+
+          </>
         }
 
       </View>

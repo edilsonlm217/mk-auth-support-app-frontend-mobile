@@ -1,11 +1,10 @@
 import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import { Dimensions, View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, Image } from 'react-native';
+import { Dimensions, View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, Image, StatusBar } from 'react-native';
 import { format, subDays, addDays } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
-import socketio from 'socket.io-client';
 
 import { store } from '../../store/store';
 import api from '../../services/api';
@@ -21,10 +20,8 @@ import NoConnection from '../../assets/broken-link.png';
 import styles from './styles';
 import { icons } from '../../styles/index';
 
-var socket;
-
 function Home({ navigation }) {
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const globalState = useContext(store);
@@ -50,14 +47,6 @@ function Home({ navigation }) {
   // Estado que verificar se houve erro no carregamento dos dados da API
   const [isOutOfConnection, setIsOutOfConnection] = useState(false);
 
-  socket = useMemo(() =>
-    socketio(`http://${globalState.state.server_ip}:${globalState.state.server_port}`, {
-      query: {
-        employee_id: globalState.state.employee_id,
-        oneSignalUserId: globalState.state.oneSignalUserId,
-      }
-    }), [globalState.state.employee_id]);
-
   async function onRefresh() {
     loadAPI();
   }
@@ -70,7 +59,7 @@ function Home({ navigation }) {
         {
           tecnico: globalState.state.employee_id,
           isAdmin: globalState.state.isAdmin,
-          date: format(date, "yyyy-MM-dd'T'") + "00:00:00.000Z",
+          date,
         },
         {
           timeout: 10000,
@@ -285,6 +274,7 @@ function Home({ navigation }) {
 
   return (
     <>
+      <StatusBar backgroundColor="#337AB7" barStyle='light-content' />
       <View style={styles.container}>
         <AppHeader navigation={navigation} label="Chamados" altura="15%" iconFor="settings" />
         <View style={styles.date_selector}>
@@ -332,4 +322,4 @@ function Home({ navigation }) {
   );
 }
 
-export { socket, Home }
+export { Home }

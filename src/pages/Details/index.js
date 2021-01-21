@@ -8,21 +8,22 @@ import {
   RefreshControl,
   ToastAndroid,
   Dimensions,
+  ActivityIndicator,
   TextInput,
 } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import Modal from 'react-native-modal';
+import { subHours, parseISO, format } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
-import api from '../../services/api';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import api from '../../services/api';
+import { store } from '../../store/store';
+import { icons, fonts } from '../../styles/index';
 import LocationService from '../../services/location';
 
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { store } from '../../store/store';
-
 import styles from './styles';
-import { icons } from '../../styles/index';
 
 export default function Details({ route, navigation }) {
   const [state, setState] = useState({});
@@ -37,6 +38,8 @@ export default function Details({ route, navigation }) {
   const [date] = useState(new Date());
 
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [time] = useState(new Date());
 
@@ -93,6 +96,7 @@ export default function Details({ route, navigation }) {
       setIsDatePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
@@ -110,10 +114,11 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
         onRefresh();
       } catch {
+        setIsLoading(false);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -126,9 +131,10 @@ export default function Details({ route, navigation }) {
       setIsTimePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_time",
             new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
@@ -143,10 +149,12 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
         onRefresh();
       } catch (e) {
+        setIsLoading(false);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -169,10 +177,10 @@ export default function Details({ route, navigation }) {
         </View>
       );
     } else {
-
       const [, closing_reason] = state.motivo_fechamento.split(': ');
-      const [date, hora] = state.fechamento.split(' ');
-      const [yyyy, mm, dd] = date.split('-');
+
+      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
+      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
 
       return (
         <>
@@ -185,7 +193,7 @@ export default function Details({ route, navigation }) {
           <View style={styles.line_container}>
             <View>
               <Text style={styles.sub_text}>Data de fechamento</Text>
-              <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
+              <Text style={styles.main_text}>{date} às {hora}</Text>
             </View>
           </View>
         </>
@@ -218,12 +226,16 @@ export default function Details({ route, navigation }) {
   async function closeRequest() {
     if (!(closingNote === '')) {
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        const timeZoneOffset = new Date().getTimezoneOffset() / 60;
+
+        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "close_request",
             closingNote,
+            closingDate: subHours(new Date(), timeZoneOffset),
             employee_id: globalState.state.employee_id,
             request_type: request_type,
             madeBy: globalState.state.employee_id,
@@ -236,9 +248,11 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         onRefresh();
         setIsDialogVisible(false);
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
         Alert.alert('Erro', 'Não foi possível fechar chamado');
       }
@@ -310,9 +324,10 @@ export default function Details({ route, navigation }) {
       ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
     } else {
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_employee",
             employee_id: newEmployee.id,
@@ -327,11 +342,13 @@ export default function Details({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         setEmployeesModal(false)
         onRefresh();
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
       } catch {
+        setIsLoading(false);
         ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
       }
     }
@@ -521,13 +538,30 @@ export default function Details({ route, navigation }) {
             <View>
               <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
                 <View style={styles.cto_line}>
-                  <View>
-                    <Text style={styles.sub_text}>Caixa atual</Text>
-                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-                  </View>
-                  <View style={{ justifyContent: 'center' }}>
-                    <Icon name="map-search" size={icons.tiny} color="#000" />
-                  </View>
+                  {state.caixa_hermetica !== null
+                    ? (
+                      <>
+                        <View>
+                          <Text style={styles.sub_text}>Caixa atual</Text>
+                          <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
+                        </View>
+                        <View style={{ justifyContent: 'center' }}>
+                          <Icon name="map-search" size={icons.tiny} color="#000" />
+                        </View>
+                      </>
+                    )
+                    : (
+                      <>
+                        <View>
+                          <Text style={styles.sub_text}>SSID</Text>
+                          <Text style={styles.main_text}>{state.ssid !== null ? state.ssid : 'Nenhum'}</Text>
+                        </View>
+                        <View style={{ justifyContent: 'center' }}>
+                          <Icon name="map-search" size={icons.tiny} color="#000" />
+                        </View>
+                      </>
+                    )
+                  }
                 </View>
               </TouchableOpacity>
             </View>
@@ -639,6 +673,39 @@ export default function Details({ route, navigation }) {
             </View>
           }
           isVisible={isDialogVisible}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
+      }
+
+      {isLoading &&
+        <Modal
+          children={
+            <View
+              style={{
+                width: 300,
+                backgroundColor: "#FFF",
+                alignSelf: "center",
+                borderWidth: 0,
+                borderRadius: 5,
+                padding: 20,
+                paddingTop: 10,
+              }}>
+              <ActivityIndicator size="small" color="#337AB7" />
+              <Text
+                style={{
+                  fontSize: fonts.regular,
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Carregando...
+            </Text>
+            </View>
+          }
+          isVisible={isLoading}
           style={{ margin: 0 }}
           animationInTiming={500}
           animationOutTiming={500}

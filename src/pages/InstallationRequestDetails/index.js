@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef } from 'react';
+import React, { useEffect, useState, useContext, useRef, useReducer } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   ScrollView,
   RefreshControl,
   ToastAndroid,
+  ActivityIndicator,
   Dimensions,
   Switch,
   Animated,
@@ -17,6 +18,13 @@ import Modal from 'react-native-modal';
 import Clipboard from '@react-native-community/clipboard';
 import api from '../../services/api';
 import CallIcon from 'react-native-vector-icons/Zocial';
+import axios from 'axios';
+import MapViewDirections from 'react-native-maps-directions';
+import { parseISO, format } from 'date-fns';
+
+const GOOGLE_MAPS_APIKEY = 'AIzaSyBPMt-2IYwdXtEw37R8SV1_9RLAMSqqcEw';
+
+import MapView, { PROVIDER_GOOGLE, Marker, Callout } from 'react-native-maps';
 
 import LocationService from '../../services/location';
 
@@ -24,12 +32,12 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { store } from '../../store/store';
 
 import styles from './styles';
-import { icons } from '../../styles/index';
+import { icons, fonts } from '../../styles/index';
 
 export default function InstallationRequestDetails({ route, navigation }) {
   const [state, setState] = useState({});
 
-  const [refreshing, setRefreshing] = useState(false);
+  const [refreshing, setRefreshing] = useState(true);
 
   const [employeeRefreshing, setEmployeeRefreshing] = useState(false);
 
@@ -39,6 +47,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [date] = useState(new Date());
 
   const [isTimePickerVisible, setIsTimePickerVisible] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [time] = useState(new Date());
 
@@ -61,7 +71,81 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const [isInstalled, setIsInstalled] = useState(true);
   const [isAvailable, setIsAvailable] = useState(true);
 
+  // Estado que controla todo o calculo de rotas
+  const [_state, dispatch] = useReducer(reducer, {
+    dest_latitude: null,
+    dest_longitude: null,
+  });
+
+  function reducer(state, action) {
+    switch (action.type) {
+      case 'traceroute':
+        return {
+          dest_latitude: action.payload.cto_latitude,
+          dest_longitude: action.payload.cto_longitude,
+        }
+    }
+  }
+
   const swipeAnim = useRef(new Animated.Value(0)).current;
+
+  // Estes dados do cliente nunca tem seus valores alterados
+  const client_latitude = route.params.latitude;
+  const client_longitude = route.params.longitude;
+  const client_name = route.params.nome;
+
+  // Estados para lidar com iteração do usuário com o mapa
+  const [latitude, setLatitude] = useState(client_latitude);
+  const [longitude, setLongitude] = useState(client_longitude);
+  const [latitudeDelta, setLatitudeDelta] = useState(0.003);
+  const [longitudeDelta, setLongitudeDelta] = useState(0);
+
+  // Estado contendo todas as CTOs existente dentro do raio de busca
+  const [arrayCTOs, setArrayCTOs] = useState([]);
+
+  useEffect(() => {
+    async function getCTOs() {
+      setRefreshing(true);
+      const response = await api.get(`cto/${client_latitude}/${client_longitude}?tenant_id=${globalState.state.tenantID}`, {
+        timeout: 10000,
+        headers: {
+          Authorization: `Bearer ${globalState.state.userToken}`,
+        },
+      },
+      );
+
+      var queries_array = [];
+      var array_cto = [];
+      response.data.map(item => {
+        const latitude = parseFloat(item.latitude);
+        const longitude = parseFloat(item.longitude);
+
+        array_cto.push(item);
+        queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
+      });
+
+      await axios.all(queries_array).then(response => {
+        response.forEach((element, index) => {
+          array_cto[index].distance = element.data.rows[0].elements[0].distance.text;
+          array_cto[index].distance_value = element.data.rows[0].elements[0].distance.value;
+        });
+      });
+
+      // Ordenação do array com mais próximos primeiro
+      array_cto.sort(function (a, b) {
+        var keyA = a.distance_value,
+          keyB = b.distance_value;
+
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+      });
+
+      setArrayCTOs(array_cto);
+    }
+
+    getCTOs();
+  }, []);
 
   const swipeOut = () => {
     Animated.timing(swipeAnim, {
@@ -133,7 +217,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
         },
       );
 
-      console.log(response.data);
       setState(response.data);
       setRefreshing(false);
     } catch {
@@ -146,14 +229,19 @@ export default function InstallationRequestDetails({ route, navigation }) {
     loadAPI();
   }, []);
 
+  useEffect(() => {
+
+  }, [state]);
+
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
       setIsDatePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: "update_visita_date",
             new_visita_date: selectedDate,
@@ -168,10 +256,12 @@ export default function InstallationRequestDetails({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
+        
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
         onRefresh();
       } catch {
+        setIsLoading(false);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
     } else if (event.type === 'dismissed') {
@@ -184,6 +274,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setIsTimePickerVisible(false);
 
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
@@ -200,11 +291,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
             },
           },
         );
-
+        
+        setIsLoading(false);
+        
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
         onRefresh();
       } catch (e) {
+        setIsLoading(false);
         console.log(e);
         Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
       }
@@ -230,8 +323,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
     } else {
 
       const [, closing_reason] = state.motivo_fechamento.split(': ');
-      const [date, hora] = state.fechamento.split(' ');
-      const [yyyy, mm, dd] = date.split('-');
+      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
+      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
 
       return (
         <>
@@ -244,7 +337,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
           <View style={styles.line_container}>
             <View>
               <Text style={styles.sub_text}>Data de fechamento</Text>
-              <Text style={styles.main_text}>{dd}/{mm}/{yyyy} às {hora}</Text>
+              <Text style={styles.main_text}>{date} às {hora}</Text>
             </View>
           </View>
         </>
@@ -267,21 +360,6 @@ export default function InstallationRequestDetails({ route, navigation }) {
       ToastAndroid.show(`${firstName} ainda não é um cliente`, ToastAndroid.SHORT);
     }
 
-  }
-
-  function handleNavigateCTOMap(coordinate) {
-    if (coordinate) {
-      const [latidude, longitude] = coordinate.split(',');
-
-      navigation.navigate('CTOs', {
-        latidude: latidude,
-        longitude: longitude,
-        client_name: state.nome,
-        client_id: state.client_id,
-      });
-    } else {
-      Alert.alert('Impossível localizar', 'Este cliente não possui coordenadas definidas');
-    }
   }
 
   async function closeRequest() {
@@ -361,7 +439,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setEmployees(response.data);
       setEmployeeRefreshing(false);
     } catch {
-      setRefreshing(false);
+      setEmployeeRefreshing(false);
       ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
     }
   }
@@ -376,6 +454,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
     } else {
       try {
+        setIsLoading(true);
         const { id: request_id } = route.params;
 
         const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
@@ -392,11 +471,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
           },
         );
 
+        setIsLoading(false);
         setEmployeesModal(false)
         onRefresh();
         ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
 
       } catch {
+        setIsLoading(false);
         ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
       }
     }
@@ -405,6 +486,60 @@ export default function InstallationRequestDetails({ route, navigation }) {
   function copyToClipboard(text) {
     Clipboard.setString(text);
     ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+  }
+
+  function getRegionForCoordinates(points) {
+    // points should be an array of { latitude: X, longitude: Y }
+    let minX, maxX, minY, maxY;
+
+    // init first point
+    ((point) => {
+      minX = point.latitude;
+      maxX = point.latitude;
+      minY = point.longitude;
+      maxY = point.longitude;
+    })(points[0]);
+
+    // calculate rect
+    points.map((point) => {
+      minX = Math.min(minX, point.latitude);
+      maxX = Math.max(maxX, point.latitude);
+      minY = Math.min(minY, point.longitude);
+      maxY = Math.max(maxY, point.longitude);
+    });
+
+    const midX = (minX + maxX) / 2;
+    const midY = (minY + maxY) / 2;
+    const deltaX = (maxX - minX);
+    const deltaY = (maxY - minY);
+
+    return {
+      latitude: midX,
+      longitude: midY,
+      latitudeDelta: deltaX,
+      longitudeDelta: deltaY
+    };
+  }
+
+  function handleTraceRoute(dest_lat, dest_lgt) {
+    if (dest_lat == null || dest_lgt == null) {
+      Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
+    } else {
+      const { latitudeDelta, longitudeDelta } = getRegionForCoordinates(arrayCTOs);
+
+      dispatch({
+        type: 'traceroute',
+        payload: {
+          cto_latitude: dest_lat,
+          cto_longitude: dest_lgt,
+        },
+      });
+
+      setLatitude((client_latitude + dest_lat) / 2);
+      setLongitude((client_longitude + dest_lgt) / 2);
+      setLatitudeDelta(latitudeDelta);
+      setLongitudeDelta(longitudeDelta);
+    }
   }
 
   return (
@@ -525,6 +660,30 @@ export default function InstallationRequestDetails({ route, navigation }) {
               <Text style={styles.sub_text}>Assunto</Text>
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
+
+            {state.instalado === 'sim' &&
+              <View style={[styles.line_container, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+                <View>
+                  <Text style={styles.sub_text}>Visitado</Text>
+                  <TouchableOpacity
+                    onPress={() => copyToClipboard(state.login)}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                  >
+                    <Text style={[styles.main_text_login_senha, { color: state.visitado === 'sim' ? 'green' : 'red' }]}>{state.visitado === 'sim' ? 'Sim' : 'Não'}</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>Instalado</Text>
+                  <TouchableOpacity
+                    onPress={() => copyToClipboard(state.senha)}
+                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
+                  >
+                    <Text style={[styles.main_text_login_senha, { color: state.instalado === 'sim' ? 'green' : 'red' }]}>{state.instalado === 'sim' ? 'Sim' : 'Não'}</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            }
+
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Equipamento</Text>
               <Text style={styles.main_text}>
@@ -628,26 +787,69 @@ export default function InstallationRequestDetails({ route, navigation }) {
                 </View>
               </View>
             </TouchableOpacity>
-            {state.status === 'fechado'
-              ?
-              (<ClosingReason />)
-              :
-              <></>
-            }
 
-            <View>
-              <TouchableOpacity onPress={() => handleNavigateCTOMap(state.coordenadas)}>
-                <View style={styles.cto_line}>
-                  <View>
-                    <Text style={styles.sub_text}>Caixa atual</Text>
-                    <Text style={styles.main_text}>{state.caixa_hermetica !== null ? state.caixa_hermetica : 'Nenhuma'}</Text>
-                  </View>
-                  <View style={{ justifyContent: 'center' }}>
-                    <Icon name="map-search" size={icons.tiny} color="#000" />
-                  </View>
+            {state && client_latitude !== null && client_longitude !== null &&
+              <View>
+                <View style={[styles.cto_line, { borderBottomWidth: 0 }]}>
+                  <Text style={styles.sub_text}>Mapa de caixas</Text>
                 </View>
-              </TouchableOpacity>
-            </View>
+                <MapView
+                  provider={PROVIDER_GOOGLE}
+                  style={{ height: 400, width: '100%' }}
+                  region={{
+                    latitude: latitude,
+                    longitude: longitude,
+                    latitudeDelta: latitudeDelta,
+                    longitudeDelta: longitudeDelta,
+                  }}
+                >
+                  <Marker
+                    coordinate={{
+                      latitude: client_latitude,
+                      longitude: client_longitude,
+                    }}
+                    title={client_name}
+                  />
+
+                  {arrayCTOs.map(cto => (
+                    <Marker
+                      key={cto.id}
+                      coordinate={{
+                        latitude: parseFloat(cto.latitude),
+                        longitude: parseFloat(cto.longitude),
+                      }}
+                      onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
+                    >
+                      <Icon name={"access-point-network"} size={icons.small} color="#FF0000" />
+                      <Callout tooltip={true}>
+                        <View style={{ width: 120, padding: 15, backgroundColor: '#FFF', opacity: 0.8, borderRadius: 10, alignItems: 'center' }}>
+                          <Text style={{ fontWeight: "bold", fontSize: 12, color: '#000' }}>{cto.nome}</Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>Distancia: {cto.distance}</Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>Conectados: {cto.connection_amount}</Text>
+                        </View>
+                      </Callout>
+                    </Marker>
+                  ))}
+
+                  {_state.dest_latitude !== null &&
+                    <MapViewDirections
+                      apikey={GOOGLE_MAPS_APIKEY}
+                      strokeWidth={8}
+                      strokeColor="hotpink"
+                      mode="WALKING"
+                      origin={{
+                        latitude: client_latitude,
+                        longitude: client_longitude,
+                      }}
+                      destination={{
+                        latitude: _state.dest_latitude,
+                        longitude: _state.dest_longitude,
+                      }}
+                    />
+                  }
+                </MapView>
+              </View>
+            }
 
             {state.instalado !== 'sim' &&
               <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
@@ -725,6 +927,39 @@ export default function InstallationRequestDetails({ route, navigation }) {
         animationOutTiming={500}
         useNativeDriver={true}
       />
+
+      {isLoading &&
+        <Modal
+          children={
+            <View
+              style={{
+                width: 300,
+                backgroundColor: "#FFF",
+                alignSelf: "center",
+                borderWidth: 0,
+                borderRadius: 5,
+                padding: 20,
+                paddingTop: 10,
+              }}>
+              <ActivityIndicator size="small" color="#337AB7" />
+              <Text
+                style={{
+                  fontSize: fonts.regular,
+                  textAlign: "center",
+                  marginBottom: 10,
+                }}
+              >
+                Carregando...
+            </Text>
+            </View>
+          }
+          isVisible={isLoading}
+          style={{ margin: 0 }}
+          animationInTiming={500}
+          animationOutTiming={500}
+          useNativeDriver={true}
+        />
+      }
 
       {isDialogVisible &&
         <Modal

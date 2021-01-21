@@ -1,46 +1,44 @@
-import React, { useEffect } from 'react';
-import { View, Image, Text, StyleSheet, Animated } from 'react-native';
+import React from 'react';
+import {
+  View,
+  Image,
+} from 'react-native';
 
-import mk_logo from '../../assets/dvida_2.png'
+import LinearGradient from 'react-native-linear-gradient';
 
-export default function SplashScreen() {
-  const logoFadeIn = new Animated.Value(0);
-  const TextFadeIn = new Animated.Value(0);
+import app_logo from '../../assets/mk-edge-logo.png';
 
-  Animated.timing(logoFadeIn, {
-    toValue: 1,
-    duration: 1000,
-  }).start();
-
-  Animated.timing(TextFadeIn, {
-    toValue: 1,
-    delay: 1000,
-    duration: 1000,
-  }).start();
-
+export default function AuthScreen() {
   return (
-    <View style={styles.container}>
-      <Animated.View style={{opacity: logoFadeIn}}>
-        <Image source={mk_logo}/>
-      </Animated.View>
-      <Animated.View style={{opacity: TextFadeIn}}>
-        <Text style={styles.title} >Controle de Chamados</Text>
-      </Animated.View>
+    <View style={{ flex: 1 }}>
+      <LinearGradient
+        colors={['#002F58', '#001C34']}
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <View style={{
+          flexDirection: 'column',
+          alignItems: 'center',
+          padding: 20,
+        }}
+        >
+          <Image
+            source={app_logo}
+            style={{
+              width: 120,
+              height: 120,
+              borderRadius: 60,
+              borderWidth: 3,
+              borderColor: '#D5D5D5',
+              marginBottom: 45,
+              marginTop: 10,
+            }}
+          />
+        </View>
+      </LinearGradient>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    marginTop: 150,
-  },
-
-  title: {
-    fontSize: 26,
-    fontWeight: "bold",
-    color: "#585858",
-    marginTop: 20,
-  },
-});

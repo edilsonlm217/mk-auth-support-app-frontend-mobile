@@ -7,7 +7,6 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { store } from './store/store';
 import { icons } from './styles/index';
-import { notification_store } from './store/notification';
 
 import { Home } from './pages/Home/index';
 import Details from './pages/Details/index';
@@ -19,7 +18,7 @@ import ClientScreen from './pages/ClientScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
 import PickNewLocation from './pages/PickNewLocation/index';
 import InstallationRequestDetails from './pages/InstallationRequestDetails';
-// import NotificationTab from './pages/NotificationTab/index';
+import SplashScreen from './pages/SplashScreen/index';
 
 import { fonts } from './styles/index';
 
@@ -27,8 +26,6 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 function HomeTabs() {
-  const NotificationStore = useContext(notification_store);
-
   return (
     <Tab.Navigator
       lazy={false}
@@ -99,6 +96,10 @@ function AuthStack() {
 export default function MainStack() {
   const globalState = useContext(store);
 
+  if (globalState.state.isLoading) {
+    return <SplashScreen />;
+  }
+
   return (
     <>
       {globalState.state.userToken !== null
@@ -118,10 +119,10 @@ export default function MainStack() {
             options={{
               title: 'Chamado de suporte',
               headerStyle: {
-                backgroundColor: '#FFF',
+                backgroundColor: '#337AB7',
               },
-              headerTintColor: '#337AB7',
-              headerTransparent: true,
+              headerTintColor: '#FFF',
+              headerTransparent: false,
               headerTitleStyle: {
                 fontWeight: 'bold',
                 fontSize: fonts.huge,
@@ -136,10 +137,10 @@ export default function MainStack() {
             options={{
               title: 'Chamado de instalação',
               headerStyle: {
-                backgroundColor: '#FFF',
+                backgroundColor: '#337AB7',
               },
-              headerTintColor: '#337AB7',
-              headerTransparent: true,
+              headerTintColor: '#FFF',
+              headerTransparent: false,
               headerTitleStyle: {
                 fontWeight: 'bold',
                 fontSize: fonts.huge,
