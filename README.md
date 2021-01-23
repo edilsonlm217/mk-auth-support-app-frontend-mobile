@@ -17,15 +17,18 @@
   </p>
 </p>
 
-# MK-Edge
+## Sobre o projeto
 O Mk-Edge é um micro-saas desenvolvido como complemento ao já consolidado sistema de gerenciamento de provedores de internet, o MK-Auth (http://mk-auth.com.br).
 
-MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores. Oferece interface simples e intuitiva, acesso à todas as ordens de serviço do sistema principal, acesso a dados do clientes como telefone, endereço, coordendas de navegação, informações de conexão e dados financeiros.
+MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores de interenet do Brasil. Oferece interface simples e intuitiva, acesso à todas as ordens de serviço do sistema principal, agenda de atendimento por técnico, acesso a dados dos clientes como telefone, endereço, coordendas de navegação, informações de conexão e dados financeiros.
 
-## Como esta aplicação está sendo construída
-O backend desta aplicação está rodando uma API Rest construída utilizando NodeJS e Express, com sistema de autenticação JWT (ainda não desenvolvido) e conexão direta com o banco de dados responsável por alimentar o MK-Auth em sua versão web. Toda a manipulação de tabelas e queries estão sendo realizadas através do ORM Sequelize que possibilta a utilização de javascript para realizá-los.
+Atualmente em sua versão BETA, MK-Edge já possui usuários ativos em mais de 5 estados brasileiros: Rio Grande do Norte, Paraíba, Amazonas, Minas Gerais, Matro Grosso do Sul e Goiás.
 
-O frontend também está sendo construido interiamente utilizando Javascript e utilizando como principal biblioteca o React Native.
+### Construído com
+O App foi desenvolvido utilizando React Native e seu backend está rodando uma API Rest construída utilizando NodeJS e Express com sistema de autenticação JWT e arquitetura multitenancy.
+
+
+
 
 ## Como rodar está aplicação
 A aplicação hoje ainda encontra-se em desenvolvimento, no entanto possui uma versão rodando em produção. Porém devido a sensibilidade de todos os dados de clientes, não disponibilizamos uma versão para que seja possível rodar em sua própria máquina.
