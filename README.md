@@ -24,26 +24,12 @@ MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado co
 
 Atualmente em sua versão BETA, MK-Edge já possui usuários ativos em mais de 5 estados brasileiros: Rio Grande do Norte, Paraíba, Amazonas, Minas Gerais, Matro Grosso do Sul e Goiás.
 
-### Construído com
+
+## Como este projeto foi construído
 O App foi desenvolvido utilizando React Native e seu backend está rodando uma API Rest construída utilizando NodeJS e Express com sistema de autenticação JWT e arquitetura multitenancy.
 
+A parte mais desafiadora e interessante deste projeto foi desenvolver uma infraestrutura que funcionasse bem com a infra já existente no cliente. Isso porque cada cliente possui um servidor na web rodando com seu respectivo banco de dados. O desafio aqui foi manter uma única codebase (tanto de backend quanto de frontend) capaz de comunicar com diferentes bancos de dados e que oferecesse um exelente percentual de disponibilidade de dados aos usuários.
 
+Para alcançar este resultado utilizamos o SymmetricDS  que é uma ferramenta de replicação (https://www.symmetricds.org). Com ela foi possível ter um espelho do database dos clientes com sincronização em tempo real e disponibilidade de dados de 98%.
 
-
-## Como rodar está aplicação
-A aplicação hoje ainda encontra-se em desenvolvimento, no entanto possui uma versão rodando em produção. Porém devido a sensibilidade de todos os dados de clientes, não disponibilizamos uma versão para que seja possível rodar em sua própria máquina.
-
-Assim que a maior parte das funcionalidades desenvolvidas para este sistema estiverem desenvolvidas, uma versão inteiramente completa com dados ficticios será disponibilizada para que seja possível rodá-la a qualquer momento.
-
-Por agora, estas são algumas screenshots disponíveis para acompanhamento do trabalho:
-
-<div style="display: flex; flex-direction: row;">
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551743-805c8900-8992-11ea-943c-6bcbaba87ddc.JPG"/>
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551740-7f2b5c00-8992-11ea-82f5-1651bbe04808.JPG"/>
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551742-805c8900-8992-11ea-8fe2-36c1e7db220a.JPG"/>
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551745-818db600-8992-11ea-868e-8e9352bd758c.JPG"/>
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551746-818db600-8992-11ea-8196-ada602a38512.JPG"/>
-  <img height="600" src="https://user-images.githubusercontent.com/55609083/80551744-80f51f80-8992-11ea-8f7f-850ca69e653c.JPG"/>
-  
-  
-</div>
+Esta solução tornou o processo de ativação de um cliente rápido e simples! Cada cliente possui uma chave de acesso (por provedor) que é informada no momento da autenticação no app, esta chave é o artefato pelo qual a API consegue identificar que cliente está requisitando da API e de qual database esses dados devem ser recuperados.
