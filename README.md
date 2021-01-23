@@ -30,6 +30,6 @@ O App foi desenvolvido utilizando React Native e seu backend está rodando uma A
 
 A parte mais desafiadora e interessante deste projeto foi desenvolver uma infraestrutura que funcionasse bem com a infra já existente no cliente. Isso porque cada cliente possui um servidor na web rodando com seu respectivo banco de dados. O desafio aqui foi manter uma única codebase (tanto de backend quanto de frontend) capaz de comunicar com diferentes bancos de dados e que oferecesse um exelente percentual de disponibilidade de dados aos usuários.
 
-Para alcançar este resultado utilizamos o SymmetricDS  que é uma ferramenta de replicação (https://www.symmetricds.org). Com ela foi possível ter um espelho do database dos clientes com sincronização em tempo real e disponibilidade de dados de 98%.
+Para alcançar este resultado utilizamos o SymmetricDS  que é uma ferramenta de replicação (https://www.symmetricds.org). Com ela foi possível ter um espelho do database dos clientes com sincronização em tempo real e disponibilidade de 98%.
 
-Esta solução tornou o processo de ativação de um cliente rápido e simples! Cada cliente possui uma chave de acesso (por provedor) que é informada no momento da autenticação no app, esta chave é o artefato pelo qual a API consegue identificar que cliente está requisitando da API e de qual database esses dados devem ser recuperados.
+Esta solução tornou o processo de ativação de um cliente rápido e simples! Cada cliente possui uma chave de acesso (por provedor) que é informada no momento da autenticação no app. Esta chave é o artefato pelo qual a API consegue identificar que cliente está requisitando do servidor e de qual database esses dados devem ser recuperados.
