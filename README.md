@@ -10,12 +10,12 @@
   <p align="center">
     MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores de internet no Brasil
     
-    <br />
-    <a href="https://github.com/github_username/repo_name">View Demo</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+  <br />
+  <a href="https://github.com/github_username/repo_name">View Demo</a>
+  ·
+  <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+  ·
+  <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
   </p>
 </p>
 
