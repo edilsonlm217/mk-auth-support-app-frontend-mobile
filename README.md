@@ -35,3 +35,4 @@ Para alcançar este resultado utilizamos o SymmetricDS  que é uma ferramenta de
 Esta solução tornou o processo de ativação de um cliente rápido e simples! Cada cliente possui uma chave de acesso (por provedor) que é informada no momento da autenticação no app. Esta chave é o artefato pelo qual a API consegue identificar que cliente está requisitando do servidor e de qual database esses dados devem ser recuperados.
 
 <img src="https://user-images.githubusercontent.com/55609083/105617058-7c8b5500-5db2-11eb-979f-1a280326166d.png" alt="screen_1">
+<img src="https://user-images.githubusercontent.com/55609083/105617144-8f525980-5db3-11eb-9e2d-fcc59f89af87.png" alt="screen_2">
