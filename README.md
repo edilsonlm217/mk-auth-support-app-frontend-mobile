@@ -1,5 +1,30 @@
-# Ordem de Serviço - MK-Auth 
-Este projeto funciona como aplicativo de gerenciamento de ordens de serviços desenvolvido exclusivamente para integração com um dos softwares de gerenciamento de provedores de internet mais utilizados do Brasil: MK-Auth (http://mk-auth.com.br).
+<!-- PROJECT LOGO -->
+<br />
+<p align="center">
+  <a href="https://github.com/github_username/repo_name">
+    <img src="images/logo.png" alt="Logo" width="80" height="80">
+  </a>
+
+  <h3 align="center">project_title</h3>
+
+  <p align="center">
+    project_description
+    <br />
+    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile">View Demo</a>
+    ·
+    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile/issues">Request Feature</a>
+  </p>
+</p>
+
+# MK-Edge
+O Mk-Edge é um micro-saas desenvolvido como complemento ao já consolidado sistema de gerenciamento de provedores de internet, o MK-Auth (http://mk-auth.com.br).
+
+MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores. Oferece interface simples e intuitiva, acesso à todas as ordens de serviço do sistema principal, acesso a dados do clientes como telefone, endereço, coordendas de navegação, informações de conexão e dados financeiros.
 
 ## Como esta aplicação está sendo construída
 O backend desta aplicação está rodando uma API Rest construída utilizando NodeJS e Express, com sistema de autenticação JWT (ainda não desenvolvido) e conexão direta com o banco de dados responsável por alimentar o MK-Auth em sua versão web. Toda a manipulação de tabelas e queries estão sendo realizadas através do ORM Sequelize que possibilta a utilização de javascript para realizá-los.
