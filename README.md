@@ -5,10 +5,10 @@
     <img src="images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
-  <h3 align="center">project_title</h3>
+  <h3 align="center">MK-Edge</h3>
 
   <p align="center">
-    project_description
+    MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores
     <br />
     <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile"><strong>Explore the docs »</strong></a>
     <br />
