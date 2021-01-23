@@ -8,12 +8,10 @@
   <h3 align="center">MK-Edge</h3>
 
   <p align="center">
-    MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores
+    MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores de internet no Brasil   
+    
     <br />
-    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile">View Demo</a>
+    <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile">Download Demo</a>
     ·
     <a href="https://github.com/edilsonlm217/mk-auth-support-app-frontend-mobile/issues">Report Bug</a>
     ·
