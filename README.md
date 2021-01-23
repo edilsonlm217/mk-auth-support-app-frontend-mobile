@@ -5,8 +5,6 @@
     <img src="http://updata.com.br/logo_mkedge.png" alt="Logo" height="80">
   </a>
 
-  <h3 align="center">MK-Edge</h3>
-
   <p align="center">
     MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores de internet no Brasil
     
