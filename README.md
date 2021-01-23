@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="http://updata.com.br/logo_mkedge.png" alt="Logo" width="80" height="80">
+    <img src="http://updata.com.br/logo_mkedge.png" alt="Logo" height="80">
   </a>
 
   <h3 align="center">MK-Edge</h3>
