@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/github_username/repo_name">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
+    <img src="http://updata.com.br/logo_mkedge.png" alt="Logo" width="80" height="80">
   </a>
 
   <h3 align="center">MK-Edge</h3>
@@ -11,11 +11,11 @@
     MK-Edge é uma versão mobile do módulo de suporte do MK-Auth que tem mudado completamente a forma de trabalho dos provedores de internet no Brasil
     
   <br />
-  <a href="https://github.com/github_username/repo_name">View Demo</a>
+  <a href="https://github.com/github_username/repo_name">Baixar Demo</a>
   ·
-  <a href="https://github.com/github_username/repo_name/issues">Report Bug</a>
+  <a href="https://github.com/github_username/repo_name/issues">Reportar Bug</a>
   ·
-  <a href="https://github.com/github_username/repo_name/issues">Request Feature</a>
+  <a href="https://github.com/github_username/repo_name/issues">Solicitar Feature</a>
   </p>
 </p>
 
