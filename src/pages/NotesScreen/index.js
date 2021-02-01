@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
 
 import UserAvatar from 'react-native-user-avatar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import api from '../../services/api';
 import { store } from '../../store/store';
+import no_message from '../../assets/no_messages.png';
 
 export default function NotesScreen({ navigation, route }) {
   const globalState = useContext(store);
@@ -63,20 +64,32 @@ export default function NotesScreen({ navigation, route }) {
   }, [navigation]);
 
   return (
-    <View style={{ flex: 1, paddingTop: 25, marginLeft: 10, marginRight: 10, padding: 5 }}>
-      <View style={{ backgroundColor: "#EBEBEB", padding: 10, borderRadius: 10, marginBottom: 10 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <UserAvatar style={{ width: 30, height: 30 }} size={30} name="Tereza Farias" />
-            <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}> Tereza Farias</Text>
+    <View style={{ flex: 1, paddingTop: 25, paddingLeft: 15, paddingRight: 15, padding: 5, backgroundColor: '#FFF' }}>
+      <ScrollView style={{ flex: 1 }}>
+
+        {notes.length === 0 && (
+          <View style={{ alignSelf: 'center', marginTop: 200 }}>
+            <Image source={no_message} style={{ width: 200, height: 150 }} />
+            <Text style={{ alignSelf: 'center', marginTop: 10 }}>Não há Mensagens</Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light', fontSize: 12, marginLeft: 10 }}>22/12/2020 às 21:13:56</Text>
-        </View>
-        <Text style={{ fontFamily: 'Roboto-Light', paddingLeft: 5 }}>
-          Retirar ONU + Roteador - 3 Meses So pagou a ativacao
-          </Text>
-      </View>
-    </View>
+        )}
+
+        {notes.map(note => (
+          <View key={note.id} style={{ backgroundColor: "#EBEBEB", padding: 10, borderRadius: 10, marginBottom: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <UserAvatar style={{ width: 30, height: 30 }} size={30} name={note.atendente} />
+                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${note.atendente}`}</Text>
+              </View>
+              <Text style={{ fontFamily: 'Roboto-Light', fontSize: 12, marginLeft: 10 }}>{note.msg_data}</Text>
+            </View>
+            <Text style={{ fontFamily: 'Roboto-Light', paddingLeft: 5 }}>
+              {note.msg}
+            </Text>
+          </View>
+        ))}
+      </ScrollView>
+    </View >
   );
 }
 
