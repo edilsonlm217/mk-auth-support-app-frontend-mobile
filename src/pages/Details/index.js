@@ -15,6 +15,7 @@ import Modal from 'react-native-modal';
 import { subHours, parseISO, format } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
+import { HeaderBackButton } from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -90,6 +91,27 @@ export default function Details({ route, navigation }) {
   useEffect(() => {
     loadAPI();
   }, []);
+
+  const NotesButton = () => (
+    <TouchableOpacity onPress={() => navigation.navigate('NotesScreen')}>
+      <Icon
+        name="message-text-outline"
+        size={22}
+        color="#FFFFFF"
+        style={{ marginRight: 20, marginTop: 5 }}
+      />
+    </TouchableOpacity>
+  );
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: (props) => (
+        <NotesButton
+          {...props}
+        />
+      ),
+    });
+  }, [navigation]);
 
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
@@ -178,9 +200,10 @@ export default function Details({ route, navigation }) {
       );
     } else {
       const [, closing_reason] = state.motivo_fechamento.split(': ');
+      const fechamento = parseISO(state.fechamento);
 
-      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
-      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
+      const date = format(fechamento, 'dd/MM/yyyy');
+      const hora = format(fechamento, 'hh:mm:ss');
 
       return (
         <>
