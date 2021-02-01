@@ -15,7 +15,6 @@ import Modal from 'react-native-modal';
 import { subHours, parseISO, format } from 'date-fns';
 import { useIsFocused } from '@react-navigation/native';
 import Clipboard from '@react-native-community/clipboard';
-import { HeaderBackButton } from '@react-navigation/stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -92,8 +91,14 @@ export default function Details({ route, navigation }) {
     loadAPI();
   }, []);
 
+  function handleNavigationToNotes() {
+    navigation.navigate('NotesScreen', {
+      chamado: state.chamado
+    });
+  }
+
   const NotesButton = () => (
-    <TouchableOpacity onPress={() => navigation.navigate('NotesScreen')}>
+    <TouchableOpacity onPress={() => handleNavigationToNotes()}>
       <Icon
         name="message-text-outline"
         size={22}
@@ -103,7 +108,7 @@ export default function Details({ route, navigation }) {
     </TouchableOpacity>
   );
 
-  React.useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       headerRight: (props) => (
         <NotesButton
@@ -111,7 +116,7 @@ export default function Details({ route, navigation }) {
         />
       ),
     });
-  }, [navigation]);
+  }, [state]);
 
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
