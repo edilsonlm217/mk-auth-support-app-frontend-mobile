@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
 
 import UserAvatar from 'react-native-user-avatar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -65,9 +65,14 @@ export default function NotesScreen({ navigation, route }) {
 
   return (
     <View style={{ flex: 1, paddingTop: 25, paddingLeft: 15, paddingRight: 15, padding: 5, backgroundColor: '#FFF' }}>
-      <ScrollView style={{ flex: 1 }}>
-
-        {notes.length === 0 && (
+      <ScrollView
+        showsVerticalScrollIndicator={true}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={() => fetchNotes()} />
+        }
+        style={{ flex: 1 }}
+      >
+        {notes.length === 0 && refreshing === false && (
           <View style={{ alignSelf: 'center', marginTop: 200 }}>
             <Image source={no_message} style={{ width: 200, height: 150 }} />
             <Text style={{ alignSelf: 'center', marginTop: 10 }}>Não há Mensagens</Text>
