@@ -1,10 +1,45 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 
 import UserAvatar from 'react-native-user-avatar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function NotesScreen({ navigation }) {
+import api from '../../services/api';
+import { store } from '../../store/store';
+
+export default function NotesScreen({ navigation, route }) {
+  const globalState = useContext(store);
+  const { tenantID: tenant_id, userToken } = globalState.state;
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [notes, setNotes] = useState([]);
+
+
+  async function fetchNotes() {
+    setRefreshing(true);
+
+    try {
+      const { chamado } = route.params;
+
+      const response = await api.get(`messages?tenant_id=${tenant_id}&chamado=${chamado}`, {
+        timeout: 10000,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      setNotes(response.data);
+      setRefreshing(false);
+    } catch (error) {
+      setRefreshing(false);
+      Alert.alert('Erro', 'Não foi possível carregar notas');
+    }
+  }
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
 
   const AddButton = () => (
     <TouchableOpacity onPress={() => { }}>
