@@ -13,12 +13,13 @@ import Details from './pages/Details/index';
 import CTOMapping from './pages/CTOMapping/index';
 import AuthScreen from './pages/AuthScreen/index';
 import CTODetails from './pages/CTODetails/index';
+import NotesScreen from './pages/NotesScreen/index';
+import SplashScreen from './pages/SplashScreen/index';
 import SearchScreen from './pages/SearchScreen/index';
 import ClientScreen from './pages/ClientScreen/index';
 import SettingsScreen from './pages/SettingsScreen/index';
 import PickNewLocation from './pages/PickNewLocation/index';
-import InstallationRequestDetails from './pages/InstallationRequestDetails';
-import SplashScreen from './pages/SplashScreen/index';
+import InstallationRequestDetails from './pages/InstallationRequestDetails/index';
 
 import { fonts } from './styles/index';
 
@@ -136,6 +137,24 @@ export default function MainStack() {
             component={InstallationRequestDetails}
             options={{
               title: 'Chamado de instalação',
+              headerStyle: {
+                backgroundColor: '#337AB7',
+              },
+              headerTintColor: '#FFF',
+              headerTransparent: false,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: fonts.huge,
+                marginLeft: -20,
+              },
+            }}
+          />
+
+          <Stack.Screen
+            name="NotesScreen"
+            component={NotesScreen}
+            options={{
+              title: 'Notas',
               headerStyle: {
                 backgroundColor: '#337AB7',
               },
