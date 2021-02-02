@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
 import { subHours } from 'date-fns';
 
@@ -21,6 +21,8 @@ export default function NotesScreen({ navigation, route }) {
   const [, setLoading] = useState(false);
 
   const [newNote, setNewNote] = useState('');
+
+  const scrollViewRef = useRef();
 
   async function fetchNotes() {
     setRefreshing(true);
@@ -105,6 +107,8 @@ export default function NotesScreen({ navigation, route }) {
     <View style={{ flex: 1, paddingTop: 25, paddingLeft: 15, paddingRight: 15, padding: 5, backgroundColor: '#FFF' }}>
       <ScrollView
         showsVerticalScrollIndicator={true}
+        ref={scrollViewRef}
+        onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={() => fetchNotes()} />
         }
