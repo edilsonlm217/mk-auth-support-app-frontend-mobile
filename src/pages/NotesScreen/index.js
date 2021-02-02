@@ -73,9 +73,9 @@ export default function NotesScreen({ navigation, route }) {
     const timeZoneOffset = new Date().getTimezoneOffset() / 60;
     const now = subHours(new Date(), timeZoneOffset);
 
-    try {
-      setLoading(true);
+    setVisible(false);
 
+    try {
       const { chamado } = route.params;
 
       const body = { msg: newNote, msg_data: now };
@@ -92,7 +92,6 @@ export default function NotesScreen({ navigation, route }) {
         settings
       );
 
-      setLoading(false);
       fetchNotes();
     } catch (error) {
       setLoading(false);
@@ -140,7 +139,7 @@ export default function NotesScreen({ navigation, route }) {
             <Dialog.Title>Adicionar nota</Dialog.Title>
             <Dialog.Description>
               Deseja inserir uma nota? Você não poderá desfazer esta ação.
-        </Dialog.Description>
+            </Dialog.Description>
             <Dialog.Input
               onChangeText={text => setNewNote(text)}
               placeholder='Sua mensagem aqui...'
