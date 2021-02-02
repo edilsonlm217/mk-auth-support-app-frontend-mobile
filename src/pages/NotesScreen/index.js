@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
+import { subHours } from 'date-fns';
 
 import Dialog from "react-native-dialog";
 import UserAvatar from 'react-native-user-avatar';
@@ -17,7 +18,7 @@ export default function NotesScreen({ navigation, route }) {
   const [notes, setNotes] = useState([]);
 
   const [visible, setVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
   const [newNote, setNewNote] = useState('');
 
@@ -69,12 +70,15 @@ export default function NotesScreen({ navigation, route }) {
   }, [navigation]);
 
   async function handleAddNote() {
+    const timeZoneOffset = new Date().getTimezoneOffset() / 60;
+    const now = subHours(new Date(), timeZoneOffset);
+
     try {
       setLoading(true);
 
       const { chamado } = route.params;
 
-      const body = { msg: newNote };
+      const body = { msg: newNote, msg_data: now };
       const settings = {
         timeout: 10000,
         headers: {
@@ -130,20 +134,23 @@ export default function NotesScreen({ navigation, route }) {
         ))}
       </ScrollView>
 
-      <View style={styles.dialog_container}>
-        <Dialog.Container visible={visible}>
-          <Dialog.Title>Adicionar nota</Dialog.Title>
-          <Dialog.Description>
-            Deseja inserir uma nota? Você não poderá desfazer esta ação.
+      {visible && (
+        <View style={styles.dialog_container}>
+          <Dialog.Container visible={visible}>
+            <Dialog.Title>Adicionar nota</Dialog.Title>
+            <Dialog.Description>
+              Deseja inserir uma nota? Você não poderá desfazer esta ação.
         </Dialog.Description>
-          <Dialog.Input
-            onChangeText={text => setNewNote(text)}
-            placeholder='Sua mensagem aqui...'
-          />
-          <Dialog.Button label="Cancelar" onPress={() => setVisible(false)} />
-          <Dialog.Button label="Adicionar" onPress={() => handleAddNote()} />
-        </Dialog.Container>
-      </View>
+            <Dialog.Input
+              onChangeText={text => setNewNote(text)}
+              placeholder='Sua mensagem aqui...'
+            />
+            <Dialog.Button label="Cancelar" onPress={() => setVisible(false)} />
+            <Dialog.Button label="Adicionar" onPress={() => handleAddNote()} />
+          </Dialog.Container>
+        </View>
+      )}
+
     </View >
   );
 }
