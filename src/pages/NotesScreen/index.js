@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl, TextInput } from 'react-native';
 
+import Dialog from "react-native-dialog";
 import UserAvatar from 'react-native-user-avatar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -15,6 +16,10 @@ export default function NotesScreen({ navigation, route }) {
   const [refreshing, setRefreshing] = useState(false);
   const [notes, setNotes] = useState([]);
 
+  const [visible, setVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [newNote, setNewNote] = useState('');
 
   async function fetchNotes() {
     setRefreshing(true);
@@ -43,7 +48,7 @@ export default function NotesScreen({ navigation, route }) {
 
 
   const AddButton = () => (
-    <TouchableOpacity onPress={() => { }}>
+    <TouchableOpacity onPress={() => setVisible(!visible)}>
       <Icon
         name="add-circle"
         size={25}
@@ -62,6 +67,36 @@ export default function NotesScreen({ navigation, route }) {
       ),
     });
   }, [navigation]);
+
+  async function handleAddNote() {
+    try {
+      setLoading(true);
+
+      const { chamado } = route.params;
+
+      const body = { msg: newNote };
+      const settings = {
+        timeout: 10000,
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      };
+
+      await api.post(
+        `messages?tenant_id=${tenant_id}&chamado=${chamado}`,
+        body,
+        settings
+      );
+
+      setLoading(false);
+      fetchNotes();
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Erro', 'Não foi possível adicionar nota');
+    }
+
+    setVisible(false);
+  }
 
   return (
     <View style={{ flex: 1, paddingTop: 25, paddingLeft: 15, paddingRight: 15, padding: 5, backgroundColor: '#FFF' }}>
@@ -94,10 +129,30 @@ export default function NotesScreen({ navigation, route }) {
           </View>
         ))}
       </ScrollView>
+
+      <View style={styles.dialog_container}>
+        <Dialog.Container visible={visible}>
+          <Dialog.Title>Adicionar nota</Dialog.Title>
+          <Dialog.Description>
+            Deseja inserir uma nota? Você não poderá desfazer esta ação.
+        </Dialog.Description>
+          <Dialog.Input
+            onChangeText={text => setNewNote(text)}
+            placeholder='Sua mensagem aqui...'
+          />
+          <Dialog.Button label="Cancelar" onPress={() => setVisible(false)} />
+          <Dialog.Button label="Adicionar" onPress={() => handleAddNote()} />
+        </Dialog.Container>
+      </View>
     </View >
   );
 }
 
 const styles = StyleSheet.create({
-
+  dialog_container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
