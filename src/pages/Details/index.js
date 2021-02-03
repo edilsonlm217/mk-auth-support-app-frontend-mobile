@@ -91,6 +91,33 @@ export default function Details({ route, navigation }) {
     loadAPI();
   }, []);
 
+  function handleNavigationToNotes() {
+    navigation.navigate('NotesScreen', {
+      chamado: state.chamado
+    });
+  }
+
+  const NotesButton = () => (
+    <TouchableOpacity onPress={() => handleNavigationToNotes()}>
+      <Icon
+        name="message-text-outline"
+        size={22}
+        color="#FFFFFF"
+        style={{ marginRight: 20, marginTop: 5 }}
+      />
+    </TouchableOpacity>
+  );
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: (props) => (
+        <NotesButton
+          {...props}
+        />
+      ),
+    });
+  }, [state]);
+
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
       setIsDatePickerVisible(false);
@@ -178,9 +205,10 @@ export default function Details({ route, navigation }) {
       );
     } else {
       const [, closing_reason] = state.motivo_fechamento.split(': ');
+      const fechamento = parseISO(state.fechamento);
 
-      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
-      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
+      const date = format(fechamento, 'dd/MM/yyyy');
+      const hora = format(fechamento, 'hh:mm:ss');
 
       return (
         <>
