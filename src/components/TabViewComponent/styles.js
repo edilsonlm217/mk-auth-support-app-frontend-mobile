@@ -1,6 +1,5 @@
 import { StyleSheet } from 'react-native';
 
-
 const styles = StyleSheet.create({
   section_container: {
     flex: 1,
@@ -8,8 +7,8 @@ const styles = StyleSheet.create({
   },
 
   indicatorStyle: {
-    backgroundColor: '#337AB7', 
-    height: 4, 
+    backgroundColor: '#337AB7',
+    height: 4,
     borderRadius: 8,
   },
 
@@ -52,7 +51,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  
+
   client_name: {
     fontWeight: 'bold',
     fontSize: 20,
@@ -66,6 +65,5 @@ const styles = StyleSheet.create({
     color: '#808080',
   },
 });
-
 
 export default styles;

@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
   },
 
   indicatorStyle: {
-    backgroundColor: '#337AB7', 
-    height: 4, 
+    backgroundColor: '#337AB7',
+    height: 4,
     borderRadius: 8,
   },
 
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  
+
   client_name: {
     fontWeight: 'bold',
     fontSize: fonts.regular,
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     fontSize: fonts.regular,
     color: '#808080',
   },
-  
+
   all_done_container: {
     flex: 1,
     alignItems: 'center',
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   },
 
   illustration_container: {
-    resizeMode: "contain",
+    resizeMode: 'contain',
     width: 300,
     opacity: 0.8,
     height: 300,

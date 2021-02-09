@@ -34,7 +34,7 @@ function HomeTabs() {
         keyboardHidesTabBar: true,
         labelStyle: {
           fontSize: fonts.small,
-        }
+        },
       }}>
       <Tab.Screen
         name="Chamados"
@@ -72,7 +72,11 @@ function HomeTabs() {
         options={{
           tabBarLabel: 'Ajustes',
           tabBarIcon: ({ color }) => (
-            <SettingsIcon name="settings-outline" size={icons.tiny} color={color} />
+            <SettingsIcon
+              name="settings-outline"
+              size={icons.tiny}
+              color={color}
+            />
           ),
         }}
       />
@@ -83,8 +87,7 @@ function HomeTabs() {
 function AuthStack() {
   return (
     <Stack.Navigator
-      screenOptions={{ gestureEnabled: true, headerShown: true }}
-    >
+      screenOptions={{ gestureEnabled: true, headerShown: true }}>
       <Stack.Screen
         name="AuthScreen"
         component={AuthScreen}
@@ -103,14 +106,12 @@ export default function MainStack() {
 
   return (
     <>
-      {globalState.state.userToken !== null
-        ?
+      {globalState.state.userToken !== null ? (
         <Stack.Navigator
-          screenOptions={{ gestureEnabled: true, headerShown: true }}
-        >
+          screenOptions={{ gestureEnabled: true, headerShown: true }}>
           <Stack.Screen
             name="Chamados"
-            component={(HomeTabs)}
+            component={HomeTabs}
             options={{ headerShown: false }}
           />
 
@@ -250,11 +251,9 @@ export default function MainStack() {
             }}
           />
         </Stack.Navigator>
-        :
+      ) : (
         <AuthStack />
-      }
+      )}
     </>
-
   );
 }
-

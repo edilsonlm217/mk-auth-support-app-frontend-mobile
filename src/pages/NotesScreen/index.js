@@ -1,8 +1,17 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, Image, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  Image,
+  RefreshControl,
+} from 'react-native';
 import { subHours } from 'date-fns';
 
-import Dialog from "react-native-dialog";
+import Dialog from 'react-native-dialog';
 import UserAvatar from 'react-native-user-avatar';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -30,12 +39,15 @@ export default function NotesScreen({ navigation, route }) {
     try {
       const { chamado } = route.params;
 
-      const response = await api.get(`messages?tenant_id=${tenant_id}&chamado=${chamado}`, {
-        timeout: 10000,
-        headers: {
-          Authorization: `Bearer ${userToken}`,
+      const response = await api.get(
+        `messages?tenant_id=${tenant_id}&chamado=${chamado}`,
+        {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
         },
-      });
+      );
 
       setNotes(response.data);
       setRefreshing(false);
@@ -49,7 +61,6 @@ export default function NotesScreen({ navigation, route }) {
     fetchNotes();
   }, []);
 
-
   const AddButton = () => (
     <TouchableOpacity onPress={() => setVisible(!visible)}>
       <Icon
@@ -58,16 +69,12 @@ export default function NotesScreen({ navigation, route }) {
         color="#FFFFFF"
         style={{ marginRight: 20, marginTop: 5 }}
       />
-    </TouchableOpacity >
+    </TouchableOpacity>
   );
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: (props) => (
-        <AddButton
-          {...props}
-        />
-      ),
+      headerRight: props => <AddButton {...props} />,
     });
   }, [navigation]);
 
@@ -91,7 +98,7 @@ export default function NotesScreen({ navigation, route }) {
       await api.post(
         `messages?tenant_id=${tenant_id}&chamado=${chamado}`,
         body,
-        settings
+        settings,
       );
 
       fetchNotes();
@@ -104,31 +111,71 @@ export default function NotesScreen({ navigation, route }) {
   }
 
   return (
-    <View style={{ flex: 1, paddingTop: 25, paddingLeft: 15, paddingRight: 15, padding: 5, backgroundColor: '#FFF' }}>
+    <View
+      style={{
+        flex: 1,
+        paddingTop: 25,
+        paddingLeft: 15,
+        paddingRight: 15,
+        padding: 5,
+        backgroundColor: '#FFF',
+      }}>
       <ScrollView
         showsVerticalScrollIndicator={true}
         ref={scrollViewRef}
-        onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={() => fetchNotes()} />
+        onContentSizeChange={() =>
+          scrollViewRef.current.scrollToEnd({ animated: true })
         }
-        style={{ flex: 1 }}
-      >
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => fetchNotes()}
+          />
+        }
+        style={{ flex: 1 }}>
         {notes.length === 0 && refreshing === false && (
           <View style={{ alignSelf: 'center', marginTop: 200 }}>
             <Image source={no_message} style={{ width: 200, height: 150 }} />
-            <Text style={{ alignSelf: 'center', marginTop: 10 }}>Não há Mensagens</Text>
+            <Text style={{ alignSelf: 'center', marginTop: 10 }}>
+              Não há Mensagens
+            </Text>
           </View>
         )}
 
         {notes.map(note => (
-          <View key={note.id} style={{ backgroundColor: "#EBEBEB", padding: 10, borderRadius: 10, marginBottom: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <View
+            key={note.id}
+            style={{
+              backgroundColor: '#EBEBEB',
+              padding: 10,
+              borderRadius: 10,
+              marginBottom: 10,
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 10,
+              }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <UserAvatar style={{ width: 30, height: 30 }} size={30} name={note.atendente} />
-                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${note.atendente}`}</Text>
+                <UserAvatar
+                  style={{ width: 30, height: 30 }}
+                  size={30}
+                  name={note.atendente}
+                />
+                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${
+                  note.atendente
+                }`}</Text>
               </View>
-              <Text style={{ fontFamily: 'Roboto-Light', fontSize: 12, marginLeft: 10 }}>{note.msg_data}</Text>
+              <Text
+                style={{
+                  fontFamily: 'Roboto-Light',
+                  fontSize: 12,
+                  marginLeft: 10,
+                }}>
+                {note.msg_data}
+              </Text>
             </View>
             <Text style={{ fontFamily: 'Roboto-Light', paddingLeft: 5 }}>
               {note.msg}
@@ -146,23 +193,22 @@ export default function NotesScreen({ navigation, route }) {
             </Dialog.Description>
             <Dialog.Input
               onChangeText={text => setNewNote(text)}
-              placeholder='Sua mensagem aqui...'
+              placeholder="Sua mensagem aqui..."
             />
             <Dialog.Button label="Cancelar" onPress={() => setVisible(false)} />
             <Dialog.Button label="Adicionar" onPress={() => handleAddNote()} />
           </Dialog.Container>
         </View>
       )}
-
-    </View >
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   dialog_container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

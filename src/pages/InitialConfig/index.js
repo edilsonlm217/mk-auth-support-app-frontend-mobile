@@ -5,7 +5,7 @@ import {
   Image,
   TextInput,
   Alert,
-  TouchableOpacity
+  TouchableOpacity,
 } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
@@ -39,19 +39,22 @@ export default function InitialConfig({ navigation }) {
   }
 
   function ValidateIPaddress(ipaddress) {
-    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
-      return (true)
+    if (
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+        ipaddress,
+      )
+    ) {
+      return true;
     }
 
-    return (false)
+    return false;
   }
 
   return (
     <View style={{ flex: 1 }}>
       <LinearGradient
         colors={['#002f58', '#337ab7']}
-        style={styles.initial_config_linearGradient}
-      >
+        style={styles.initial_config_linearGradient}>
         <View style={styles.initial_config_container}>
           <Image source={gear} style={styles.initial_config_logo_style} />
 
@@ -60,9 +63,10 @@ export default function InitialConfig({ navigation }) {
           </Text>
 
           <HideWithKeyboard>
-            <Text style={styles.initial_config_sub_title} >
-              Para conectar com seu servidor MK-AUTH informe o endereço IP externo e porta para conexão
-          </Text>
+            <Text style={styles.initial_config_sub_title}>
+              Para conectar com seu servidor MK-AUTH informe o endereço IP
+              externo e porta para conexão
+            </Text>
           </HideWithKeyboard>
 
           <View style={[styles.initial_config_input_container]}>
@@ -96,8 +100,7 @@ export default function InitialConfig({ navigation }) {
       </LinearGradient>
       <TouchableOpacity
         onPress={handleNextPage}
-        style={styles.initial_config_next_btn_style}
-      >
+        style={styles.initial_config_next_btn_style}>
         <HideWithKeyboard style={{ flexDirection: 'row' }}>
           <Text style={styles.initial_config_navigators_text_style}>
             Próximo

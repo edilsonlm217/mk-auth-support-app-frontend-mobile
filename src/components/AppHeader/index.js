@@ -1,5 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { fonts } from '../../styles/index';
@@ -8,21 +14,27 @@ export default function AppHeader(props) {
   return (
     <View style={[styles.container, { height: props.altura }]}>
       <View style={styles.header_container}>
-        {props.backButton === true &&
+        {props.backButton === true && (
           <View style={{ width: '10%' }}>
-            <TouchableOpacity onPress={() => props.navigation.goBack()} style={{ marginRight: 0 }}>
+            <TouchableOpacity
+              onPress={() => props.navigation.goBack()}
+              style={{ marginRight: 0 }}>
               <Icon name="arrow-left" size={24} color="#FFF" />
             </TouchableOpacity>
           </View>
-        }
+        )}
         <View style={{ width: '70%' }}>
-          <Text numberOfLines={1} style={styles.header_title}>{props.label}</Text>
+          <Text numberOfLines={1} style={styles.header_title}>
+            {props.label}
+          </Text>
         </View>
-        {props.clientScreen &&
-          <TouchableOpacity onPress={props.OpenModal} style={{ flex: 1, marginRight: 20, alignItems: 'flex-end' }}>
+        {props.clientScreen && (
+          <TouchableOpacity
+            onPress={props.OpenModal}
+            style={{ flex: 1, marginRight: 20, alignItems: 'flex-end' }}>
             <Icon name="menu" size={24} color="#FFF" />
           </TouchableOpacity>
-        }
+        )}
       </View>
     </View>
   );
@@ -32,7 +44,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#337AB7',
     flexDirection: 'row',
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 
   header_title: {
@@ -42,10 +54,10 @@ const styles = StyleSheet.create({
   },
 
   header_container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     marginTop: 15,
     marginLeft: 15,
-    alignItems: "center",
+    alignItems: 'center',
     height: '30%',
     flex: 1,
   },

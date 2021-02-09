@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Alert, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  Alert,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
 import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -16,13 +23,19 @@ export default function ClientConnections(props) {
 
   const [connections, setConnections] = useState([]);
 
-  const [onEndReachedCalledDuringMomentum, setOnEndReachedCalledDuringMomentum] = useState(true);
+  const [
+    onEndReachedCalledDuringMomentum,
+    setOnEndReachedCalledDuringMomentum,
+  ] = useState(true);
 
   async function loadAPI() {
     try {
       setRefreshing(true);
 
-      const response = await api.get(`connections/${client_id}?tenant_id=${globalState.state.tenantID}&page=1`,
+      const response = await api.get(
+        `connections/${client_id}?tenant_id=${
+          globalState.state.tenantID
+        }&page=1`,
         {
           timeout: 10000,
           headers: {
@@ -53,55 +66,68 @@ export default function ClientConnections(props) {
 
         <View style={styles.card_second_row}>
           <View style={styles.date_container}>
-            <Text >{item.start_date}</Text>
-            <Text >{item.start_time}</Text>
+            <Text>{item.start_date}</Text>
+            <Text>{item.start_time}</Text>
           </View>
 
           <View style={{ borderWidth: StyleSheet.hairlineWidth }} />
 
           <View style={styles.date_container}>
-            {item.end_date !== null
-              ?
+            {item.end_date !== null ? (
               <>
-                <Text >{item.end_date}</Text>
-                <Text >{item.end_time}</Text>
+                <Text>{item.end_date}</Text>
+                <Text>{item.end_time}</Text>
               </>
-              :
+            ) : (
               <>
                 <Text
                   style={[
                     styles.main_text,
                     {
-                      fontWeight: "normal",
+                      fontWeight: 'normal',
                       color: 'green',
                       flex: 1,
-                      textAlign: 'center'
-                    }
-                  ]}
-                >
+                      textAlign: 'center',
+                    },
+                  ]}>
                   ONLINE
                 </Text>
               </>
-            }
+            )}
           </View>
         </View>
 
         <View style={styles.card_third_row}>
           <View style={styles.usage_container}>
-            <Icon style={{ marginRight: 5 }} name="clock-time-eight-outline" size={22} color="#337AB7" />
-            <Text >{item.duration}</Text>
+            <Icon
+              style={{ marginRight: 5 }}
+              name="clock-time-eight-outline"
+              size={22}
+              color="#337AB7"
+            />
+            <Text>{item.duration}</Text>
           </View>
 
           <View style={styles.usage_container}>
-            <Icon style={{ marginRight: 5 }} name="cloud-upload-outline" size={22} color="#337AB7" />
-            <Text >
+            <Icon
+              style={{ marginRight: 5 }}
+              name="cloud-upload-outline"
+              size={22}
+              color="#337AB7"
+            />
+            <Text>
               {`${item.upload.new_value.toFixed(2)}${item.upload.unit}`}
             </Text>
           </View>
 
           <View style={styles.usage_container}>
-            <Icon style={{ marginRight: 5 }} name="cloud-download-outline" size={22} color="#337AB7" />
-            <Text >
+            <Icon
+              style={{ marginRight: 5 }}
+              name="cloud-download-outline"
+              size={22}
+              color="#337AB7"
+            />
+            <Text>
               {`${item.download.new_value.toFixed(2)}${item.download.unit}`}
             </Text>
           </View>
@@ -115,7 +141,10 @@ export default function ClientConnections(props) {
       try {
         setRefreshing(true);
 
-        const response = await api.get(`connections/${client_id}?tenant_id=${globalState.state.tenantID}&page=${currentPage}`,
+        const response = await api.get(
+          `connections/${client_id}?tenant_id=${
+            globalState.state.tenantID
+          }&page=${currentPage}`,
           {
             timeout: 10000,
             headers: {
@@ -125,10 +154,7 @@ export default function ClientConnections(props) {
         );
 
         setCurrentPage(currentPage + 1);
-        setConnections([
-          ...connections,
-          ...response.data
-        ]);
+        setConnections([...connections, ...response.data]);
 
         setRefreshing(false);
         setOnEndReachedCalledDuringMomentum(true);
@@ -143,10 +169,7 @@ export default function ClientConnections(props) {
     if (!refreshing) return null;
     return (
       <View style={styles.loading}>
-        <ActivityIndicator
-          size="large"
-          color="#0000ff"
-        />
+        <ActivityIndicator size="large" color="#0000ff" />
       </View>
     );
   };
@@ -158,31 +181,28 @@ export default function ClientConnections(props) {
           marginBottom: 10,
           flexDirection: 'row',
           justifyContent: 'space-between',
-          alignItems: 'center'
-        }}
-      >
-        <Text style={[styles.main_text, { fontSize: 16, }]}>Conexão Atual</Text>
+          alignItems: 'center',
+        }}>
+        <Text style={[styles.main_text, { fontSize: 16 }]}>Conexão Atual</Text>
       </View>
 
-      {connections.length !== 0
-        ? (
-          <FlatList
-            data={connections}
-            renderItem={renderItem}
-            keyExtractor={item => item.id}
-            refreshing={refreshing}
-            onRefresh={() => loadAPI()}
-            onEndReachedThreshold={0.5}
-            onMomentumScrollBegin={() => setOnEndReachedCalledDuringMomentum(false)}
-            onEndReached={() => loadNextPages()}
-            ListFooterComponent={renderFooter}
-          />
-        )
-        : (
-          <Text>Cliente não possui nenhuma conexão</Text>
-        )
-      }
-
+      {connections.length !== 0 ? (
+        <FlatList
+          data={connections}
+          renderItem={renderItem}
+          keyExtractor={item => item.id}
+          refreshing={refreshing}
+          onRefresh={() => loadAPI()}
+          onEndReachedThreshold={0.5}
+          onMomentumScrollBegin={() =>
+            setOnEndReachedCalledDuringMomentum(false)
+          }
+          onEndReached={() => loadNextPages()}
+          ListFooterComponent={renderFooter}
+        />
+      ) : (
+        <Text>Cliente não possui nenhuma conexão</Text>
+      )}
     </>
   );
 }
@@ -200,8 +220,7 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingRight: 5,
 
-
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -219,27 +238,39 @@ const styles = StyleSheet.create({
 
   sub_text: {
     fontSize: fonts.small,
-    color: "#adadad",
+    color: '#adadad',
   },
 
   card_first_row: {
-    flexDirection: 'row', justifyContent: 'space-between', padding: 5, paddingBottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 5,
+    paddingBottom: 0,
   },
 
   card_second_row: {
-    padding: 5, paddingBottom: 10, flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: StyleSheet.hairlineWidth
+    padding: 5,
+    paddingBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
 
   card_third_row: {
-    paddingTop: 10, flexDirection: "row", justifyContent: 'space-around', marginBottom: 5
+    paddingTop: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 5,
   },
 
   date_container: {
-    flexDirection: 'row', width: '47%', justifyContent: 'space-between'
+    flexDirection: 'row',
+    width: '47%',
+    justifyContent: 'space-between',
   },
 
   usage_container: {
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
 
   loading: {

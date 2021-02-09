@@ -2,8 +2,8 @@ import { fonts } from '../styles/index';
 
 const general = {
   initial_config_linearGradient: {
-    flex: 1, 
-    alignItems: 'center', 
+    flex: 1,
+    alignItems: 'center',
     justifyContent: 'center',
   },
 
@@ -30,55 +30,55 @@ const general = {
 
   initial_config_main_title: {
     fontSize: fonts.huge,
-    fontWeight: "bold",
-    color: "#FFF",
-    textAlign: "center",
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
     marginBottom: 30,
   },
 
   initial_config_sub_title: {
     fontSize: fonts.regular,
-    color: "#FFF",
-    textAlign: "center",
+    color: '#FFF',
+    textAlign: 'center',
     marginBottom: 10,
     marginLeft: 10,
     marginRight: 10,
   },
 
   initial_config_input_container: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     borderRadius: 7,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     height: 45,
     paddingLeft: 10,
     paddingRight: 10,
-    marginTop: 20
+    marginTop: 20,
   },
 
   initial_config_icon_container: {
-    width: '10%', 
+    width: '10%',
     alignItems: 'center',
   },
 
   initial_config_next_btn_style: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     right: 10,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
 
   initial_config_prev_btn_style: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 20,
     left: 10,
-    flexDirection: "row",
+    flexDirection: 'row',
   },
-  
+
   initial_config_navigators_text_style: {
     fontSize: fonts.regular,
-    color: "#FFF",
+    color: '#FFF',
   },
-}
+};
 
 export default general;

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 import {
   Collapse,
@@ -20,7 +20,9 @@ export default function FlatListCard(props) {
                 <Text style={styles.client_name}>{props.data.nome}</Text>
                 <Text style={styles.visit_time}>{props.data.visita}</Text>
               </View>
-              <Text>{`${props.data.endereco}, ${props.data.numero} - ${props.data.bairro}`}</Text>
+              <Text>{`${props.data.endereco}, ${props.data.numero} - ${
+                props.data.bairro
+              }`}</Text>
               <Text>{`Serviço: ${props.data.assunto}`}</Text>
             </View>
           </CollapseHeader>
@@ -29,16 +31,15 @@ export default function FlatListCard(props) {
               <View>
                 <Text style={styles.sub_text}>Relato do cliente:</Text>
                 <Text style={styles.main_body_text}>
-                  {
-                    props.data.mensagem !== null
-                      ? props.data.mensagem
-                      : 'Sem comentários'
-                  }
+                  {props.data.mensagem !== null
+                    ? props.data.mensagem
+                    : 'Sem comentários'}
                 </Text>
               </View>
             </View>
             <View>
-              <TouchableOpacity onPress={() => OpenCoordinate(props.data.coordenadas)}>
+              <TouchableOpacity
+                onPress={() => OpenCoordinate(props.data.coordenadas)}>
                 <Text style={styles.location_btn}>Localização</Text>
               </TouchableOpacity>
               <Text style={styles.close_request_btn}>Fechar chamado</Text>

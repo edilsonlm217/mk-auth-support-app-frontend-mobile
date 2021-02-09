@@ -4,7 +4,7 @@ import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
   },
   map: {
     ...StyleSheet.absoluteFillObject,
@@ -26,7 +26,6 @@ const styles = StyleSheet.create({
 
     borderTopWidth: 1,
     borderTopColor: 'red',
-
   },
 
   confirm_btn_container: {
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
 
   option_label: {
     fontSize: fonts.medium,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginTop: 20,
     marginLeft: 20,
   },
@@ -56,15 +55,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     height: '100%',
-    textAlignVertical: "center",
+    textAlignVertical: 'center',
     fontSize: fonts.medium,
   },
 
   modal_style: {
     width: '100%',
     maxWidth: 275,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
@@ -75,7 +74,7 @@ const styles = StyleSheet.create({
 
   modal_text_style: {
     fontSize: fonts.regular,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 10,
   },
 });

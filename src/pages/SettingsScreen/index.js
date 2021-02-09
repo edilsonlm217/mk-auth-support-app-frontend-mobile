@@ -5,10 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   Alert,
-  ToastAndroid
+  ToastAndroid,
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-import Dialog from "react-native-dialog";
+import Dialog from 'react-native-dialog';
 import api from '../../services/api';
 
 import { store } from '../../store/store';
@@ -41,7 +41,10 @@ export default function SettingsScreen({ navigation }) {
 
   async function loadAPI() {
     try {
-      const response = await api.get(`employee/${globalState.state.employee_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `employee/${globalState.state.employee_id}?tenant_id=${
+          globalState.state.tenantID
+        }`,
         {
           timeout: 10000,
           headers: {
@@ -61,15 +64,15 @@ export default function SettingsScreen({ navigation }) {
   }, []);
 
   function handleSaving() {
-    ToastAndroid.show("Alteração salva com sucesso!", ToastAndroid.SHORT);
+    ToastAndroid.show('Alteração salva com sucesso!', ToastAndroid.SHORT);
 
     changeConfig({
       serverIP: serverIP === null ? globalState.state.server_ip : serverIP,
-      serverPort: serverPort === null ? globalState.state.server_port : serverPort,
+      serverPort:
+        serverPort === null ? globalState.state.server_port : serverPort,
     });
 
     navigation.goBack();
-
   }
 
   function handleIPCancelBtn() {
@@ -83,26 +86,30 @@ export default function SettingsScreen({ navigation }) {
   }
 
   function SaveButton() {
-    if ((serverPort !== null && serverPort !== globalState.state.server_port) || (serverIP !== null && serverIP !== globalState.state.server_ip)) {
+    if (
+      (serverPort !== null && serverPort !== globalState.state.server_port) ||
+      (serverIP !== null && serverIP !== globalState.state.server_ip)
+    ) {
       return (
         <TouchableOpacity
           onPress={handleSaving}
-          style={styles.close_request_btn}
-        >
+          style={styles.close_request_btn}>
           <Text style={styles.btn_label}>Salvar Alterações</Text>
         </TouchableOpacity>
       );
     }
 
-    return (
-      <>
-      </>
-    );
+    return <></>;
   }
 
   async function handleLogout() {
     try {
-      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port'];
+      const keys = [
+        '@auth_token',
+        '@employee_id',
+        '@server_ip',
+        '@server_port',
+      ];
       await AsyncStorage.multiRemove(keys);
 
       signOut();
@@ -112,11 +119,15 @@ export default function SettingsScreen({ navigation }) {
   }
 
   function ValidateIPaddress(ipaddress) {
-    if (/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(ipaddress)) {
-      return (true)
+    if (
+      /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+        ipaddress,
+      )
+    ) {
+      return true;
     }
 
-    return (false)
+    return false;
   }
 
   function confirmIPChange() {
@@ -164,7 +175,11 @@ export default function SettingsScreen({ navigation }) {
           <TouchableOpacity onPress={() => setIsConfirmLogoutVisible(true)}>
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Usuário logado</Text>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
                 <Text style={styles.main_text}>{loggedUser.nome}</Text>
                 <IonicIcon name="exit-outline" size={25} color="red" />
               </View>
@@ -172,7 +187,6 @@ export default function SettingsScreen({ navigation }) {
           </TouchableOpacity>
 
           <SaveButton />
-
         </View>
 
         <View>
@@ -180,15 +194,20 @@ export default function SettingsScreen({ navigation }) {
             <Dialog.Title>Endereço IP</Dialog.Title>
             <Dialog.Description>
               Por favor informe o endereço IP de seu servidor
-          </Dialog.Description>
+            </Dialog.Description>
             <Dialog.Input
               keyboardType="number-pad"
-              onChangeText={ip => { setTempIP(ip) }}
-              label='IP'
+              onChangeText={ip => {
+                setTempIP(ip);
+              }}
+              label="IP"
               wrapperStyle={{ borderBottomWidth: StyleSheet.hairlineWidth }}
             />
             <Dialog.Button onPress={handleIPCancelBtn} label="Cancelar" />
-            <Dialog.Button onPress={() => confirmIPChange()} label="Confirmar" />
+            <Dialog.Button
+              onPress={() => confirmIPChange()}
+              label="Confirmar"
+            />
           </Dialog.Container>
         </View>
 
@@ -197,15 +216,20 @@ export default function SettingsScreen({ navigation }) {
             <Dialog.Title>Porta do Servidor</Dialog.Title>
             <Dialog.Description>
               Por favor informe a porta de acesso do IP informado
-          </Dialog.Description>
+            </Dialog.Description>
             <Dialog.Input
               keyboardType="number-pad"
-              onChangeText={port => { setTempPort(port) }}
-              label='Porta'
+              onChangeText={port => {
+                setTempPort(port);
+              }}
+              label="Porta"
               wrapperStyle={{ borderBottomWidth: StyleSheet.hairlineWidth }}
             />
             <Dialog.Button onPress={handlePortCancelBtn} label="Cancelar" />
-            <Dialog.Button onPress={() => confirmPortChange()} label="Confirmar" />
+            <Dialog.Button
+              onPress={() => confirmPortChange()}
+              label="Confirmar"
+            />
           </Dialog.Container>
         </View>
 
@@ -215,7 +239,10 @@ export default function SettingsScreen({ navigation }) {
             <Dialog.Description>
               Você realmente deseja deslogar do sistema?
             </Dialog.Description>
-            <Dialog.Button onPress={() => setIsConfirmLogoutVisible(false)} label="Cancelar" />
+            <Dialog.Button
+              onPress={() => setIsConfirmLogoutVisible(false)}
+              label="Cancelar"
+            />
             <Dialog.Button onPress={() => handleLogout()} label="Deslogar" />
           </Dialog.Container>
         </View>

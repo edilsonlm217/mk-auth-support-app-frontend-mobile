@@ -5,11 +5,11 @@ import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   ...general,
-  
+
   modal_style: {
     width: 300,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 5,
     padding: 20,
@@ -17,8 +17,8 @@ const styles = StyleSheet.create({
   },
 
   modal_text_style: {
-    fontSize: fonts.regular, 
-    textAlign: "center", 
+    fontSize: fonts.regular,
+    textAlign: 'center',
     marginBottom: 10,
   },
 });
