@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import MapView from 'react-native-maps';
-import { View, PermissionsAndroid, ActivityIndicator, Alert, Text, TouchableOpacity, ToastAndroid } from 'react-native';
+import {
+  View,
+  PermissionsAndroid,
+  ActivityIndicator,
+  Alert,
+  Text,
+  TouchableOpacity,
+  ToastAndroid,
+} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import Modal from 'react-native-modal';
 import api from '../../services/api';
@@ -24,25 +32,29 @@ export default function PickNewLocation({ route, navigation }) {
   useEffect(() => {
     async function getUserLocation() {
       const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
         setIsVisible(true);
-        Geolocation.getCurrentPosition(geo_success => {
-          const current_longitude = geo_success.coords.longitude;
-          const current_latitude = geo_success.coords.latitude;
+        Geolocation.getCurrentPosition(
+          geo_success => {
+            const current_longitude = geo_success.coords.longitude;
+            const current_latitude = geo_success.coords.latitude;
 
-          setLatitude(current_latitude);
-          setLongitude(current_longitude);
-          setIsVisible(false);
-        }, geo_error => {
-          setIsVisible(false);
-          Alert.alert('Erro', "Falha ao obter localização");
-        }, {
-          timeout: 10000,
-          enableHighAccuracy: true,
-        });
+            setLatitude(current_latitude);
+            setLongitude(current_longitude);
+            setIsVisible(false);
+          },
+          geo_error => {
+            setIsVisible(false);
+            Alert.alert('Erro', 'Falha ao obter localização');
+          },
+          {
+            timeout: 10000,
+            enableHighAccuracy: true,
+          },
+        );
       } else {
         setIsVisible(false);
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
@@ -52,7 +64,12 @@ export default function PickNewLocation({ route, navigation }) {
     getUserLocation();
   }, []);
 
-  function handleRegionChange({ latitude, longitude, latitudeDelta, longitudeDelta }) {
+  function handleRegionChange({
+    latitude,
+    longitude,
+    latitudeDelta,
+    longitudeDelta,
+  }) {
     setLatitude(latitude);
     setLongitude(longitude);
     setLatitudeDelta(latitudeDelta);
@@ -63,22 +80,23 @@ export default function PickNewLocation({ route, navigation }) {
     const client_id = route.params.data.id;
 
     try {
-      const response = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.post(
+        `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          action: "update_client_location",
+          action: 'update_client_location',
           latitude: latitude,
           longitude: longitude,
         },
         {
           timeout: 10000,
           headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`
+            Authorization: `Bearer ${globalState.state.userToken}`,
           },
-        }
+        },
       );
 
       if (response.status === 200) {
-        ToastAndroid.show("Alteração feita com sucesso!", ToastAndroid.SHORT);
+        ToastAndroid.show('Alteração feita com sucesso!', ToastAndroid.SHORT);
         navigation.goBack();
       }
     } catch {
@@ -103,14 +121,23 @@ export default function PickNewLocation({ route, navigation }) {
         }}
       />
       <View style={styles.mapMarkerContainer}>
-        <Icon style={{ alignSelf: "center" }} name="location-on" size={40} color="#ad1f1f" />
+        <Icon
+          style={{ alignSelf: 'center' }}
+          name="location-on"
+          size={40}
+          color="#ad1f1f"
+        />
 
         <View style={styles.bottom_option}>
-          <Text style={styles.option_label}>MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO</Text>
+          <Text style={styles.option_label}>
+            MOVA O MAPA PARA AJUSTAR A LOCALIZAÇÃO
+          </Text>
 
           <View style={styles.confirm_btn_container}>
-            <TouchableOpacity onPress={updateClientCoordinates} style={styles.confirm_btn}>
-              <Text style={styles.btn_label} >Confirmar</Text>
+            <TouchableOpacity
+              onPress={updateClientCoordinates}
+              style={styles.confirm_btn}>
+              <Text style={styles.btn_label}>Confirmar</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -119,9 +146,7 @@ export default function PickNewLocation({ route, navigation }) {
         children={
           <View style={styles.modal_style}>
             <ActivityIndicator size="small" color="#0000ff" />
-            <Text style={styles.modal_text_style}>
-              Obtendo localização...
-            </Text>
+            <Text style={styles.modal_text_style}>Obtendo localização...</Text>
           </View>
         }
         isVisible={isVisible}

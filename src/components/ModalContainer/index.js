@@ -13,32 +13,54 @@ export default function ModalContainer(props) {
   const [isVisible, setIsVisible] = useState(true);
 
   const navigation_array = [
-    () => { setViewMode(1) },
-    () => { setViewMode(2) },
-    () => { setViewMode(3) },
-    () => { props.goToModalLocation() },
-    () => { props.goToModalCTO() },
+    () => {
+      setViewMode(1);
+    },
+    () => {
+      setViewMode(2);
+    },
+    () => {
+      setViewMode(3);
+    },
+    () => {
+      props.goToModalLocation();
+    },
+    () => {
+      props.goToModalCTO();
+    },
   ];
 
   const CurrentView = () => {
     if (viewMode === 0) {
-      return (
-        <ModalHome navigationOptions={navigation_array} />
-      );
+      return <ModalHome navigationOptions={navigation_array} />;
     } else if (viewMode === 1) {
       return (
-        <EditNumber for={'editFone'} clientData={props.clientData} label="Alterar número de telefone" goBack={() => setViewMode(0)} />
+        <EditNumber
+          for={'editFone'}
+          clientData={props.clientData}
+          label="Alterar número de telefone"
+          goBack={() => setViewMode(0)}
+        />
       );
     } else if (viewMode === 2) {
       return (
-        <EditPhoneNumber for={'editCelular'} clientData={props.clientData} label="Alterar número do celular" goBack={() => setViewMode(0)} />
+        <EditPhoneNumber
+          for={'editCelular'}
+          clientData={props.clientData}
+          label="Alterar número do celular"
+          goBack={() => setViewMode(0)}
+        />
       );
     }
 
     return (
-      <EditAddress clientData={props.clientData} label="Alterar endereço" goBack={() => setViewMode(0)} />
+      <EditAddress
+        clientData={props.clientData}
+        label="Alterar endereço"
+        goBack={() => setViewMode(0)}
+      />
     );
-  }
+  };
 
   function handleModalClosing() {
     if (viewMode === 0) {
@@ -69,9 +91,9 @@ export default function ModalContainer(props) {
 
 const styles = StyleSheet.create({
   modal_style: {
-    position: "absolute",
+    position: 'absolute',
     width: '100%',
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     bottom: 0,
     padding: 20,
     paddingBottom: 0,

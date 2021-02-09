@@ -16,10 +16,10 @@ import {
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import RefreshIcon from 'react-native-vector-icons/SimpleLineIcons';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
-import Clipboard from '@react-native-community/clipboard'
+import Clipboard from '@react-native-community/clipboard';
 import CallIcon from 'react-native-vector-icons/Zocial';
-import { BarChart } from "react-native-chart-kit";
-import Dialog from "react-native-dialog";
+import { BarChart } from 'react-native-chart-kit';
+import Dialog from 'react-native-dialog';
 import Modal from 'react-native-modal';
 import api from '../../services/api';
 
@@ -44,14 +44,14 @@ export default function ClientDetails(props) {
   const swipeOut = () => {
     Animated.timing(swipeAnim, {
       toValue: 150,
-      duration: 200
+      duration: 200,
     }).start();
   };
 
   const swipeIn = () => {
     Animated.timing(swipeAnim, {
       toValue: 0,
-      duration: 200
+      duration: 200,
     }).start();
   };
 
@@ -59,7 +59,8 @@ export default function ClientDetails(props) {
     try {
       setIsLoading();
 
-      const response = await api.get(`client/${client.id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `client/${client.id}?tenant_id=${globalState.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -112,17 +113,16 @@ export default function ClientDetails(props) {
 
     if (Platform.OS === 'android') {
       phoneNumber = `tel:${number}`;
-    }
-    else {
+    } else {
       phoneNumber = `telprompt:${number}`;
     }
 
     Linking.openURL(phoneNumber);
-  };
+  }
 
   function copyToClipboard(text) {
     Clipboard.setString(text);
-    ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+    ToastAndroid.show('Copiado para o clipboard', ToastAndroid.SHORT);
   }
 
   function getMACAddressStatus() {
@@ -140,7 +140,8 @@ export default function ClientDetails(props) {
   }
 
   async function handleMACRefreshing() {
-    await api.post(`client/${client.id}?tenant_id=${globalState.state.tenantID}`,
+    await api.post(
+      `client/${client.id}?tenant_id=${globalState.state.tenantID}`,
       {
         automac: true,
       },
@@ -153,7 +154,7 @@ export default function ClientDetails(props) {
     );
 
     setIsResetMacDialogVisible(false);
-    ToastAndroid.show("Alteração solicitada", ToastAndroid.SHORT);
+    ToastAndroid.show('Alteração solicitada', ToastAndroid.SHORT);
     loadAPI();
   }
 
@@ -163,29 +164,45 @@ export default function ClientDetails(props) {
         onScrollBeginDrag={() => FloatActionBar('close')}
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={clientState.state.isLoading} onRefresh={() => loadAPI()} />
-        }
-      >
-        {clientState.state.isLoading === false &&
+          <RefreshControl
+            refreshing={clientState.state.isLoading}
+            onRefresh={() => loadAPI()}
+          />
+        }>
+        {clientState.state.isLoading === false && (
           <>
             <View>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Status de conexão</Text>
-                  <Text style={[styles.main_text, {
-                    color: clientState.state.client.equipment_status === 'Online' ? 'green' : 'red'
-                  }]}>
+                  <Text
+                    style={[
+                      styles.main_text,
+                      {
+                        color:
+                          clientState.state.client.equipment_status === 'Online'
+                            ? 'green'
+                            : 'red',
+                      },
+                    ]}>
                     {clientState.state.client.equipment_status}
                   </Text>
                 </View>
                 <View>
-                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>Status Financeiro</Text>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>
+                    Status Financeiro
+                  </Text>
                   <Text
-                    style={[styles.main_text, {
-                      color: clientState.state.client.bloqueado === 'sim' ? 'red' : 'green',
-                      textAlign: 'right',
-                    }]}
-                  >
+                    style={[
+                      styles.main_text,
+                      {
+                        color:
+                          clientState.state.client.bloqueado === 'sim'
+                            ? 'red'
+                            : 'green',
+                        textAlign: 'right',
+                      },
+                    ]}>
                     {clientState.state.client.finance_state}
                   </Text>
                 </View>
@@ -196,14 +213,26 @@ export default function ClientDetails(props) {
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Usuário</Text>
-                  <TouchableOpacity onPress={() => copyToClipboard(clientState.state.client.login)}>
-                    <Text style={styles.main_text_login_senha}>{clientState.state.client.login}</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      copyToClipboard(clientState.state.client.login)
+                    }>
+                    <Text style={styles.main_text_login_senha}>
+                      {clientState.state.client.login}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <View>
-                  <Text style={[styles.sub_text, { textAlign: 'right', }]}>Senha</Text>
-                  <TouchableOpacity onPress={() => copyToClipboard(clientState.state.client.senha)}>
-                    <Text style={styles.main_text_login_senha}>{clientState.state.client.senha}</Text>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>
+                    Senha
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      copyToClipboard(clientState.state.client.senha)
+                    }>
+                    <Text style={styles.main_text_login_senha}>
+                      {clientState.state.client.senha}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -213,11 +242,15 @@ export default function ClientDetails(props) {
               <Text style={styles.sub_text}>Endereço IP</Text>
               <TouchableOpacity
                 onPress={() => copyToClipboard(clientState.state.client.ip)}
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-              >
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
                 <Text style={styles.main_text_login_senha}>
-                  {clientState.state.client.ip ? clientState.state.client.ip : 'Não informado'}
-                  </Text>
+                  {clientState.state.client.ip
+                    ? clientState.state.client.ip
+                    : 'Não informado'}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -225,9 +258,7 @@ export default function ClientDetails(props) {
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço MAC</Text>
-                  <Text style={styles.main_text}>
-                    {getMACAddressStatus()}
-                  </Text>
+                  <Text style={styles.main_text}>{getMACAddressStatus()}</Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
                   <RefreshIcon name="refresh" size={icons.tiny} color="#000" />
@@ -240,14 +271,15 @@ export default function ClientDetails(props) {
                 <View style={{ width: '100%' }}>
                   <Text style={styles.sub_text}>Plano</Text>
                   <View style={{ flexDirection: 'row' }}>
-                    <Text style={[styles.main_text, { flex: 0, marginRight: 10 }]}>
+                    <Text
+                      style={[styles.main_text, { flex: 0, marginRight: 10 }]}>
                       {clientState.state.client.plano}
                     </Text>
-                    {clientState.state.client.status_corte === 'down' &&
+                    {clientState.state.client.status_corte === 'down' && (
                       <View style={styles.down_badge}>
                         <Text style={{ fontFamily: 'Roboto-Light' }}>Down</Text>
                       </View>
-                    }
+                    )}
                   </View>
                 </View>
               </View>
@@ -258,7 +290,9 @@ export default function ClientDetails(props) {
               <View>
                 <Text style={styles.sub_text}>Caixa atual</Text>
                 <Text style={styles.main_text_login_senha}>
-                  {clientState.state.client.caixa_herm !== null ? clientState.state.client.caixa_herm : 'Nenhuma'}
+                  {clientState.state.client.caixa_herm !== null
+                    ? clientState.state.client.caixa_herm
+                    : 'Nenhuma'}
                 </Text>
               </View>
               {/* <View style={{ justifyContent: 'center' }}>
@@ -267,66 +301,79 @@ export default function ClientDetails(props) {
             </View>
             {/* </TouchableOpacity> */}
 
-            <TouchableOpacity onPress={() => dialCall(clientState.state.client.fone)}>
+            <TouchableOpacity
+              onPress={() => dialCall(clientState.state.client.fone)}>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Telefone</Text>
                   <Text style={styles.main_text}>
-                    {clientState.state.client.fone ? clientState.state.client.fone : 'Não informado'}
+                    {clientState.state.client.fone
+                      ? clientState.state.client.fone
+                      : 'Não informado'}
                   </Text>
                 </View>
-                {clientState.state.client.fone &&
+                {clientState.state.client.fone && (
                   <View style={{ justifyContent: 'center' }}>
                     <CallIcon name="call" size={icons.tiny} color="#000" />
                   </View>
-                }
+                )}
               </View>
             </TouchableOpacity>
 
             <View>
-              <TouchableOpacity onPress={() => FloatActionBar('open', clientState.state.client.celular)}>
+              <TouchableOpacity
+                onPress={() =>
+                  FloatActionBar('open', clientState.state.client.celular)
+                }>
                 <View style={styles.clickable_line}>
                   <View>
                     <Text style={styles.sub_text}>Celular</Text>
                     <Text style={styles.main_text}>
-                      {clientState.state.client.celular ? clientState.state.client.celular : 'Não informado'}
+                      {clientState.state.client.celular
+                        ? clientState.state.client.celular
+                        : 'Não informado'}
                     </Text>
                   </View>
-                  {clientState.state.client.celular &&
+                  {clientState.state.client.celular && (
                     <View style={{ justifyContent: 'center' }}>
                       <CallIcon name="call" size={icons.tiny} color="#000" />
                     </View>
-                  }
+                  )}
                 </View>
               </TouchableOpacity>
-              <Animated.View style={[styles.swiped_options, { width: swipeAnim }]}>
+              <Animated.View
+                style={[styles.swiped_options, { width: swipeAnim }]}>
                 <TouchableOpacity
-                  onPress={() => openWhatsapp(clientState.state.client.celular)}
-                >
+                  onPress={() =>
+                    openWhatsapp(clientState.state.client.celular)
+                  }>
                   <Icon name="whatsapp" color="green" size={26} />
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => dialCall(clientState.state.client.celular)}
-                >
+                  onPress={() => dialCall(clientState.state.client.celular)}>
                   <CallIcon name="call" size={26} color="green" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => FloatActionBar('close')}
-                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}
-                >
+                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}>
                   <Icon name="close" size={18} color="#000" />
                 </TouchableOpacity>
               </Animated.View>
             </View>
 
             <TouchableOpacity
-              onPress={() => LocationService.navigateToCoordinate(clientState.state.client.coordenadas)}
-            >
+              onPress={() =>
+                LocationService.navigateToCoordinate(
+                  clientState.state.client.coordenadas,
+                )
+              }>
               <View style={styles.clickable_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
                   <Text style={[styles.main_text, { maxWidth: '90%' }]}>
-                    {`${clientState.state.client.endereco_res}, ${clientState.state.client.numero_res} - ${clientState.state.client.bairro_res}`}
+                    {`${clientState.state.client.endereco_res}, ${
+                      clientState.state.client.numero_res
+                    } - ${clientState.state.client.bairro_res}`}
                   </Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
@@ -336,10 +383,14 @@ export default function ClientDetails(props) {
             </TouchableOpacity>
 
             <View>
-              <View style={[styles.clickable_line, { borderBottomWidth: 0, marginBottom: 10 }]}>
+              <View
+                style={[
+                  styles.clickable_line,
+                  { borderBottomWidth: 0, marginBottom: 10 },
+                ]}>
                 <View>
                   <Text style={styles.sub_text}>Última conexão</Text>
-                  <Text style={styles.main_text} >
+                  <Text style={styles.main_text}>
                     {clientState.state.client.current_user_connection}
                   </Text>
                 </View>
@@ -347,17 +398,21 @@ export default function ClientDetails(props) {
             </View>
 
             <View style={styles.consumption_section}>
-
               <View style={[styles.clickable_line]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.icon_frame, { borderColor: '#337AB7' }]}>
-                    <MaterialIcon name="data-usage" size={icons.tiny} color="#337AB7" />
+                    <MaterialIcon
+                      name="data-usage"
+                      size={icons.tiny}
+                      color="#337AB7"
+                    />
                   </View>
-                  <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>Trafego Atual</Text>
+                  <Text style={{ color: '#337AB7', fontWeight: 'bold' }}>
+                    Trafego Atual
+                  </Text>
                 </View>
                 <Text
-                  style={{ textAlignVertical: 'center', fontWeight: 'bold' }}
-                >
+                  style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>
                   {`${clientState.state.client.current_data_usage} Gb`}
                 </Text>
               </View>
@@ -365,37 +420,60 @@ export default function ClientDetails(props) {
               <View style={[styles.clickable_line]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.icon_frame, { borderColor: '#33B7AE' }]}>
-                    <Icon name="clock-outline" size={icons.tiny} color="#33B7AE" />
+                    <Icon
+                      name="clock-outline"
+                      size={icons.tiny}
+                      color="#33B7AE"
+                    />
                   </View>
-                  <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>Média Diária</Text>
+                  <Text style={{ color: '#33B7AE', fontWeight: 'bold' }}>
+                    Média Diária
+                  </Text>
                 </View>
-                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${clientState.state.client.consuption_average} Gb`}</Text>
+                <Text
+                  style={{
+                    textAlignVertical: 'center',
+                    fontWeight: 'bold',
+                  }}>{`${
+                  clientState.state.client.consuption_average
+                } Gb`}</Text>
               </View>
 
               <View style={[styles.clickable_line, { borderBottomWidth: 0 }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <View style={[styles.icon_frame, { borderColor: '#B78633' }]}>
-                    <Icon name="chart-line-variant" size={icons.tiny} color="#B78633" />
+                    <Icon
+                      name="chart-line-variant"
+                      size={icons.tiny}
+                      color="#B78633"
+                    />
                   </View>
-                  <Text style={{ color: '#B78633', fontWeight: 'bold' }}>Consumo Estimado</Text>
+                  <Text style={{ color: '#B78633', fontWeight: 'bold' }}>
+                    Consumo Estimado
+                  </Text>
                 </View>
-                <Text style={{ textAlignVertical: 'center', fontWeight: 'bold' }}>{`${clientState.state.client.expected_consuption} Gb`}</Text>
+                <Text
+                  style={{
+                    textAlignVertical: 'center',
+                    fontWeight: 'bold',
+                  }}>{`${
+                  clientState.state.client.expected_consuption
+                } Gb`}</Text>
               </View>
 
               <View style={styles.graph_container}>
-
-                {Object.keys(clientState.state.client).length !== 0 &&
+                {Object.keys(clientState.state.client).length !== 0 && (
                   <BarChart
                     data={clientState.state.client.graph_obj}
-                    width={Dimensions.get("window").width * 85 / 100}
+                    width={(Dimensions.get('window').width * 85) / 100}
                     height={200}
                     withInnerLines={false}
                     showValuesOnTopOfBars={true}
                     withHorizontalLabels={true}
                     chartConfig={{
-                      backgroundGradientFrom: "#FFF",
+                      backgroundGradientFrom: '#FFF',
                       backgroundGradientFromOpacity: 1,
-                      backgroundGradientTo: "#FFF",
+                      backgroundGradientTo: '#FFF',
                       backgroundGradientToOpacity: 1,
                       barPercentage: 0.7,
                       color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
@@ -406,11 +484,11 @@ export default function ClientDetails(props) {
                     }}
                     fromZero={true}
                   />
-                }
+                )}
               </View>
             </View>
           </>
-        }
+        )}
       </ScrollView>
 
       <View>
@@ -418,10 +496,15 @@ export default function ClientDetails(props) {
           <Dialog.Title>Redefinir MAC</Dialog.Title>
           <Dialog.Description>
             Deseja realmente redefinir o endereço MAC?
-            </Dialog.Description>
-          <Dialog.Button onPress={() => setIsResetMacDialogVisible(false)} label="Cancelar" />
-          <Dialog.Button onPress={() => handleMACRefreshing()} label="Redefinir" />
-
+          </Dialog.Description>
+          <Dialog.Button
+            onPress={() => setIsResetMacDialogVisible(false)}
+            label="Cancelar"
+          />
+          <Dialog.Button
+            onPress={() => handleMACRefreshing()}
+            label="Redefinir"
+          />
         </Dialog.Container>
       </View>
     </>
@@ -444,7 +527,7 @@ const styles = StyleSheet.create({
   },
 
   main_text: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     flex: 1,
   },
@@ -455,7 +538,7 @@ const styles = StyleSheet.create({
   },
 
   main_text_login_senha: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
 
@@ -468,14 +551,14 @@ const styles = StyleSheet.create({
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    justifyContent: "space-between"
+    justifyContent: 'space-between',
   },
 
   modal_style: {
     width: '100%',
     maxWidth: 275,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
@@ -485,7 +568,7 @@ const styles = StyleSheet.create({
   },
 
   modal_header: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.medium,
     width: '100%',
     marginBottom: 10,
@@ -495,7 +578,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 35,
     marginTop: 15,
-    display: "flex",
+    display: 'flex',
     justifyContent: 'center',
     borderRadius: 4,
     backgroundColor: '#FFF',
@@ -514,7 +597,7 @@ const styles = StyleSheet.create({
   modal_btn_style: {
     fontSize: fonts.medium,
     paddingLeft: 15,
-    textAlign: "center",
+    textAlign: 'center',
   },
 
   header_title: {
@@ -526,7 +609,7 @@ const styles = StyleSheet.create({
   client_status: {
     fontSize: fonts.small,
     textAlign: 'center',
-    marginRight: 5
+    marginRight: 5,
   },
 
   section_header: {
@@ -534,8 +617,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
   },
 
-  consumption_section: {
-  },
+  consumption_section: {},
 
   icon_frame: {
     width: 36,
@@ -578,7 +660,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   swiped_options: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     right: 0,
     zIndex: 3,
@@ -589,6 +671,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     flexDirection: 'row',
-
-  }
+  },
 });

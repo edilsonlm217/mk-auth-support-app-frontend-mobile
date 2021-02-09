@@ -28,7 +28,7 @@ const NotificationStateProvider = ({ children }) => {
           new_notifications: action.payload.new_notifications,
           today_notifications: action.payload.today_notifications,
           previous_notifications: action.payload.previous_notifications,
-        }
+        };
 
       case 'setAllAsViewed':
         return {
@@ -36,7 +36,7 @@ const NotificationStateProvider = ({ children }) => {
           new_notifications: state.new_notifications,
           today_notifications: state.today_notifications,
           previous_notifications: state.previous_notifications,
-        }
+        };
 
       case 'setAllAsRead':
         return {
@@ -44,25 +44,26 @@ const NotificationStateProvider = ({ children }) => {
           new_notifications: action.payload.new_notifications,
           today_notifications: action.payload.today_notifications,
           previous_notifications: action.payload.previous_notifications,
-        }
+        };
 
       default:
         throw new Error();
-    };
+    }
   }
 
   const GlobalStore = useContext(store);
 
   async function markAsViewed() {
     dispatch({
-      type: 'setAllAsViewed'
+      type: 'setAllAsViewed',
     });
 
     try {
       const userToken = await AsyncStorage.getItem('@auth_token');
       const employee_id = await AsyncStorage.getItem('@employee_id');
 
-      await api.put(`notification?tenant_id=${globalState.state.tenantID}`,
+      await api.put(
+        `notification?tenant_id=${globalState.state.tenantID}`,
         {
           action: 'markAsViewed',
           viewed_at: new Date(),
@@ -89,14 +90,12 @@ const NotificationStateProvider = ({ children }) => {
       const employee_id = await AsyncStorage.getItem('@employee_id');
 
       if (employee_id) {
-        const response = await api.get(`notification/${employee_id}`,
-          {
-            timeout: 10000,
-            headers: {
-              Authorization: `Bearer ${userToken}`,
-            },
+        const response = await api.get(`notification/${employee_id}`, {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${userToken}`,
           },
-        );
+        });
 
         const new_notifications = [];
         const today_notifications = [];
@@ -104,8 +103,10 @@ const NotificationStateProvider = ({ children }) => {
 
         let count_unread = 0;
         response.data.notifications.map(item => {
-          const notificationAge =
-            differenceInMinutes(new Date(), parseISO(item.viewed_at));
+          const notificationAge = differenceInMinutes(
+            new Date(),
+            parseISO(item.viewed_at),
+          );
 
           if (item.viewed_at === null || notificationAge <= 5) {
             new_notifications.push(item);
@@ -123,12 +124,13 @@ const NotificationStateProvider = ({ children }) => {
         });
 
         dispatch({
-          type: 'setNotifications', payload: {
+          type: 'setNotifications',
+          payload: {
             notification_count: count_unread,
             new_notifications,
             today_notifications,
-            previous_notifications
-          }
+            previous_notifications,
+          },
         });
       }
     } catch (error) {
@@ -146,15 +148,16 @@ const NotificationStateProvider = ({ children }) => {
         notification_count,
         new_notifications,
         today_notifications,
-        previous_notifications
+        previous_notifications,
       ) => {
         dispatch({
-          type: 'setNotifications', payload: {
+          type: 'setNotifications',
+          payload: {
             notification_count,
             new_notifications,
             today_notifications,
-            previous_notifications
-          }
+            previous_notifications,
+          },
         });
       },
       addNewNotification: () => {
@@ -167,7 +170,7 @@ const NotificationStateProvider = ({ children }) => {
         new_notifications,
         today_notifications,
         previous_notifications,
-        notification_id
+        notification_id,
       ) => {
         const new_notifications_updated = [];
         const today_notifications_updated = [];
@@ -198,17 +201,19 @@ const NotificationStateProvider = ({ children }) => {
         });
 
         dispatch({
-          type: 'setAllAsRead', payload: {
+          type: 'setAllAsRead',
+          payload: {
             new_notifications,
             today_notifications,
             previous_notifications,
-          }
+          },
         });
-
-      }
-    }), []);
+      },
+    }),
+    [],
+  );
 
   return <Provider value={{ state, methods }}>{children}</Provider>;
 };
 
-export { notification_store, NotificationStateProvider }
+export { notification_store, NotificationStateProvider };

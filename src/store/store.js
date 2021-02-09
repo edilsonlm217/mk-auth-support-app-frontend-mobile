@@ -41,7 +41,7 @@ const StateProvider = ({ children }) => {
           isLoading: false,
           isAdmin: action.payload.isAdmin,
           tenantID: action.payload.tenantID,
-          restoreKey: action.payload.restoreKey == "true" ? true : false,
+          restoreKey: action.payload.restoreKey == 'true' ? true : false,
           oneSignalUserId: action.payload.oneSignalUserId,
         };
 
@@ -62,7 +62,7 @@ const StateProvider = ({ children }) => {
       case 'CHANGE_SERVER_CONFIG':
         const changedState = {
           ...prevState,
-        }
+        };
 
         return changedState;
 
@@ -70,11 +70,11 @@ const StateProvider = ({ children }) => {
         return {
           ...prevState,
           notification_count: action.payload.notification_count,
-        }
+        };
 
       default:
         throw new Error();
-    };
+    }
   }, initialState);
 
   useEffect(() => {
@@ -89,25 +89,25 @@ const StateProvider = ({ children }) => {
         tenantID = await AsyncStorage.getItem('@tenantID');
         oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
 
-        if (isAdmin === "false") {
+        if (isAdmin === 'false') {
           isAdmin = false;
-        } else if (isAdmin === "true") {
+        } else if (isAdmin === 'true') {
           isAdmin = true;
         }
-
       } catch (e) {
         // Restoring token failed
       }
 
       dispatch({
-        type: 'RESTORE_TOKEN', payload: {
+        type: 'RESTORE_TOKEN',
+        payload: {
           userToken,
           employee_id,
           isAdmin,
           restoreKey,
           tenantID,
           oneSignalUserId,
-        }
+        },
       });
     };
 
@@ -120,21 +120,30 @@ const StateProvider = ({ children }) => {
         const { login, password, tenant_id } = data;
 
         try {
-          const response = await api.post(`sessions?tenant_id=${tenant_id}`, {
-            login,
-            password,
-          }, {
-            timeout: 10000,
-          });
+          const response = await api.post(
+            `sessions?tenant_id=${tenant_id}`,
+            {
+              login,
+              password,
+            },
+            {
+              timeout: 10000,
+            },
+          );
 
           const { token, user } = response.data;
 
-          const auth_token_key = ['@auth_token', response.data.token.toString()];
+          const auth_token_key = [
+            '@auth_token',
+            response.data.token.toString(),
+          ];
           const employee_id_key = ['@employee_id', user.employee_id.toString()];
           const isAdmin = ['@isAdmin', user.isAdmin.toString()];
           const tenantID = ['@tenantID', tenant_id];
 
-          const oneSignalUserId = await AsyncStorage.getItem('@OneSignalUserId');
+          const oneSignalUserId = await AsyncStorage.getItem(
+            '@OneSignalUserId',
+          );
 
           try {
             await AsyncStorage.multiSet([
@@ -143,89 +152,92 @@ const StateProvider = ({ children }) => {
               isAdmin,
               tenantID,
             ]);
-
           } catch (e) {
             console.warn(e);
             Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
           }
 
           dispatch({
-            type: 'SIGN_IN', payload: {
+            type: 'SIGN_IN',
+            payload: {
               token,
               employee_id: user.employee_id,
               isAdmin: user.isAdmin,
               tenantID: tenant_id,
               oneSignalUserId,
-            }
+            },
           });
 
           return true;
-
         } catch (err) {
           console.warn(err);
           if (err.message.includes('401')) {
             Alert.alert('Erro', 'Usuário ou senha inválidos');
           } else {
-            Alert.alert('Erro de conexão', 'Não foi possível encontrar o servidor');
+            Alert.alert(
+              'Erro de conexão',
+              'Não foi possível encontrar o servidor',
+            );
           }
           return true;
         }
       },
 
-      saveTenantKey: async (data) => {
+      saveTenantKey: async data => {
         const restoreKeyStatus = data;
 
         try {
-          const saveToStorage = ['@restore_key_status', restoreKeyStatus.toString()];
+          const saveToStorage = [
+            '@restore_key_status',
+            restoreKeyStatus.toString(),
+          ];
 
-          await AsyncStorage.multiSet([
-            saveToStorage,
-          ]);
+          await AsyncStorage.multiSet([saveToStorage]);
         } catch (error) {
           console.log('Deu erro na hora de salvar no AsyncStorage');
         }
 
         dispatch({
-          type: 'SAVE_KEY_PREFERENCES', payload: {
+          type: 'SAVE_KEY_PREFERENCES',
+          payload: {
             restoreKeyStatus,
-          }
+          },
         });
       },
 
       signOut: () => dispatch({ type: 'SIGN_OUT' }),
 
-      changeConfig: async (data) => {
+      changeConfig: async data => {
         try {
           const server_ip_key = ['@server_ip', data.serverIP];
           const server_port_key = ['@server_port', data.serverPort];
 
-          await AsyncStorage.multiSet([
-            server_ip_key,
-            server_port_key,
-          ]);
-
+          await AsyncStorage.multiSet([server_ip_key, server_port_key]);
         } catch (e) {
           Alert.alert('Erro', 'Não foi possível salvar dados na Storage');
         }
 
         dispatch({
-          type: 'CHANGE_SERVER_CONFIG', payload: {
+          type: 'CHANGE_SERVER_CONFIG',
+          payload: {
             server_ip: data.serverIP,
             server_port: data.serverPort,
-          }
+          },
         });
       },
       setNotificationCount: data => {
         dispatch({
-          type: 'setNotification', payload: {
+          type: 'setNotification',
+          payload: {
             notification_count: data,
-          }
+          },
         });
       },
-
-    }), []);
+    }),
+    [],
+  );
 
   return <Provider value={{ state, methods }}>{children}</Provider>;
 };
 
-export { store, StateProvider }
+export { store, StateProvider };

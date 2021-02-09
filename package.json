@@ -7,7 +7,8 @@
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.9.0",
@@ -22,6 +23,7 @@
     "add": "^2.0.6",
     "axios": "^0.19.2",
     "date-fns": "^2.11.0",
+    "dotenv": "^8.2.0",
     "react": "16.9.0",
     "react-native": "0.61.5",
     "react-native-android-location-services-dialog-box": "^2.8.2",

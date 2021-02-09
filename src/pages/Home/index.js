@@ -1,5 +1,21 @@
-import React, { useMemo, useState, useEffect, useReducer, useContext } from 'react';
-import { Dimensions, View, Text, TouchableOpacity, Alert, ScrollView, RefreshControl, Image, StatusBar } from 'react-native';
+import React, {
+  useMemo,
+  useState,
+  useEffect,
+  useReducer,
+  useContext,
+} from 'react';
+import {
+  Dimensions,
+  View,
+  Text,
+  TouchableOpacity,
+  Alert,
+  ScrollView,
+  RefreshControl,
+  Image,
+  StatusBar,
+} from 'react-native';
 import { format, subDays, addDays } from 'date-fns';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
@@ -21,7 +37,16 @@ import styles from './styles';
 import { icons } from '../../styles/index';
 
 function Home({ navigation }) {
-  const [date, setDate] = useState(new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate(), 0, 0, 0));
+  const [date, setDate] = useState(
+    new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      0,
+      0,
+      0,
+    ),
+  );
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
 
   const globalState = useContext(store);
@@ -55,7 +80,8 @@ function Home({ navigation }) {
     try {
       setRefreshing(true);
 
-      const response = await api.post(`requests?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.post(
+        `requests?tenant_id=${globalState.state.tenantID}`,
         {
           tecnico: globalState.state.employee_id,
           isAdmin: globalState.state.isAdmin,
@@ -85,12 +111,12 @@ function Home({ navigation }) {
         handleLogout();
         Alert.alert(
           'Sessão expirada',
-          'Sua sessão não é mais válida. Você será direcionado a tela de login'
+          'Sua sessão não é mais válida. Você será direcionado a tela de login',
         );
       } else {
         Alert.alert(
           'Erro de conexão',
-          'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.'
+          'Não foi possível conectar ao servidor! Por favor,verifique se as configurações IP estão corretas.',
         );
         setIsOutOfConnection(true);
       }
@@ -107,7 +133,6 @@ function Home({ navigation }) {
     }
   }, [isFocused]);
 
-
   function reducer(state, action) {
     switch (action.type) {
       case 'save_requests':
@@ -118,8 +143,7 @@ function Home({ navigation }) {
           action.payload.requests.map(item => {
             if (item.status === 'fechado') {
               close_arr.push(item);
-            }
-            else {
+            } else {
               open_arr.push(item);
             }
           });
@@ -128,7 +152,7 @@ function Home({ navigation }) {
         return {
           open_requests: open_arr,
           close_requests: close_arr,
-        }
+        };
     }
   }
 
@@ -158,32 +182,39 @@ function Home({ navigation }) {
     if (isOutOfConnection === false) {
       return (
         <View style={styles.section_container}>
-          {state.open_requests.length !== 0
-            ?
+          {state.open_requests.length !== 0 ? (
             <ScrollView
               refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }
-            >
+              }>
               {state.open_requests.map(item => (
                 <Card key={item.id} item={item} navigation={navigation} />
               ))}
             </ScrollView>
-            :
+          ) : (
             <View style={{ flex: 1 }}>
               <ScrollView
                 refreshControl={
-                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-              >
-                {refreshing !== true &&
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }>
+                {refreshing !== true && (
                   <View>
-                    <Text style={{ alignSelf: 'center', marginTop: 50, fontSize: 18 }}>Nenhum chamado</Text>
+                    <Text
+                      style={{
+                        alignSelf: 'center',
+                        marginTop: 50,
+                        fontSize: 18,
+                      }}>
+                      Nenhum chamado
+                    </Text>
                   </View>
-                }
+                )}
               </ScrollView>
             </View>
-          }
+          )}
         </View>
       );
     } else {
@@ -192,11 +223,12 @@ function Home({ navigation }) {
           <ScrollView
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
+            }>
             <View style={{ alignItems: 'center', marginTop: 50 }}>
               <Image source={NoConnection} />
-              <Text style={{ fontSize: 18, marginTop: 30 }}>Não há conexão com o servidor</Text>
+              <Text style={{ fontSize: 18, marginTop: 30 }}>
+                Não há conexão com o servidor
+              </Text>
             </View>
           </ScrollView>
         </View>
@@ -208,34 +240,40 @@ function Home({ navigation }) {
     if (isOutOfConnection === false) {
       return (
         <View style={styles.section_container}>
-          {
-            state.close_requests.length !== 0
-              ?
+          {state.close_requests.length !== 0 ? (
+            <ScrollView
+              style={{ flex: 1 }}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
+              {state.close_requests.map(item => (
+                <Card key={item.id} item={item} navigation={navigation} />
+              ))}
+            </ScrollView>
+          ) : (
+            <View style={{ flex: 1 }}>
               <ScrollView
-                style={{ flex: 1 }}
                 refreshControl={
-                  <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
-              >
-                {state.close_requests.map(item => (
-                  <Card key={item.id} item={item} navigation={navigation} />
-                ))}
+                  <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                  />
+                }>
+                {refreshing !== true && (
+                  <View>
+                    <Text
+                      style={{
+                        alignSelf: 'center',
+                        marginTop: 50,
+                        fontSize: 18,
+                      }}>
+                      Nenhum chamado
+                    </Text>
+                  </View>
+                )}
               </ScrollView>
-              :
-              <View style={{ flex: 1 }}>
-                <ScrollView
-                  refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                  }
-                >
-                  {refreshing !== true &&
-                    <View>
-                      <Text style={{ alignSelf: 'center', marginTop: 50, fontSize: 18 }}>Nenhum chamado</Text>
-                    </View>
-                  }
-                </ScrollView>
-              </View>
-          }
+            </View>
+          )}
         </View>
       );
     } else {
@@ -244,11 +282,12 @@ function Home({ navigation }) {
           <ScrollView
             refreshControl={
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-            }
-          >
+            }>
             <View style={{ alignItems: 'center', marginTop: 50 }}>
               <Image source={NoConnection} />
-              <Text style={{ fontSize: 18, marginTop: 30 }}>Não há conexão com o servidor</Text>
+              <Text style={{ fontSize: 18, marginTop: 30 }}>
+                Não há conexão com o servidor
+              </Text>
             </View>
           </ScrollView>
         </View>
@@ -258,7 +297,12 @@ function Home({ navigation }) {
 
   async function handleLogout() {
     try {
-      const keys = ['@auth_token', '@employee_id', '@server_ip', '@server_port'];
+      const keys = [
+        '@auth_token',
+        '@employee_id',
+        '@server_ip',
+        '@server_port',
+      ];
       await AsyncStorage.multiRemove(keys);
 
       signOut();
@@ -274,9 +318,14 @@ function Home({ navigation }) {
 
   return (
     <>
-      <StatusBar backgroundColor="#337AB7" barStyle='light-content' />
+      <StatusBar backgroundColor="#337AB7" barStyle="light-content" />
       <View style={styles.container}>
-        <AppHeader navigation={navigation} label="Chamados" altura="15%" iconFor="settings" />
+        <AppHeader
+          navigation={navigation}
+          label="Chamados"
+          altura="15%"
+          iconFor="settings"
+        />
         <View style={styles.date_selector}>
           <TouchableOpacity onPress={handlePrevDay}>
             <Icon name="chevron-left" size={icons.large} color="#FFF" />
@@ -294,32 +343,32 @@ function Home({ navigation }) {
           renderScene={renderScene}
           onIndexChange={setIndex}
           initialLayout={{ width: Dimensions.get('window').width }}
-          renderTabBar={props =>
+          renderTabBar={props => (
             <TabBar
               {...props}
               indicatorStyle={styles.indicatorStyle}
               labelStyle={styles.label_style}
               style={styles.tabBar_style}
             />
-          }
+          )}
         />
-
       </View>
 
-      {
-        isDatePickerVisible
-          ?
-          <DateTimePicker
-            mode={date}
-            display="calendar"
-            value={date}
-            onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
-            style={{ backgroundColor: 'red' }}
-          />
-          : <></>
-      }
+      {isDatePickerVisible ? (
+        <DateTimePicker
+          mode={date}
+          display="calendar"
+          value={date}
+          onChange={(event, selectedDate) => {
+            handleNewDate(event, selectedDate);
+          }}
+          style={{ backgroundColor: 'red' }}
+        />
+      ) : (
+        <></>
+      )}
     </>
   );
 }
 
-export { Home }
+export { Home };

@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from 'axios';
 
 const resources = {};
 
@@ -18,9 +18,9 @@ const makeRequestCreator = () => {
         // Return result if it exists
         return resources[query];
       }
-      const res = await axios.get(query,
-        authorization,
-        { cancelToken: cancel.token });
+      const res = await axios.get(query, authorization, {
+        cancelToken: cancel.token,
+      });
 
       const result = res.data;
       // Store response
@@ -30,10 +30,10 @@ const makeRequestCreator = () => {
     } catch (error) {
       if (axios.isCancel(error)) {
         // Handle if request was cancelled
-        console.log("Request canceled", error.message);
+        console.log('Request canceled', error.message);
       } else {
         // Handle usual errors
-        console.log("Something went wrong: ", error.message);
+        console.log('Something went wrong: ', error.message);
       }
     }
   };

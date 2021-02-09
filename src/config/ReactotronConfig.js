@@ -1,7 +1,8 @@
 import Reactotron from 'reactotron-react-native';
+import appConfig from './app';
 
 if (__DEV__) {
-  const tron = Reactotron.configure({host: '192.168.99.1'})
+  const tron = Reactotron.configure({host: appConfig.reactotronHost})
     .useReactNative()
     .connect();
 
