@@ -4,26 +4,26 @@ import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     width: '100%',
     height: '100%',
     padding: 20,
     paddingTop: 20,
     borderTopLeftRadius: 20,
-    borderTopRightRadius: 20, 
+    borderTopRightRadius: 20,
   },
   header_container: {
     flexDirection: 'row',
     marginBottom: 15,
   },
-  
-  main_text: { 
-    fontWeight: "bold",
+
+  main_text: {
+    fontWeight: 'bold',
     fontSize: fonts.regular,
-    maxWidth: '95%', 
+    maxWidth: '95%',
   },
-  
-  sub_text: { 
+
+  sub_text: {
     fontSize: fonts.small,
     color: '#989898',
   },
@@ -31,12 +31,12 @@ const styles = StyleSheet.create({
   line_container_location: {
     flexDirection: 'row',
   },
-  
+
   location_line: {
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    justifyContent: "space-between"
+    justifyContent: 'space-between',
   },
 
   line_container: {
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   btns_contaier: {
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFF',
   },
   secondary_btn: {
     backgroundColor: '#FFF',
@@ -66,13 +66,13 @@ const styles = StyleSheet.create({
 
     elevation: 6,
   },
-  
+
   secondary_btn_text: {
     fontSize: fonts.regular,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#337AB7',
   },
-  
+
   main_btn: {
     backgroundColor: '#337AB7',
     width: 160,
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
 
   main_btn_text: {
     fontSize: fonts.regular,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#FFF',
   },
 
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: '#337AB7',
     alignSelf: 'center',
-    position: "absolute",
+    position: 'absolute',
     bottom: 200,
     borderRadius: 30,
     justifyContent: 'center',
@@ -116,6 +116,5 @@ const styles = StyleSheet.create({
     fontSize: fonts.regular,
   },
 });
-
 
 export default styles;

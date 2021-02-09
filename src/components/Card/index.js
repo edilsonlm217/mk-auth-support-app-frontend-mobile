@@ -28,13 +28,12 @@ export default function Card(props) {
   const borderColor = calcBorderColor();
 
   function UserAdress() {
-
     if (props.item.endereco === null) {
-      return <Text>Sem endereço</Text>
+      return <Text>Sem endereço</Text>;
     } else {
       const endereco = props.item.endereco;
-      const numero = props.item.numero ? props.item.numero : 'S/N'
-      const bairro = props.item.bairro
+      const numero = props.item.numero ? props.item.numero : 'S/N';
+      const bairro = props.item.bairro;
 
       return (
         <Text numberOfLines={1} style={{ fontSize: fonts.small }}>
@@ -70,23 +69,25 @@ export default function Card(props) {
               assunto: props.item.assunto,
             });
           }
-        }}
-      >
+        }}>
         <View style={styles.card_header_content_container}>
           <View style={styles.card_header}>
-            <Text numberOfLines={1} style={styles.client_name}>{props.item.nome}</Text>
+            <Text numberOfLines={1} style={styles.client_name}>
+              {props.item.nome}
+            </Text>
             <Text style={styles.visit_time}>{props.item.visita}</Text>
           </View>
           <UserAdress />
-          <Text style={{ fontSize: fonts.small }}>{`Assunto: ${props.item.assunto}`}</Text>
-          {globalState.state.isAdmin &&
+          <Text style={{ fontSize: fonts.small }}>{`Assunto: ${
+            props.item.assunto
+          }`}</Text>
+          {globalState.state.isAdmin && (
             <Text style={{ fontSize: fonts.small }}>
               {props.item.employee_name === null
                 ? 'Técnico: Não assinalado'
-                : `Técnico: ${props.item.employee_name}`
-              }
+                : `Técnico: ${props.item.employee_name}`}
             </Text>
-          }
+          )}
         </View>
       </TouchableOpacity>
     </>

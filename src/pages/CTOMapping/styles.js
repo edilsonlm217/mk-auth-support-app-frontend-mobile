@@ -10,9 +10,9 @@ const styles = StyleSheet.create({
   map_container: {
     flex: 1,
   },
-  
+
   map: {
-    height: "100%",
+    height: '100%',
   },
 
   bottom_menu: {
@@ -21,49 +21,49 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     padding: 15,
     borderTopWidth: 0.7,
-    borderTopColor: "red",
+    borderTopColor: 'red',
   },
 
   main_title: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
-  
+
   suggested_card: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
     padding: 5,
     paddingLeft: 15,
     paddingRight: 15,
-    
+
     marginBottom: 15,
     marginTop: 10,
-    
+
     borderWidth: 0.5,
     borderRadius: 20,
     borderColor: '#AFAFAF',
   },
 
   suggested_card_selected: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
     padding: 5,
     paddingLeft: 15,
     paddingRight: 15,
-    
+
     marginBottom: 15,
     marginTop: 10,
-    
+
     borderWidth: 1,
     borderRadius: 20,
     borderColor: '#3842d2',
   },
 
   card_name: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 
   icon_container: {
@@ -71,47 +71,47 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     width: 35,
     height: 35,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 15,
   },
 
   distance_container: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
 
   card_title: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
 
   sub_card_title: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     minWidth: 70,
   },
 
   sub_card_title_distance: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
-    textAlign: "right",
+    textAlign: 'right',
     minWidth: 70,
   },
 
   sub_card_icon_container: {
-    minWidth: 70, 
-    alignItems: "flex-end"
+    minWidth: 70,
+    alignItems: 'flex-end',
   },
 
   sub_card_title_selected: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
-    color: "#FFF",
+    color: '#FFF',
     minWidth: 70,
   },
 
   card_distance: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
 
@@ -120,16 +120,16 @@ const styles = StyleSheet.create({
   },
 
   sub_cards_container: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-around",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
     alignItems: 'center',
   },
 
   sub_cards: {
     flexGrow: 1,
     height: 55,
-    
+
     borderWidth: 0.5,
     borderColor: '#AFAFAF',
     borderRadius: 20,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 15,
     paddingRight: 15,
-    
+
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
@@ -156,25 +156,25 @@ const styles = StyleSheet.create({
     padding: 10,
     paddingLeft: 15,
     paddingRight: 15,
-    
+
     marginTop: 10,
     marginLeft: 5,
     marginRight: 5,
 
     justifyContent: 'center',
 
-    backgroundColor: "#3842D2",
+    backgroundColor: '#3842D2',
   },
 
   main_line: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
 
   main_line_selected: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     height: '100%',
   },
 
@@ -184,8 +184,8 @@ const styles = StyleSheet.create({
 
   modal_style: {
     width: 300,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
 
   modal_header: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     width: '100%',
     marginBottom: 5,
@@ -203,11 +203,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     marginTop: 10,
-    display: "flex",
+    display: 'flex',
     justifyContent: 'center',
     borderRadius: 4,
     backgroundColor: '#3842D2',
-    
+
     shadowColor: '#000',
     shadowOffset: {
       width: 4,
@@ -223,11 +223,11 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     marginTop: 10,
-    display: "flex",
+    display: 'flex',
     justifyContent: 'center',
     borderRadius: 4,
     backgroundColor: '#000',
-    
+
     shadowColor: '#000',
     shadowOffset: {
       width: 4,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
 
   modal_btn_style: {
     fontSize: fonts.regular,
-    textAlign: "center",
+    textAlign: 'center',
     color: '#FFF',
   },
 });

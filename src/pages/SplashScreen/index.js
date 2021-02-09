@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Image,
-} from 'react-native';
+import { View, Image } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -17,14 +14,13 @@ export default function AuthScreen() {
           flex: 1,
           alignItems: 'center',
           justifyContent: 'center',
-        }}
-      >
-        <View style={{
-          flexDirection: 'column',
-          alignItems: 'center',
-          padding: 20,
-        }}
-        >
+        }}>
+        <View
+          style={{
+            flexDirection: 'column',
+            alignItems: 'center',
+            padding: 20,
+          }}>
           <Image
             source={app_logo}
             style={{

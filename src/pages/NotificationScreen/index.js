@@ -1,6 +1,21 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native';
-import { differenceInDays, differenceInHours, differenceInMinutes, differenceInSeconds, parseISO, isToday } from 'date-fns';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
+import {
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInSeconds,
+  parseISO,
+  isToday,
+} from 'date-fns';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import api from '../../services/api';
@@ -28,7 +43,8 @@ export default function NotificationScreen(props) {
     try {
       setRefreshing(true);
 
-      const response = await api.get(`notification/${employee_id}?tenant_id=${GlobalStore.state.tenantID}`,
+      const response = await api.get(
+        `notification/${employee_id}?tenant_id=${GlobalStore.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -43,8 +59,10 @@ export default function NotificationScreen(props) {
 
       let count_unread = 0;
       response.data.notifications.map(item => {
-        const notificationAge =
-          differenceInMinutes(new Date(), parseISO(item.viewed_at));
+        const notificationAge = differenceInMinutes(
+          new Date(),
+          parseISO(item.viewed_at),
+        );
 
         if (item.viewed_at === null || notificationAge <= 5) {
           temp_new_notifications.push(item);
@@ -65,13 +83,16 @@ export default function NotificationScreen(props) {
         count_unread,
         temp_new_notifications,
         temp_today_notifications,
-        temp_previous_notifications
+        temp_previous_notifications,
       );
 
       setRefreshing(false);
     } catch (error) {
       setRefreshing(false);
-      Alert.alert('Erro', 'Falha ao chamar a API (fetchNotifications at NotificationScreen)');
+      Alert.alert(
+        'Erro',
+        'Falha ao chamar a API (fetchNotifications at NotificationScreen)',
+      );
     }
   }
 
@@ -84,11 +105,12 @@ export default function NotificationScreen(props) {
       NotificationStore.state.new_notifications,
       NotificationStore.state.today_notifications,
       NotificationStore.state.previous_notifications,
-      notification_id
+      notification_id,
     );
 
     try {
-      await api.put(`notification`,
+      await api.put(
+        `notification`,
         {
           action: 'markAsRead',
           notification_id,
@@ -100,10 +122,11 @@ export default function NotificationScreen(props) {
           },
         },
       );
-
-
     } catch (error) {
-      Alert.alert('Erro', 'Falha ao marcar notificação como lida (notification_screen)');
+      Alert.alert(
+        'Erro',
+        'Falha ao marcar notificação como lida (notification_screen)',
+      );
     }
   }
 
@@ -112,7 +135,6 @@ export default function NotificationScreen(props) {
       fetchNotifications();
       setSelectedNotificationID(null);
     }
-
   }, [props.isFocused]);
 
   async function handleNotificationPress(notification) {
@@ -125,7 +147,7 @@ export default function NotificationScreen(props) {
     markNotificationsAsRead(notification.data.id);
   }
 
-  const NotificationAge = (date) => {
+  const NotificationAge = date => {
     const parsedDate = parseISO(date);
 
     let duration = 0;
@@ -146,14 +168,15 @@ export default function NotificationScreen(props) {
     return duration;
   };
 
-  const NotificationComponent = (notification) => {
+  const NotificationComponent = notification => {
     return (
-      <TouchableOpacity onPress={() => handleNotificationPress(notification)}
-        style={notification.data.is_read
-          ? styles.notification_container_read
-          : styles.notification_container_unread
-        }
-      >
+      <TouchableOpacity
+        onPress={() => handleNotificationPress(notification)}
+        style={
+          notification.data.is_read
+            ? styles.notification_container_read
+            : styles.notification_container_unread
+        }>
         <View>
           <Icon name="bell-outline" size={20} color="#000" />
         </View>
@@ -162,7 +185,9 @@ export default function NotificationScreen(props) {
             {notification.data.header}
           </Text>
           <Text style={styles.notification_sub_text}>
-            {`${notification.data.content}: há ${NotificationAge(notification.data.created_at)}`}
+            {`${notification.data.content}: há ${NotificationAge(
+              notification.data.created_at,
+            )}`}
           </Text>
         </View>
       </TouchableOpacity>
@@ -179,52 +204,51 @@ export default function NotificationScreen(props) {
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
-                onRefresh={() => { fetchNotifications() }}
+                onRefresh={() => {
+                  fetchNotifications();
+                }}
               />
-            }
-          >
-            {NotificationStore.state.new_notifications.length !== 0 &&
+            }>
+            {NotificationStore.state.new_notifications.length !== 0 && (
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>Novas</Text>
                 <>
-                  {NotificationStore.state.new_notifications.map((item, index) => {
-                    return (
-                      <NotificationComponent key={index} data={item} />
-                    );
-                  })}
+                  {NotificationStore.state.new_notifications.map(
+                    (item, index) => {
+                      return <NotificationComponent key={index} data={item} />;
+                    },
+                  )}
                 </>
               </>
-            }
+            )}
 
-            {NotificationStore.state.today_notifications.length !== 0 &&
+            {NotificationStore.state.today_notifications.length !== 0 && (
               <>
-                <Text style={[styles.main_text, { marginTop: 10 }]}>
-                  Hoje
-                </Text>
+                <Text style={[styles.main_text, { marginTop: 10 }]}>Hoje</Text>
                 <>
-                  {NotificationStore.state.today_notifications.map((item, index) => {
-                    return (
-                      <NotificationComponent key={index} data={item} />
-                    );
-                  })}
+                  {NotificationStore.state.today_notifications.map(
+                    (item, index) => {
+                      return <NotificationComponent key={index} data={item} />;
+                    },
+                  )}
                 </>
               </>
-            }
+            )}
 
-            {NotificationStore.state.previous_notifications.length !== 0 &&
+            {NotificationStore.state.previous_notifications.length !== 0 && (
               <>
                 <Text style={[styles.main_text, { marginTop: 10 }]}>
                   Anteriores
                 </Text>
                 <>
-                  {NotificationStore.state.previous_notifications.map((item, index) => {
-                    return (
-                      <NotificationComponent key={index} data={item} />
-                    );
-                  })}
+                  {NotificationStore.state.previous_notifications.map(
+                    (item, index) => {
+                      return <NotificationComponent key={index} data={item} />;
+                    },
+                  )}
                 </>
               </>
-            }
+            )}
           </ScrollView>
         </View>
       </View>
@@ -234,7 +258,7 @@ export default function NotificationScreen(props) {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     width: '100%',
     height: '100%',
     padding: 20,
@@ -275,6 +299,6 @@ const styles = StyleSheet.create({
 
   notification_sub_text: {
     fontFamily: 'Roboto-Light',
-    fontSize: 12
+    fontSize: 12,
   },
 });

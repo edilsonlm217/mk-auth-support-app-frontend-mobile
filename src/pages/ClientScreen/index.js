@@ -30,14 +30,16 @@ export default function ClientScreen({ navigation, route }) {
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
     { key: 'third', title: 'Financeiro' },
-  ]
+  ];
 
   const nonAdminRoute = [
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
-  ]
+  ];
 
-  const [routes] = useState(globalState.state.isAdmin ? adminRoute : nonAdminRoute);
+  const [routes] = useState(
+    globalState.state.isAdmin ? adminRoute : nonAdminRoute,
+  );
 
   const [isVisible, setIsVisible] = useState(false);
 
@@ -56,7 +58,8 @@ export default function ClientScreen({ navigation, route }) {
     try {
       setIsLoading();
 
-      const response = await api.get(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -85,28 +88,31 @@ export default function ClientScreen({ navigation, route }) {
     switch (route.key) {
       case 'first':
         return (
-          <View
-            style={styles.section_container}
-          >
-            <ClientDetails data={client_id} state={globalState} clientState={ClientState} navigation={navigation} />
+          <View style={styles.section_container}>
+            <ClientDetails
+              data={client_id}
+              state={globalState}
+              clientState={ClientState}
+              navigation={navigation}
+            />
           </View>
         );
 
       case 'second':
         return (
-          <View
-            style={styles.section_container}
-          >
+          <View style={styles.section_container}>
             <ClientConnections data={client_id} state={globalState} />
           </View>
         );
 
       case 'third':
         return (
-          <View
-            style={styles.section_container}
-          >
-            <ClientFinancing data={client_id} state={globalState} navigation={navigation} />
+          <View style={styles.section_container}>
+            <ClientFinancing
+              data={client_id}
+              state={globalState}
+              navigation={navigation}
+            />
           </View>
         );
 
@@ -117,7 +123,7 @@ export default function ClientScreen({ navigation, route }) {
 
   const renderLabel = ({ route }) => (
     <View>
-      <Text style={styles.label_style} ellipsizeMode='tail' numberOfLines={1}>
+      <Text style={styles.label_style} ellipsizeMode="tail" numberOfLines={1}>
         {route.title.toUpperCase()}
       </Text>
     </View>
@@ -133,14 +139,16 @@ export default function ClientScreen({ navigation, route }) {
     navigation.navigate('UpdateClienteLocation', {
       data: {
         id: ClientState.state.client.id,
-      }
+      },
     });
   }
 
   function handleNavigateToCTO() {
     handleModalClosing();
 
-    const [latidude, longitude] = ClientState.state.client.coordenadas.split(',');
+    const [latidude, longitude] = ClientState.state.client.coordenadas.split(
+      ',',
+    );
 
     navigation.navigate('CTOs', {
       to: 'CTO',
@@ -167,25 +175,25 @@ export default function ClientScreen({ navigation, route }) {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: Dimensions.get('window').width }}
-        renderTabBar={props =>
+        renderTabBar={props => (
           <TabBar
             {...props}
             renderLabel={renderLabel}
             indicatorStyle={styles.indicatorStyle}
             style={styles.tabBar_style}
           />
-        }
+        )}
       />
 
       <>
-        {isVisible &&
+        {isVisible && (
           <ModalContainer
             clientData={ClientState.state.client}
             closeModal={() => setIsVisible(false)}
             goToModalLocation={() => handleNavigateToLocation()}
             goToModalCTO={() => handleNavigateToCTO()}
           />
-        }
+        )}
       </>
     </View>
   );
@@ -207,7 +215,7 @@ const styles = StyleSheet.create({
   },
 
   main_text: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     minWidth: '90%',
     maxWidth: '90%',
@@ -229,7 +237,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: fonts.medium,
     alignSelf: 'center',
-    textAlign: "center",
+    textAlign: 'center',
   },
 
   tabBar_style: {
@@ -242,9 +250,9 @@ const styles = StyleSheet.create({
   },
 
   modal_style: {
-    position: "absolute",
+    position: 'absolute',
     width: '100%',
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     bottom: 0,
     padding: 20,
     paddingBottom: 0,

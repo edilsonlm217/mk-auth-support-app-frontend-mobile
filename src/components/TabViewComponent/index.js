@@ -1,5 +1,11 @@
-import React, {useState} from 'react';
-import {View, Dimensions, ScrollView, TouchableOpacity, Text} from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Dimensions,
+  ScrollView,
+  TouchableOpacity,
+  Text,
+} from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import Card from '../Card/index';
@@ -16,11 +22,11 @@ export default function TabViewComponent(props) {
   function OpenRequestsRoute() {
     return (
       <View style={styles.section_container}>
-          <ScrollView >
-            { props.state.open_requests.map(item => (
-              <Card key={item.id} item={item} navigation={props.navigation}/>
-            ))} 
-          </ScrollView>
+        <ScrollView>
+          {props.state.open_requests.map(item => (
+            <Card key={item.id} item={item} navigation={props.navigation} />
+          ))}
+        </ScrollView>
       </View>
     );
   }
@@ -29,9 +35,9 @@ export default function TabViewComponent(props) {
     return (
       <View style={styles.section_container}>
         <ScrollView>
-          { props.state.close_requests.map(item => (
-            <Card key={item.id} item={item} navigation={props.navigation}/>
-          ))} 
+          {props.state.close_requests.map(item => (
+            <Card key={item.id} item={item} navigation={props.navigation} />
+          ))}
         </ScrollView>
       </View>
     );
@@ -45,18 +51,18 @@ export default function TabViewComponent(props) {
   return (
     <>
       <TabView
-        navigationState={{index, routes}}
+        navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
-        initialLayout={{width: Dimensions.get('window').width}}
-        renderTabBar={props =>
+        initialLayout={{ width: Dimensions.get('window').width }}
+        renderTabBar={props => (
           <TabBar
             {...props}
             indicatorStyle={styles.indicatorStyle}
             labelStyle={styles.label_style}
             style={styles.tabBar_style}
           />
-        }
+        )}
       />
     </>
   );

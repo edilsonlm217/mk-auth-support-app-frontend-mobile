@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef } from 'react';
-import { AppState } from 'react-native'
+import { AppState } from 'react-native';
 import { useIsFocused } from '@react-navigation/native';
 import BackgroundTimer from 'react-native-background-timer';
 
@@ -19,10 +19,10 @@ export default function NotificationTab() {
   var interval;
 
   useEffect(() => {
-    AppState.addEventListener("change", _handleAppStateChange);
+    AppState.addEventListener('change', _handleAppStateChange);
 
     return () => {
-      AppState.removeEventListener("change", _handleAppStateChange);
+      AppState.removeEventListener('change', _handleAppStateChange);
     };
   }, []);
 
@@ -40,19 +40,18 @@ export default function NotificationTab() {
 
   function _handleAppStateChange(nextAppState) {
     if (
-      appState.current.match(/inactive|background/) && nextAppState === "active"
+      appState.current.match(/inactive|background/) &&
+      nextAppState === 'active'
     ) {
       BackgroundTimer.clearInterval(interval);
     } else {
       interval = BackgroundTimer.setInterval(() => {
-        socket.emit('online')
-      }, 5000)
+        socket.emit('online');
+      }, 5000);
 
       appState.current = nextAppState;
     }
-  };
+  }
 
-  return (
-    <NotificationScreen isFocused={isFocused} />
-  );
+  return <NotificationScreen isFocused={isFocused} />;
 }
