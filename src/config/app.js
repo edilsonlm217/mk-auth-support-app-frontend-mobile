@@ -1,6 +1,6 @@
-import 'dotenv/config';
+import { API_URL, REACTOTRON_HOST } from 'react-native-dotenv';
 
 export default {
-  reactotronHost: process.env.REACTOTRON_HOST,
-  apiUrl: process.env.API_URL,
+  reactotronHost: REACTOTRON_HOST,
+  apiUrl: API_URL,
 };
