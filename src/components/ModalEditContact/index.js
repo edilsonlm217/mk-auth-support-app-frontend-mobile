@@ -1,5 +1,12 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  ToastAndroid,
+} from 'react-native';
 import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,13 +29,16 @@ export default function ModalEditContact(props) {
     }
 
     if (props.for === 'editCelular') {
-      return props.clientData.celular ? props.clientData.celular : 'Nenhum'
+      return props.clientData.celular ? props.clientData.celular : 'Nenhum';
     }
   };
 
   async function handleSaveNewNumber() {
     if (props.for === 'editCelular') {
-      const response_update = await api.post(`client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
+      const response_update = await api.post(
+        `client/${clientState.state.client.id}?tenant_id=${
+          globalState.state.tenantID
+        }`,
         {
           celular: newNumber,
         },
@@ -46,9 +56,12 @@ export default function ModalEditContact(props) {
 
       setClientData(newState);
       props.goBack();
-      ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+      ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
     } else {
-      const response_update = await api.post(`client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
+      const response_update = await api.post(
+        `client/${clientState.state.client.id}?tenant_id=${
+          globalState.state.tenantID
+        }`,
         {
           fone: newNumber,
         },
@@ -66,20 +79,30 @@ export default function ModalEditContact(props) {
 
       setClientData(newState);
       props.goBack();
-      ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+      ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
     }
   }
 
   return (
     <>
       <TouchableOpacity onPress={props.goBack} style={styles.header}>
-        <Icon name='arrow-left' size={22} color='#000' />
-        <Text style={[styles.main_text, { fontSize: 16, marginBottom: 10, marginLeft: 15 }]}>{props.label}</Text>
+        <Icon name="arrow-left" size={22} color="#000" />
+        <Text
+          style={[
+            styles.main_text,
+            { fontSize: 16, marginBottom: 10, marginLeft: 15 },
+          ]}>
+          {props.label}
+        </Text>
       </TouchableOpacity>
 
       <View style={{ marginBottom: 20 }}>
         <Text>Número atual</Text>
-        <TextInput value={data()} editable={false} style={styles.disabled_text_input} />
+        <TextInput
+          value={data()}
+          editable={false}
+          style={styles.disabled_text_input}
+        />
       </View>
 
       <View style={{ marginBottom: 20 }}>
@@ -91,8 +114,10 @@ export default function ModalEditContact(props) {
             style={styles.enable_text_input}
             keyboardType="number-pad"
           />
-          <TouchableOpacity onPress={() => handleSaveNewNumber()} style={styles.save_btn_container}>
-            <Icon name='check' size={20} color='#FFF' />
+          <TouchableOpacity
+            onPress={() => handleSaveNewNumber()}
+            style={styles.save_btn_container}>
+            <Icon name="check" size={20} color="#FFF" />
           </TouchableOpacity>
         </View>
       </View>

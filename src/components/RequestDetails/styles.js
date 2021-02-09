@@ -3,8 +3,8 @@ import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
-    position: "absolute",
+    backgroundColor: '#FFF',
+    position: 'absolute',
     bottom: 0,
     width: '100%',
     borderTopRightRadius: 20,
@@ -15,13 +15,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
   },
-  
-  main_text: { 
-    fontWeight: "bold",
-    fontSize: fonts.regular,    
+
+  main_text: {
+    fontWeight: 'bold',
+    fontSize: fonts.regular,
   },
-  
-  sub_text: { 
+
+  sub_text: {
     fontSize: fonts.small,
     color: '#989898',
   },
@@ -30,8 +30,8 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   btns_contaier: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-around',
     marginTop: 20,
     backgroundColor: '#FFF',
@@ -57,17 +57,17 @@ const styles = StyleSheet.create({
 
     elevation: 6,
   },
-  
+
   secondary_btn_text: {
     fontSize: fonts.regular,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#337AB7',
     paddingLeft: 10,
     paddingRight: 10,
-    textAlign: "center",
+    textAlign: 'center',
     minWidth: 150,
   },
-  
+
   main_btn: {
     margin: 5,
 
@@ -92,11 +92,11 @@ const styles = StyleSheet.create({
 
   main_btn_text: {
     fontSize: fonts.regular,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#FFF',
     paddingLeft: 10,
     paddingRight: 10,
-    textAlign: "center",
+    textAlign: 'center',
     minWidth: 150,
   },
 });

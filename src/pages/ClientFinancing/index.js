@@ -1,5 +1,14 @@
 import React, { useState, useContext, useEffect, useReducer } from 'react';
-import { View, Text, Switch, StyleSheet, ScrollView, Alert, RefreshControl, ToastAndroid } from 'react-native';
+import {
+  View,
+  Text,
+  Switch,
+  StyleSheet,
+  ScrollView,
+  Alert,
+  RefreshControl,
+  ToastAndroid,
+} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Accordion from 'react-native-collapsible/Accordion';
 import { format, parseISO } from 'date-fns';
@@ -36,7 +45,7 @@ export default function ClientFinancing(props) {
         return {
           isEnabled: false,
           date: null,
-        }
+        };
 
       case 'turnOn':
         setIsDatePickerVisible(false);
@@ -44,14 +53,15 @@ export default function ClientFinancing(props) {
         return {
           isEnabled: true,
           date: action.payload.date,
-        }
+        };
     }
   }
 
   async function loadAPI() {
     try {
       setRefreshing(true);
-      const response = await api.get(`invoices/${client_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `invoices/${client_id}?tenant_id=${globalState.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -62,8 +72,10 @@ export default function ClientFinancing(props) {
 
       setState(response.data);
       console.log(response.data.invoices.paid_invoices);
-      if (response.data.observacao === 'sim' && switcherState.isEnabled === false) {
-
+      if (
+        response.data.observacao === 'sim' &&
+        switcherState.isEnabled === false
+      ) {
         dispatch({
           type: 'turnOn',
           payload: {
@@ -91,7 +103,8 @@ export default function ClientFinancing(props) {
       });
 
       try {
-        const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
+        const response_update = await api.post(
+          `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
           {
             observacao: 'nao',
             date: null,
@@ -104,7 +117,7 @@ export default function ClientFinancing(props) {
           },
         );
       } catch (error) {
-        ToastAndroid.show("Não foi possível desabilitar", ToastAndroid.SHORT);
+        ToastAndroid.show('Não foi possível desabilitar', ToastAndroid.SHORT);
         dispatch({
           type: 'turnOn',
           payload: {
@@ -112,7 +125,6 @@ export default function ClientFinancing(props) {
           },
         });
       }
-
     } else {
       setIsDatePickerVisible(true);
     }
@@ -121,19 +133,43 @@ export default function ClientFinancing(props) {
   const _renderHeader = (section, isActive, index) => {
     return (
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Icon name={index ? "chevron-up-circle" : "chevron-down-circle"} size={icons.large} color="#337AB7" />
+        <Icon
+          name={index ? 'chevron-up-circle' : 'chevron-down-circle'}
+          size={icons.large}
+          color="#337AB7"
+        />
         <View style={{ width: '50%', alignItems: 'center' }}>
-          <Text numberOfLines={1} style={[styles.main_text, { fontSize: fonts.medium, textAlign: 'left', width: '50%' }]}>Vencimento</Text>
+          <Text
+            numberOfLines={1}
+            style={[
+              styles.main_text,
+              { fontSize: fonts.medium, textAlign: 'left', width: '50%' },
+            ]}>
+            Vencimento
+          </Text>
         </View>
-        {section.content.status === 'vencido'
-          ? <Text style={{ color: index ? '#000' : 'red', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
-          : <Text style={{ color: index ? '#000' : '#337AB7', fontFamily: 'Roboto-Light' }}>{section.title}</Text>
-        }
+        {section.content.status === 'vencido' ? (
+          <Text
+            style={{
+              color: index ? '#000' : 'red',
+              fontFamily: 'Roboto-Light',
+            }}>
+            {section.title}
+          </Text>
+        ) : (
+          <Text
+            style={{
+              color: index ? '#000' : '#337AB7',
+              fontFamily: 'Roboto-Light',
+            }}>
+            {section.title}
+          </Text>
+        )}
       </View>
     );
   };
 
-  const _renderContent = (section) => {
+  const _renderContent = section => {
     return (
       <>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -145,14 +181,15 @@ export default function ClientFinancing(props) {
                 {
                   fontSize: fonts.medium,
                   textAlign: 'left',
-                  width: '50%'
-                }
-              ]}
-            >
+                  width: '50%',
+                },
+              ]}>
               Título
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.titulo}</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>
+            {section.content.titulo}
+          </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -163,14 +200,15 @@ export default function ClientFinancing(props) {
                 {
                   fontSize: fonts.medium,
                   textAlign: 'left',
-                  width: '50%'
-                }
-              ]}
-            >
+                  width: '50%',
+                },
+              ]}>
               Tipo
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.tipo}</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>
+            {section.content.tipo}
+          </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -181,14 +219,15 @@ export default function ClientFinancing(props) {
                 {
                   fontSize: fonts.medium,
                   textAlign: 'left',
-                  width: '50%'
-                }
-              ]}
-            >
+                  width: '50%',
+                },
+              ]}>
               Valor
             </Text>
           </View>
-          <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.valor}</Text>
+          <Text style={{ fontFamily: 'Roboto-Light' }}>
+            {section.content.valor}
+          </Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
@@ -199,17 +238,20 @@ export default function ClientFinancing(props) {
                 {
                   fontSize: fonts.medium,
                   textAlign: 'left',
-                  flex: 1, width: '50%'
-                }]}
-            >
+                  flex: 1,
+                  width: '50%',
+                },
+              ]}>
               Descrição
             </Text>
           </View>
           <View style={{ flex: 1, marginBottom: 10 }}>
-            <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.descricao}</Text>
+            <Text style={{ fontFamily: 'Roboto-Light' }}>
+              {section.content.descricao}
+            </Text>
           </View>
         </View>
-        {section.content.paidAt &&
+        {section.content.paidAt && (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <Icon name="chevron-down-circle" size={icons.large} color="#FFF" />
             <View style={{ width: '50%', alignItems: 'center' }}>
@@ -219,24 +261,33 @@ export default function ClientFinancing(props) {
                   {
                     fontSize: fonts.medium,
                     textAlign: 'left',
-                    flex: 1, width: '50%'
-                  }]}
-              >
+                    flex: 1,
+                    width: '50%',
+                  },
+                ]}>
                 Pago em
-            </Text>
+              </Text>
             </View>
             <View style={{ flex: 1, marginBottom: 10 }}>
-              <Text style={{ fontFamily: 'Roboto-Light' }}>{section.content.paidAt}</Text>
+              <Text style={{ fontFamily: 'Roboto-Light' }}>
+                {section.content.paidAt}
+              </Text>
             </View>
           </View>
-        }
+        )}
       </>
     );
   };
 
   const _renderFooter = () => {
     return (
-      <View style={{ flex: 1, borderBottomWidth: StyleSheet.hairlineWidth, borderColor: "#d9d9d9" }}></View>
+      <View
+        style={{
+          flex: 1,
+          borderBottomWidth: StyleSheet.hairlineWidth,
+          borderColor: '#d9d9d9',
+        }}
+      />
     );
   };
 
@@ -258,7 +309,8 @@ export default function ClientFinancing(props) {
       });
 
       try {
-        const response_update = await api.post(`client/${client_id}?tenant_id=${globalState.state.tenantID}`,
+        const response_update = await api.post(
+          `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
           {
             observacao: 'sim',
             date: selectedDate,
@@ -274,10 +326,8 @@ export default function ClientFinancing(props) {
         dispatch({
           type: 'turnOff',
         });
-        ToastAndroid.show("Não foi possível habilitar", ToastAndroid.SHORT);
+        ToastAndroid.show('Não foi possível habilitar', ToastAndroid.SHORT);
       }
-
-
     } else if (event.type === 'dismissed') {
       setIsDatePickerVisible(false);
     }
@@ -288,25 +338,24 @@ export default function ClientFinancing(props) {
       showsVerticalScrollIndicator={false}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={() => loadAPI()} />
-      }
-    >
+      }>
       <View style={styles.observation_section}>
         <View style={{ flex: 1 }}>
           <Text style={styles.main_text}>Em observação</Text>
-          {switcherState.isEnabled
-            ?
+          {switcherState.isEnabled ? (
             <Text style={styles.sub_text}>
               {`Até: ${format(switcherState.date, 'dd/MM/yyyy')}`}
             </Text>
-            :
+          ) : (
             <Text style={styles.sub_text}>
-              Habilitar o modo observação impedirá que o sistema bloqueie o cliente
+              Habilitar o modo observação impedirá que o sistema bloqueie o
+              cliente
             </Text>
-          }
+          )}
         </View>
         <Switch
-          trackColor={{ false: "#767577", true: "#337AB7" }}
-          thumbColor={switcherState.isEnabled ? "#f4f3f4" : "#f4f3f4"}
+          trackColor={{ false: '#767577', true: '#337AB7' }}
+          thumbColor={switcherState.isEnabled ? '#f4f3f4' : '#f4f3f4'}
           ios_backgroundColor="#3e3e3e"
           onValueChange={toggleSwitch}
           value={switcherState.isEnabled}
@@ -314,69 +363,69 @@ export default function ClientFinancing(props) {
       </View>
 
       <View style={styles.invoices}>
-        <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas em aberto</Text>
+        <Text style={[styles.main_text, { marginBottom: 10 }]}>
+          Faturas em aberto
+        </Text>
 
-        {state !== null &&
+        {state !== null && (
           <>
-            {state.invoices.pending_invoices.length === 0
-              ? (
-                <Text>Nenhuma fatura pendente</Text>
-              )
-              : (
-                <Accordion
-                  expandMultiple={true}
-                  underlayColor="#FFF"
-                  sections={state.invoices.pending_invoices}
-                  activeSections={PendingActiveSections}
-                  renderHeader={_renderHeader}
-                  renderContent={_renderContent}
-                  renderFooter={_renderFooter}
-                  onChange={(activeSections) => _updateSections('pending', activeSections)}
-                />
-              )
-            }
+            {state.invoices.pending_invoices.length === 0 ? (
+              <Text>Nenhuma fatura pendente</Text>
+            ) : (
+              <Accordion
+                expandMultiple={true}
+                underlayColor="#FFF"
+                sections={state.invoices.pending_invoices}
+                activeSections={PendingActiveSections}
+                renderHeader={_renderHeader}
+                renderContent={_renderContent}
+                renderFooter={_renderFooter}
+                onChange={activeSections =>
+                  _updateSections('pending', activeSections)
+                }
+              />
+            )}
           </>
-
-        }
-
+        )}
       </View>
 
       <View style={styles.invoices}>
-        <Text style={[styles.main_text, { marginBottom: 10 }]}>Faturas pagas</Text>
+        <Text style={[styles.main_text, { marginBottom: 10 }]}>
+          Faturas pagas
+        </Text>
 
-        {state !== null &&
+        {state !== null && (
           <>
-            {state.invoices.paid_invoices.length === 0
-              ? (
-                <Text>Nenhuma fatura paga</Text>
-              )
-              : (
-                <Accordion
-                  expandMultiple={true}
-                  underlayColor="#FFF"
-                  sections={state.invoices.paid_invoices}
-                  activeSections={PaidActiveSections}
-                  renderHeader={_renderHeader}
-                  renderContent={_renderContent}
-                  renderFooter={_renderFooter}
-                  onChange={(activeSections) => _updateSections('paid', activeSections)}
-                />
-              )
-            }
-
+            {state.invoices.paid_invoices.length === 0 ? (
+              <Text>Nenhuma fatura paga</Text>
+            ) : (
+              <Accordion
+                expandMultiple={true}
+                underlayColor="#FFF"
+                sections={state.invoices.paid_invoices}
+                activeSections={PaidActiveSections}
+                renderHeader={_renderHeader}
+                renderContent={_renderContent}
+                renderFooter={_renderFooter}
+                onChange={activeSections =>
+                  _updateSections('paid', activeSections)
+                }
+              />
+            )}
           </>
-        }
-
+        )}
       </View>
 
-      {isDatePickerVisible &&
+      {isDatePickerVisible && (
         <DateTimePicker
           mode="datetime"
           display="calendar"
           value={new Date()}
-          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+          onChange={(event, selectedDate) => {
+            handleNewDate(event, selectedDate);
+          }}
         />
-      }
+      )}
     </ScrollView>
   );
 }

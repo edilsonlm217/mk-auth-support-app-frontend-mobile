@@ -1,5 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, TextInput, ToastAndroid } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  ToastAndroid,
+} from 'react-native';
 import api from '../../services/api';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -14,12 +21,19 @@ export default function ModalEditAddress(props) {
 
   const { setClientData } = clientState.methods;
 
-  const [newAddress, setNewAddres] = useState(clientState.state.client.endereco_res);
+  const [newAddress, setNewAddres] = useState(
+    clientState.state.client.endereco_res,
+  );
   const [newNo, setNewNo] = useState(clientState.state.client.numero_res);
-  const [newNeighborhood, setNewNeighborhood] = useState(clientState.state.client.bairro_res);
+  const [newNeighborhood, setNewNeighborhood] = useState(
+    clientState.state.client.bairro_res,
+  );
 
   async function handleNewAddress() {
-    const response_update = await api.post(`/client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID}`,
+    const response_update = await api.post(
+      `/client/${clientState.state.client.id}?tenant_id=${
+        globalState.state.tenantID
+      }`,
       {
         endereco_res: newAddress,
         numero_res: newNo,
@@ -40,34 +54,56 @@ export default function ModalEditAddress(props) {
 
     setClientData(newState);
     props.goBack();
-    ToastAndroid.show("Alterado com sucesso", ToastAndroid.SHORT);
+    ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
   }
 
   return (
     <>
       <TouchableOpacity onPress={props.goBack} style={styles.header}>
-        <Icon name='arrow-left' size={22} color='#000' />
-        <Text style={[styles.main_text, { fontSize: 16, marginBottom: 10, marginLeft: 15 }]}>{props.label}</Text>
+        <Icon name="arrow-left" size={22} color="#000" />
+        <Text
+          style={[
+            styles.main_text,
+            { fontSize: 16, marginBottom: 10, marginLeft: 15 },
+          ]}>
+          {props.label}
+        </Text>
       </TouchableOpacity>
-
 
       <View style={{ marginBottom: 10 }}>
         <Text>Endereço</Text>
-        <TextInput onChangeText={text => setNewAddres(text)} value={newAddress} editable={true} style={styles.enable_text_input} />
+        <TextInput
+          onChangeText={text => setNewAddres(text)}
+          value={newAddress}
+          editable={true}
+          style={styles.enable_text_input}
+        />
       </View>
 
       <View style={{ marginBottom: 20, flexDirection: 'row' }}>
         <View style={{ flexDirection: 'column', width: '20%' }}>
-          <Text textAlign="center" >Número</Text>
-          <TextInput onChangeText={text => setNewNo(text)} value={newNo} editable={true} style={styles.enable_text_input} />
+          <Text textAlign="center">Número</Text>
+          <TextInput
+            onChangeText={text => setNewNo(text)}
+            value={newNo}
+            editable={true}
+            style={styles.enable_text_input}
+          />
         </View>
 
         <View style={{ flexDirection: 'column', flex: 1 }}>
           <Text>Bairro</Text>
           <View style={{ flexDirection: 'row' }}>
-            <TextInput onChangeText={text => setNewNeighborhood(text)} value={newNeighborhood} editable={true} style={styles.enable_text_input} />
-            <TouchableOpacity onPress={() => handleNewAddress()} style={[styles.save_btn_container]}>
-              <Icon name='check' size={20} color='#FFF' />
+            <TextInput
+              onChangeText={text => setNewNeighborhood(text)}
+              value={newNeighborhood}
+              editable={true}
+              style={styles.enable_text_input}
+            />
+            <TouchableOpacity
+              onPress={() => handleNewAddress()}
+              style={[styles.save_btn_container]}>
+              <Icon name="check" size={20} color="#FFF" />
             </TouchableOpacity>
           </View>
         </View>
