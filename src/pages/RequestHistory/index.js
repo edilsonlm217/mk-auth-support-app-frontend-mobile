@@ -70,6 +70,12 @@ export default function RequestHistory(props) {
 
   const Card = ({ data }) => {
     if (data) {
+
+      const data_fechamento =
+        data.fechamento === null
+          ? format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt })
+          : format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+
       return (
         <TouchableOpacity
           onPress={() => handleNavigate(data.id, data.nome, data.assunto)}
@@ -77,7 +83,7 @@ export default function RequestHistory(props) {
         >
           <View style={styles.card_header}>
             <Text numberOfLines={1} style={styles.client_name}>{data.nome}</Text>
-            <Text style={styles.sub_text}>{format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt })}</Text>
+            <Text style={styles.sub_text}>{data_fechamento}</Text>
           </View>
           <Text
             style={[
