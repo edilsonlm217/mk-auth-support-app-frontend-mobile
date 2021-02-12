@@ -70,11 +70,23 @@ export default function RequestHistory(props) {
 
   const Card = ({ data }) => {
     if (data) {
+      let data_fechamento = null;
+      let servico = null;
 
-      const data_fechamento =
-        data.fechamento === null
+      if (data.tipo !== 'instalacao') {
+        servico = data.assunto;
+
+        data_fechamento = data.fechamento === null
           ? format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt })
           : format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+      } else {
+        servico = 'Ativação';
+
+        data_fechamento = data.visita === null
+          ? 'visita null'
+          : format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+      }
+
 
       return (
         <TouchableOpacity
@@ -90,7 +102,7 @@ export default function RequestHistory(props) {
               styles.sub_text,
               { fontFamily: 'Roboto-Regular' }]
             }
-          >{`Serviço: ${data.assunto}`}</Text>
+          >{`Serviço: ${servico}`}</Text>
           <Text
             style={[
               styles.sub_text,
@@ -148,7 +160,7 @@ export default function RequestHistory(props) {
             alignItems: 'center',
           }}
         >
-          {sortMode === 'desc'
+          {sortMode === 'DESC'
             ?
             <>
               <Text
@@ -157,7 +169,7 @@ export default function RequestHistory(props) {
                   { marginRight: 15 }
                 ]}
               >Mais recentes primeiro</Text>
-              <Icon name="sort-ascending" size={22} color="#337AB7" />
+              <Icon name="sort-descending" size={22} color="#337AB7" />
             </>
             :
             <>
@@ -167,7 +179,7 @@ export default function RequestHistory(props) {
                   { marginRight: 15 }
                 ]}
               >Mais antigos primeiro</Text>
-              <Icon name="sort-descending" size={22} color="#337AB7" />
+              <Icon name="sort-ascending" size={22} color="#337AB7" />
             </>
           }
 
