@@ -62,6 +62,9 @@ export default function CTOMapping({ route, navigation }) {
   // Estado para controlar o refresh controller
   const [refreshing, setRefreshing] = useState(false);
 
+  // Estado para controler o maptype da MapView
+  const [mapType, setMapType] = useState('standard');
+
   function reducer(state, action) {
     switch (action.type) {
       case 'traceroute':
@@ -160,10 +163,8 @@ export default function CTOMapping({ route, navigation }) {
         );
 
         const route_response = await axios.get(
-          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${
-            current_client_cto.data.latitude
-          },${
-            current_client_cto.data.longitude
+          `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${current_client_cto.data.latitude
+          },${current_client_cto.data.longitude
           }&mode=walking&key=${GOOGLE_MAPS_APIKEY}`,
         );
 
@@ -183,8 +184,7 @@ export default function CTOMapping({ route, navigation }) {
     async function getCTOs() {
       setRefreshing(true);
       const response = await api.get(
-        `cto/${client_latitude}/${client_longitude}?tenant_id=${
-          globalState.state.tenantID
+        `cto/${client_latitude}/${client_longitude}?tenant_id=${globalState.state.tenantID
         }`,
         {
           timeout: 10000,
@@ -218,7 +218,7 @@ export default function CTOMapping({ route, navigation }) {
       });
 
       // Ordenação do array com mais próximos primeiro
-      array_cto.sort(function(a, b) {
+      array_cto.sort(function (a, b) {
         var keyA = a.distance_value,
           keyB = b.distance_value;
 
@@ -234,11 +234,32 @@ export default function CTOMapping({ route, navigation }) {
     getCTOs();
   }, [suggestedCTO]);
 
+  const LayerButton = () => (
+    <TouchableOpacity
+      style={styles.layer_btn}
+      onPress={() => handleMapTypeSwitching(mapType)}>
+      <Icon
+        name="layers-outline"
+        size={25}
+        color='#000'
+      />
+    </TouchableOpacity>
+  );
+
+  function handleMapTypeSwitching(map_type) {
+    if (map_type === 'standard') {
+      setMapType('hybrid');
+    } else {
+      setMapType('standard');
+    }
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.map_container}>
         <MapView
           onRegionChangeComplete={handleRegionChange}
+          mapType={mapType}
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
           region={{
@@ -362,7 +383,9 @@ export default function CTOMapping({ route, navigation }) {
               }}
             />
           )}
+
         </MapView>
+        <LayerButton />
       </View>
       <View style={styles.bottom_menu}>
         {suggestedCTO !== null ? (
@@ -400,16 +423,16 @@ export default function CTOMapping({ route, navigation }) {
             </TouchableOpacity>
           </>
         ) : (
-          <>
-            <Text
-              style={[
-                styles.main_title,
-                { marginBottom: 10, color: '#AFAFAF' },
-              ]}>
-              Nenhuma caixa sugerida
+            <>
+              <Text
+                style={[
+                  styles.main_title,
+                  { marginBottom: 10, color: '#AFAFAF' },
+                ]}>
+                Nenhuma caixa sugerida
             </Text>
-          </>
-        )}
+            </>
+          )}
 
         <Text style={styles.main_title}>Mais opções</Text>
         <ScrollView
@@ -424,49 +447,49 @@ export default function CTOMapping({ route, navigation }) {
               Não há caixas próximas a este cliente
             </Text>
           ) : (
-            <View style={styles.sub_cards_container}>
-              {arrayCTOs.map(cto =>
-                cto.nome === suggestedCTO?.nome ? (
-                  <></>
-                ) : selectedBtn !== cto.nome ? (
-                  <TouchableOpacity
-                    key={cto.nome}
-                    onPress={() => handleSelection(cto)}
-                    style={styles.sub_cards}>
-                    <View style={styles.main_line}>
-                      <Text style={styles.sub_card_title}>{cto.nome}</Text>
-                      <Text
-                        numberOfLines={1}
-                        style={[styles.sub_card_title_distance]}>
-                        {cto.distance}
-                      </Text>
-                    </View>
-                    <Text style={styles.sub_line}>
-                      {cto.connection_amount} Conectados
-                    </Text>
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    key={cto.nome}
-                    onPress={() => handleSelection(cto)}
-                    style={styles.sub_cards_selected}>
-                    <View style={styles.main_line_selected}>
-                      <Text style={styles.sub_card_title_selected}>
-                        {cto.nome}
-                      </Text>
-                      <View style={styles.sub_card_icon_container}>
-                        <Icon
-                          name={'checkbox-marked-circle'}
-                          size={icons.small}
-                          color="#FFF"
-                        />
+              <View style={styles.sub_cards_container}>
+                {arrayCTOs.map(cto =>
+                  cto.nome === suggestedCTO?.nome ? (
+                    <></>
+                  ) : selectedBtn !== cto.nome ? (
+                    <TouchableOpacity
+                      key={cto.nome}
+                      onPress={() => handleSelection(cto)}
+                      style={styles.sub_cards}>
+                      <View style={styles.main_line}>
+                        <Text style={styles.sub_card_title}>{cto.nome}</Text>
+                        <Text
+                          numberOfLines={1}
+                          style={[styles.sub_card_title_distance]}>
+                          {cto.distance}
+                        </Text>
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                ),
-              )}
-            </View>
-          )}
+                      <Text style={styles.sub_line}>
+                        {cto.connection_amount} Conectados
+                    </Text>
+                    </TouchableOpacity>
+                  ) : (
+                        <TouchableOpacity
+                          key={cto.nome}
+                          onPress={() => handleSelection(cto)}
+                          style={styles.sub_cards_selected}>
+                          <View style={styles.main_line_selected}>
+                            <Text style={styles.sub_card_title_selected}>
+                              {cto.nome}
+                            </Text>
+                            <View style={styles.sub_card_icon_container}>
+                              <Icon
+                                name={'checkbox-marked-circle'}
+                                size={icons.small}
+                                color="#FFF"
+                              />
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      ),
+                )}
+              </View>
+            )}
         </ScrollView>
       </View>
       <Modal
