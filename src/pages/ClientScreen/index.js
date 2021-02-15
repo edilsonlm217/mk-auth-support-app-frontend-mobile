@@ -21,11 +21,9 @@ export default function ClientScreen({ navigation, route }) {
   const ClientState = useContext(clientStore);
   const { setIsLoading, setClientData } = ClientState.methods;
 
-  const { client_id, client_name } = route.params;
+  const { client_id } = route.params;
 
   const [index, setIndex] = useState(0);
-
-  const [count, setCount] = useState(0); 7
 
   const adminRoute = [
     { key: 'first', title: 'Geral' },
