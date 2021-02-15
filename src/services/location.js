@@ -1,6 +1,6 @@
 import { PermissionsAndroid, Alert } from 'react-native';
-import openMap from 'react-native-open-maps';
-import Geolocation from '@react-native-community/geolocation';
+// import openMap from 'react-native-open-maps';
+import OpenMap from "react-native-open-map";
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box';
 
 class LocationService {
@@ -8,7 +8,7 @@ class LocationService {
     this.init();
   }
 
-  init() {}
+  init() { }
 
   async isGPSEnable() {
     try {
@@ -59,25 +59,17 @@ class LocationService {
       );
 
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        openMap({
-          provider: 'google',
-          end: `${latitude},${longitude}`,
-        });
-        // Geolocation.getCurrentPosition(geo_success => {
-        // const current_longitude = geo_success.coords.longitude;
-        // const current_latitude = geo_success.coords.latitude;
-
-        //   openMap({
-        //     provider: 'google',
-        //     // start: `${current_latitude},${current_longitude}`,
-        //     end: `${latitude},${longitude}`
-        //   });
-        // }, geo_error => {
-        //   Alert.alert('Erro', 'Não é possível navegar até o cliente');
-        // }, {
-        //   timeout: 5000,
-        //   enableHighAccuracy: true,
+        // openMap({
+        //   provider: 'google',
+        //   end: `${latitude},${longitude}`,
         // });
+
+        OpenMap.show({
+          latitude: latitude,
+          longitude: longitude,
+          cancelText: 'Fechar',
+          actionSheetTitle: 'Como deseja navegar?', 
+        });
       } else {
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');
       }
