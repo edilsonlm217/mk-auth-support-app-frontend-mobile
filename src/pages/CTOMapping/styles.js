@@ -13,6 +13,7 @@ const styles = StyleSheet.create({
 
   map: {
     height: '100%',
+    position: 'relative',
   },
 
   bottom_menu: {
@@ -244,6 +245,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#FFF',
   },
+
+  layer_btn: {
+    position: 'absolute',
+    right: 30,
+    bottom: 30,
+    backgroundColor: '#FFF',
+    height: 40,
+    width: 40,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+
+    elevation: 5,
+  }
 });
 
 export default styles;
