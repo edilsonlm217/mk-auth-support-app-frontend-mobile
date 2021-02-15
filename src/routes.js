@@ -172,9 +172,20 @@ export default function MainStack() {
           <Stack.Screen
             name="ClientScreen"
             component={ClientScreen}
-            options={{
-              headerShown: false,
-            }}
+            options={({ route }) => ({
+              title: route.params.client_name,
+              headerStyle: {
+                backgroundColor: '#337AB7',
+                elevation: 0,
+              },
+              headerTintColor: '#FFF',
+              headerTransparent: false,
+              headerTitleStyle: {
+                fontWeight: 'bold',
+                fontSize: 20,
+                marginLeft: -20,
+              },
+            })}
           />
 
           <Stack.Screen
@@ -252,8 +263,8 @@ export default function MainStack() {
           />
         </Stack.Navigator>
       ) : (
-        <AuthStack />
-      )}
+          <AuthStack />
+        )}
     </>
   );
 }
