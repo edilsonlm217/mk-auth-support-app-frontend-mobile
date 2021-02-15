@@ -71,7 +71,6 @@ export default function ClientFinancing(props) {
       );
 
       setState(response.data);
-      console.log(response.data.invoices.paid_invoices);
       if (
         response.data.observacao === 'sim' &&
         switcherState.isEnabled === false

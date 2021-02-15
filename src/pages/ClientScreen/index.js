@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text, Alert } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Alert, TouchableOpacity } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import api from '../../services/api';
@@ -8,12 +8,13 @@ import { fonts } from '../../styles/index';
 import { store } from '../../store/store';
 import { clientStore } from '../../store/client';
 
-import AppHeader from '../../components/AppHeader/index';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import ModalContainer from '../../components/ModalContainer/index';
 
 import ClientDetails from '../ClientDetails/index';
 import ClientConnections from '../ClientConnections/index';
 import ClientFinancing from '../ClientFinancing/index';
+import RequestHistory from '../RequestHistory/index';
 
 export default function ClientScreen({ navigation, route }) {
   const globalState = useContext(store);
@@ -24,17 +25,19 @@ export default function ClientScreen({ navigation, route }) {
 
   const [index, setIndex] = useState(0);
 
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(0); 7
 
   const adminRoute = [
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
     { key: 'third', title: 'Financeiro' },
+    { key: 'fourth', title: 'Chamados' },
   ];
 
   const nonAdminRoute = [
     { key: 'first', title: 'Geral' },
     { key: 'second', title: 'Conexões' },
+    { key: 'fourth', title: 'Chamados' },
   ];
 
   const [routes] = useState(
@@ -46,11 +49,8 @@ export default function ClientScreen({ navigation, route }) {
   const isFocused = useIsFocused(false);
 
   useEffect(() => {
-    if (isFocused) {
-      setCount(count + 1);
-      if (count + 1 > 1) {
-        setIsVisible(true);
-      }
+    if (isFocused && route.params.re_open_modal) {
+      setIsVisible(true);
     }
   }, [isFocused]);
 
@@ -116,6 +116,20 @@ export default function ClientScreen({ navigation, route }) {
           </View>
         );
 
+      case 'fourth':
+        return (
+          <View style={styles.section_container}>
+            <RequestHistory
+              data={{
+                client_id,
+                tenant_id: globalState.state.tenantID,
+                userToken: globalState.state.userToken,
+              }}
+              navigation={navigation}
+            />
+          </View>
+        );
+
       default:
         return null;
     }
@@ -159,17 +173,23 @@ export default function ClientScreen({ navigation, route }) {
     });
   }
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: props => (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.setParams({ re_open_modal: true });
+            setIsVisible(true);
+          }}
+          style={{ flex: 1, marginRight: 20, justifyContent: 'center' }}>
+          <Icon name="menu" size={24} color="#FFF" />
+        </TouchableOpacity >
+      ),
+    });
+  }, []);
+
   return (
     <View style={styles.container}>
-      <AppHeader
-        navigation={navigation}
-        label={client_name}
-        altura="10%"
-        backButton={true}
-        clientScreen={true}
-        OpenModal={() => setIsVisible(true)}
-      />
-
       <TabView
         navigationState={{ index, routes }}
         renderScene={renderScene}
