@@ -76,9 +76,13 @@ export default function RequestHistory(props) {
       if (data.tipo !== 'instalacao') {
         servico = data.assunto;
 
-        data_fechamento = data.fechamento === null
-          ? format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt })
-          : format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+        try {
+          data_fechamento = data.fechamento === null
+            ? format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt })
+            : format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+        } catch {
+          data_fechamento = 'Format Error';
+        }
       } else {
         servico = 'Ativação';
 
