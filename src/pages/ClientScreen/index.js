@@ -39,7 +39,7 @@ export default function ClientScreen({ navigation, route }) {
   ];
 
   const [routes] = useState(
-    globalState.state.isAdmin ? adminRoute : nonAdminRoute,
+    route.params.showClientFinancing ? adminRoute : nonAdminRoute,
   );
 
   const [isVisible, setIsVisible] = useState(false);
