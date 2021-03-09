@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
@@ -23,6 +23,7 @@ import PickNewLocation from './pages/PickNewLocation/index';
 import InstallationRequestDetails from './pages/InstallationRequestDetails/index';
 
 import { fonts } from './styles/index';
+import api from './services/api';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -106,6 +107,25 @@ function AuthStack() {
 }
 
 function SignedStack() {
+  const globalStore = useContext(store);
+
+  const [state, setState] = useState({});
+
+  async function fetchStructure() {
+    const { tenantID, employee_id } = globalStore.state;
+    try {
+      const response = await api.get(`app/structure?tenant_id=${tenantID}&employee_id=${employee_id}`);
+
+      setState(response.data);
+    } catch (err) {
+      console.log(err.message);
+    }
+  }
+
+  useEffect(() => {
+    fetchStructure();
+  }, []);
+
   return (
     <Stack.Navigator
       screenOptions={{ gestureEnabled: true, headerShown: true }}>
@@ -172,6 +192,7 @@ function SignedStack() {
       <Stack.Screen
         name="ClientScreen"
         component={ClientScreen}
+        initialParams={{ showClientFinancing: state.showClientFinancing }}
         options={({ route }) => ({
           title: route.params.client_name,
           headerStyle: {
