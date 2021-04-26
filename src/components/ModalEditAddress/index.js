@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   ToastAndroid,
+  Alert,
 } from 'react-native';
 import api from '../../services/api';
 
@@ -30,31 +31,40 @@ export default function ModalEditAddress(props) {
   );
 
   async function handleNewAddress() {
-    const response_update = await api.post(
-      `/client/${clientState.state.client.id}?tenant_id=${
-        globalState.state.tenantID
-      }`,
-      {
-        endereco_res: newAddress,
-        numero_res: newNo,
-        bairro_res: newNeighborhood,
-      },
-      {
-        timeout: 10000,
-        headers: {
-          Authorization: `Bearer ${globalState.state.userToken}`,
+    try {
+      await api.post(
+        `/client/${clientState.state.client.id}?tenant_id=${
+          globalState.state.tenantID
+        }`,
+        {
+          action: 'update_client',
+          endereco_res: newAddress,
+          numero_res: newNo,
+          bairro_res: newNeighborhood,
         },
-      },
-    );
+        {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
 
-    const newState = clientState.state.client;
-    newState.endereco_res = newAddress;
-    newState.numero_res = newNo;
-    newState.bairro_res = newNeighborhood;
+      const newState = clientState.state.client;
+      newState.endereco_res = newAddress;
+      newState.numero_res = newNo;
+      newState.bairro_res = newNeighborhood;
 
-    setClientData(newState);
-    props.goBack();
-    ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
+      setClientData(newState);
+      props.goBack();
+      ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
+    } catch (error) {
+        if (error.response.data.code === 401) {
+          Alert.alert('Permissão negada', error.response.data.message);
+        } else {
+          Alert.alert('Erro', 'Não foi possível salvar esta alteração');
+        }
+    }
   }
 
   return (

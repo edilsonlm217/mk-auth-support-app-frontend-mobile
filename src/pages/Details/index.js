@@ -124,7 +124,7 @@ export default function Details({ route, navigation }) {
         setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(
+        await api.post(
           `request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
             action: 'update_visita_date',
@@ -143,9 +143,14 @@ export default function Details({ route, navigation }) {
         setIsLoading(false);
         ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
         onRefresh();
-      } catch {
+      } catch (error) {
         setIsLoading(false);
-        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+
+        if (error.response.data.code === 401) {
+          Alert.alert('Permissão negada', error.response.data.message);
+        } else {
+          Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+        }
       }
     } else if (event.type === 'dismissed') {
       setIsDatePickerVisible(false);
@@ -182,9 +187,14 @@ export default function Details({ route, navigation }) {
         ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
 
         onRefresh();
-      } catch (e) {
+      } catch (error) {
         setIsLoading(false);
-        Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+
+        if (error.response.data.code === 401) {
+          Alert.alert('Permissão negada', error.response.data.message);
+        } else {
+          Alert.alert('Erro', 'Não foi possível atualizar horário de visita');
+        }
       }
     } else if (event.type === 'dismissed') {
       setIsTimePickerVisible(false);
@@ -396,9 +406,14 @@ export default function Details({ route, navigation }) {
         setEmployeesModal(false);
         onRefresh();
         ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
-      } catch {
+      } catch (error) {
         setIsLoading(false);
-        ToastAndroid.show('Tente novamente', ToastAndroid.SHORT);
+
+        if (error.response.data.code === 401) {
+          Alert.alert('Permissão negada', error.response.data.message);
+        } else {
+          Alert.alert('Erro', 'Tente novamente');
+        }
       }
     }
   }

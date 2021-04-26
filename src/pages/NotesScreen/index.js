@@ -87,7 +87,12 @@ export default function NotesScreen({ navigation, route }) {
     try {
       const { chamado } = route.params;
 
-      const body = { msg: newNote, msg_data: now };
+      const body = {
+        msg: newNote,
+        msg_data: now,
+        action: 'add_note',
+      };
+
       const settings = {
         timeout: 10000,
         headers: {
@@ -104,7 +109,11 @@ export default function NotesScreen({ navigation, route }) {
       fetchNotes();
     } catch (error) {
       setLoading(false);
-      Alert.alert('Erro', 'Não foi possível adicionar nota');
+      if (error.response.data.code === 401) {
+        Alert.alert('Permissão negada', error.response.data.message);
+      } else {
+        Alert.alert('Erro', 'Não foi possível adicionar nota');
+      }
     }
 
     setVisible(false);
@@ -164,9 +173,8 @@ export default function NotesScreen({ navigation, route }) {
                   size={30}
                   name={note.atendente}
                 />
-                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${
-                  note.atendente
-                }`}</Text>
+                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${note.atendente
+                  }`}</Text>
               </View>
               <Text
                 style={{

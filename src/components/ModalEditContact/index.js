@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInput,
   ToastAndroid,
+  Alert,
 } from 'react-native';
 import api from '../../services/api';
 
@@ -34,52 +35,60 @@ export default function ModalEditContact(props) {
   };
 
   async function handleSaveNewNumber() {
-    if (props.for === 'editCelular') {
-      const response_update = await api.post(
-        `client/${clientState.state.client.id}?tenant_id=${
-          globalState.state.tenantID
-        }`,
-        {
-          celular: newNumber,
-        },
-        {
-          timeout: 10000,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+    try {
+      if (props.for === 'editCelular') {
+        await api.post(
+          `client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID
+          }`,
+          {
+            action: 'update_client',
+            celular: newNumber,
           },
-        },
-      );
-
-      const newState = clientState.state.client;
-
-      newState.celular = newNumber;
-
-      setClientData(newState);
-      props.goBack();
-      ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
-    } else {
-      const response_update = await api.post(
-        `client/${clientState.state.client.id}?tenant_id=${
-          globalState.state.tenantID
-        }`,
-        {
-          fone: newNumber,
-        },
-        {
-          timeout: 10000,
-          headers: {
-            Authorization: `Bearer ${globalState.state.userToken}`,
+          {
+            timeout: 10000,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
           },
-        },
-      );
+        );
 
-      const newState = clientState.state.client;
+        const newState = clientState.state.client;
 
-      newState.fone = newNumber;
+        newState.celular = newNumber;
 
-      setClientData(newState);
-      props.goBack();
-      ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
+        setClientData(newState);
+        props.goBack();
+        ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
+      } else {
+        const { tenantID } = globalState.state;
+        await api.post(
+          `client/${clientState.state.client.id}?tenant_id=${tenantID}`,
+          {
+            action: 'update_client',
+            fone: newNumber,
+          },
+          {
+            timeout: 10000,
+            headers: {
+              Authorization: `Bearer ${globalState.state.userToken}`,
+            },
+          },
+        );
+
+        const newState = clientState.state.client;
+
+        newState.fone = newNumber;
+
+        setClientData(newState);
+        props.goBack();
+        ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
+      }
+    } catch (error) {
+      if (error.response.data.code === 401) {
+        Alert.alert('Permissão negada', error.response.data.message);
+      } else {
+        Alert.alert('Erro', 'Não foi possível salvar esta alteração');
+      }
     }
   }
 

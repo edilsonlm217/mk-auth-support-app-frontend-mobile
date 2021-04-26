@@ -102,23 +102,32 @@ export default function CTOMapping({ route, navigation }) {
   }
 
   async function handleUpdateCTO() {
-    const response_update = await api.post(
-      `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
-      {
-        new_cto: selectedBtn,
-      },
-      {
-        timeout: 10000,
-        headers: {
-          Authorization: `Bearer ${globalState.state.userToken}`,
+    try {
+      const response_update = await api.post(
+        `client/${client_id}?tenant_id=${globalState.state.tenantID}`,
+        {
+          action: 'update_client',
+          new_cto: selectedBtn,
         },
-      },
-    );
+        {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
+        },
+      );
 
-    if (response_update.status === 200) {
-      ToastAndroid.show('CTO alterada com sucesso!', ToastAndroid.SHORT);
-      setIsVisible(false);
-      navigation.goBack();
+      if (response_update.status === 200) {
+        ToastAndroid.show('CTO alterada com sucesso!', ToastAndroid.SHORT);
+        setIsVisible(false);
+        navigation.goBack();
+      }
+    } catch (error) {
+      if (error.response.data.code === 401) {
+        Alert.alert('Permissão negada', error.response.data.message);
+      } else {
+        Alert.alert('Erro', 'Não foi possível atualizar localização');
+      }
     }
   }
 
