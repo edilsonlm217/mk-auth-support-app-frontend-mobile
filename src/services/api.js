@@ -1,10 +1,8 @@
 import axios from 'axios';
-import appConfig from '../config/app';
 
 const api = axios.create({
-  baseURL: appConfig.apiUrl,
-  // baseURL: 'http://192.168.137.37:3333', // internal connection
-  // baseURL: 'http://200.98.203.122:3333/', // VPS connection
+  baseURL: 'http://192.168.3.69:3333', // when localhost
+  // baseURL: 'http://mk-edge.com.br:3333', // when preprod and prod
 });
 
 export default api;
