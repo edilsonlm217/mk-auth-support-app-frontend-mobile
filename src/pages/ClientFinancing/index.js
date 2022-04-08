@@ -107,6 +107,7 @@ export default function ClientFinancing(props) {
           {
             observacao: 'nao',
             date: null,
+            action: 'update_client',
           },
           {
             timeout: 10000,
@@ -313,6 +314,7 @@ export default function ClientFinancing(props) {
           {
             observacao: 'sim',
             date: selectedDate,
+            action: 'update_client',
           },
           {
             timeout: 10000,
