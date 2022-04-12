@@ -144,6 +144,7 @@ export default function ClientDetails(props) {
       `client/${client.id}?tenant_id=${globalState.state.tenantID}`,
       {
         automac: true,
+        action: 'update_client',
       },
       {
         timeout: 10000,
