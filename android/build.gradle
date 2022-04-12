@@ -36,4 +36,14 @@ allprojects {
         jcenter()
         maven { url 'https://jitpack.io' }
     }
+
+    afterEvaluate {
+        if (getPlugins().hasPlugin('android') ||
+            getPlugins().hasPlugin('android-library')) {
+            configure(android.lintOptions) {
+                abortOnError false
+                checkReleaseBuilds false
+            }
+        }
+    }
 }
