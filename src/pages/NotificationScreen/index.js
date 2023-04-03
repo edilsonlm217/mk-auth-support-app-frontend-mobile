@@ -110,7 +110,7 @@ export default function NotificationScreen(props) {
 
     try {
       await api.put(
-        `notification`,
+        'notification',
         {
           action: 'markAsRead',
           notification_id,

@@ -38,7 +38,8 @@ export default function ModalEditContact(props) {
     try {
       if (props.for === 'editCelular') {
         await api.post(
-          `client/${clientState.state.client.id}?tenant_id=${globalState.state.tenantID
+          `client/${clientState.state.client.id}?tenant_id=${
+            globalState.state.tenantID
           }`,
           {
             action: 'update_client',

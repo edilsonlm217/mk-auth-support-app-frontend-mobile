@@ -59,11 +59,11 @@ export default function ModalEditAddress(props) {
       props.goBack();
       ToastAndroid.show('Alterado com sucesso', ToastAndroid.SHORT);
     } catch (error) {
-        if (error.response.data.code === 401) {
-          Alert.alert('Permissão negada', error.response.data.message);
-        } else {
-          Alert.alert('Erro', 'Não foi possível salvar esta alteração');
-        }
+      if (error.response.data.code === 401) {
+        Alert.alert('Permissão negada', error.response.data.message);
+      } else {
+        Alert.alert('Erro', 'Não foi possível salvar esta alteração');
+      }
     }
   }
 

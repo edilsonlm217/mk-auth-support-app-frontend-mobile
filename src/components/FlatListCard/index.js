@@ -38,8 +38,7 @@ export default function FlatListCard(props) {
               </View>
             </View>
             <View>
-              <TouchableOpacity
-                onPress={() => OpenCoordinate(props.data.coordenadas)}>
+              <TouchableOpacity>
                 <Text style={styles.location_btn}>Localização</Text>
               </TouchableOpacity>
               <Text style={styles.close_request_btn}>Fechar chamado</Text>

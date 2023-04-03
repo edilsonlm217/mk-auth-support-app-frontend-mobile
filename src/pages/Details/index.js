@@ -71,7 +71,8 @@ export default function Details({ route, navigation }) {
 
     try {
       const response = await api.get(
-        `request/${request_id}/${request_type}?tenant_id=${globalState.state.tenantID
+        `request/${request_id}/${request_type}?tenant_id=${
+          globalState.state.tenantID
         }`,
         {
           timeout: 10000,
@@ -305,7 +306,10 @@ export default function Details({ route, navigation }) {
         }
       }
     } else {
-      Alert.alert('Permissão negada', 'É obrigatório informar o motivo do fechamento');
+      Alert.alert(
+        'Permissão negada',
+        'É obrigatório informar o motivo do fechamento',
+      );
     }
   }
 
@@ -430,11 +434,13 @@ export default function Details({ route, navigation }) {
         style={styles.section_header}>
         <Text style={styles.header_title}>{route.params.nome}</Text>
         <Text style={[styles.sub_text, { textAlign: 'center' }]}>
-          {`${route.params.plano === 'nenhum' ? 'Nenhum' : route.params.plano
-            } | ${route.params.tipo
+          {`${
+            route.params.plano === 'nenhum' ? 'Nenhum' : route.params.plano
+          } | ${
+            route.params.tipo
               ? route.params.tipo.toUpperCase()
               : route.params.tipo
-            } | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`}
+          } | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`}
         </Text>
         {state.equipment_status && (
           <View
@@ -499,26 +505,26 @@ export default function Details({ route, navigation }) {
                 </TouchableOpacity>
               </>
             ) : (
-                <>
-                  <View>
-                    <View style={styles.cto_line}>
-                      <View>
-                        <Text style={styles.sub_text}>Horário de visita</Text>
-                        <Text style={styles.main_text}>{state.visita}</Text>
-                      </View>
+              <>
+                <View>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Horário de visita</Text>
+                      <Text style={styles.main_text}>{state.visita}</Text>
                     </View>
                   </View>
+                </View>
 
-                  <View>
-                    <View style={styles.cto_line}>
-                      <View>
-                        <Text style={styles.sub_text}>Data de visita</Text>
-                        <Text style={styles.main_text}>{state.data_visita}</Text>
-                      </View>
+                <View>
+                  <View style={styles.cto_line}>
+                    <View>
+                      <Text style={styles.sub_text}>Data de visita</Text>
+                      <Text style={styles.main_text}>{state.data_visita}</Text>
                     </View>
                   </View>
-                </>
-              )}
+                </View>
+              </>
+            )}
 
             {globalState.state.isAdmin && (
               <TouchableOpacity onPress={() => openChangeEmployeeModal()}>
@@ -596,8 +602,9 @@ export default function Details({ route, navigation }) {
               <View style={styles.location_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
-                  <Text style={styles.main_text}>{`${state.endereco}, ${state.numero
-                    } - ${state.bairro}`}</Text>
+                  <Text style={styles.main_text}>{`${state.endereco}, ${
+                    state.numero
+                  } - ${state.bairro}`}</Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
                   <Icon name="navigation" size={icons.tiny} color="#000" />
@@ -629,22 +636,22 @@ export default function Details({ route, navigation }) {
                       </View>
                     </>
                   ) : (
-                      <>
-                        <View>
-                          <Text style={styles.sub_text}>SSID</Text>
-                          <Text style={styles.main_text}>
-                            {state.ssid !== null ? state.ssid : 'Nenhum'}
-                          </Text>
-                        </View>
-                        <View style={{ justifyContent: 'center' }}>
-                          <Icon
-                            name="map-search"
-                            size={icons.tiny}
-                            color="#000"
-                          />
-                        </View>
-                      </>
-                    )}
+                    <>
+                      <View>
+                        <Text style={styles.sub_text}>SSID</Text>
+                        <Text style={styles.main_text}>
+                          {state.ssid !== null ? state.ssid : 'Nenhum'}
+                        </Text>
+                      </View>
+                      <View style={{ justifyContent: 'center' }}>
+                        <Icon
+                          name="map-search"
+                          size={icons.tiny}
+                          color="#000"
+                        />
+                      </View>
+                    </>
+                  )}
                 </View>
               </TouchableOpacity>
             </View>
@@ -718,8 +725,8 @@ export default function Details({ route, navigation }) {
                           {employee.id === newEmployee.id ? (
                             <RadioButton selected />
                           ) : (
-                              <RadioButton />
-                            )}
+                            <RadioButton />
+                          )}
                           <Text style={{ marginLeft: 10, alignSelf: 'center' }}>
                             {employee.nome}
                           </Text>

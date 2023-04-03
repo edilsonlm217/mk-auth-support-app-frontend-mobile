@@ -1,5 +1,12 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, StyleSheet, Dimensions, Text, Alert, TouchableOpacity } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Dimensions,
+  Text,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useIsFocused } from '@react-navigation/native';
 import api from '../../services/api';
@@ -181,7 +188,7 @@ export default function ClientScreen({ navigation, route }) {
           }}
           style={{ flex: 1, marginRight: 20, justifyContent: 'center' }}>
           <Icon name="menu" size={24} color="#FFF" />
-        </TouchableOpacity >
+        </TouchableOpacity>
       ),
     });
   }, []);

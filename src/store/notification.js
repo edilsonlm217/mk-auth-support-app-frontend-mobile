@@ -18,6 +18,8 @@ const notification_store = createContext(initialState);
 const { Provider } = notification_store;
 
 const NotificationStateProvider = ({ children }) => {
+  const globalState = useContext(store);
+
   const [state, dispatch] = useReducer(reducer, initialState);
 
   function reducer(state, action) {

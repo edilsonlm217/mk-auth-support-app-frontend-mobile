@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, RefreshControl } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  RefreshControl,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { format, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -32,7 +40,7 @@ export default function RequestHistory(props) {
     } catch (error) {
       setRefreshing(false);
       console.log(error);
-      Alert.alert('Erro', 'Não foi possível recuperar chamados')
+      Alert.alert('Erro', 'Não foi possível recuperar chamados');
     }
   }
 
@@ -57,7 +65,6 @@ export default function RequestHistory(props) {
       re_open_modal: false,
     });
 
-
     props.navigation.navigate('Details', {
       id: id,
       nome: nome,
@@ -77,42 +84,50 @@ export default function RequestHistory(props) {
         servico = data.assunto;
 
         try {
-          data_fechamento = data.fechamento === null
-            ? format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt })
-            : format(parseISO(data.fechamento), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+          data_fechamento =
+            data.fechamento === null
+              ? format(parseISO(data.visita), "dd 'de' MMM 'de' yyyy", {
+                  locale: pt,
+                })
+              : format(parseISO(data.fechamento), "dd 'de' MMM 'de' yyyy", {
+                  locale: pt,
+                });
         } catch {
           data_fechamento = 'Format Error';
         }
       } else {
         servico = 'Ativação';
 
-        data_fechamento = data.visita === null
-          ? 'visita null'
-          : format(parseISO(data.visita), `dd 'de' MMM 'de' yyyy`, { locale: pt });
+        data_fechamento =
+          data.visita === null
+            ? 'visita null'
+            : format(parseISO(data.visita), "dd 'de' MMM 'de' yyyy", {
+                locale: pt,
+              });
       }
-
 
       return (
         <TouchableOpacity
           onPress={() => handleNavigate(data.id, data.nome, data.assunto)}
-          style={styles.card}
-        >
+          style={styles.card}>
           <View style={styles.card_header}>
-            <Text numberOfLines={1} style={styles.client_name}>{data.nome}</Text>
+            <Text numberOfLines={1} style={styles.client_name}>
+              {data.nome}
+            </Text>
             <Text style={styles.sub_text}>{data_fechamento}</Text>
           </View>
           <Text
             style={[
               styles.sub_text,
-              { fontFamily: 'Roboto-Regular' }]
-            }
-          >{`Serviço: ${servico}`}</Text>
+              { fontFamily: 'Roboto-Regular' },
+            ]}>{`Serviço: ${servico}`}</Text>
           <Text
             style={[
               styles.sub_text,
-              { fontFamily: 'Roboto-Regular' }
-            ]}
-          >{`Técnico: ${data.tecnico === null ? 'Não assinalado' : data.tecnico}`}</Text>
+              { fontFamily: 'Roboto-Regular' },
+            ]}>{`Técnico: ${
+            data.tecnico === null ? 'Não assinalado' : data.tecnico
+          }`}</Text>
         </TouchableOpacity>
       );
     }
@@ -129,87 +144,72 @@ export default function RequestHistory(props) {
           refreshing={refreshing}
           onRefresh={() => fetchRequests()}
         />
-      }
-    >
+      }>
       <Text style={styles.main_text}>Abertos</Text>
 
-      {state !== null &&
+      {state !== null && (
         <>
-          {state.opened_requests.length > 0
-            ?
+          {state.opened_requests.length > 0 ? (
             <>
               {state.opened_requests.map(request => (
                 <Card key={request.id} data={request} />
               ))}
             </>
-            :
+          ) : (
             <Text style={styles.sub_text}>Nenhum chamado</Text>
-          }
-
+          )}
         </>
-      }
+      )}
 
       <View style={styles.header_container}>
         <Text
           style={[
             styles.main_text,
-            { height: '100%', textAlignVertical: 'center' }
-          ]}
-        >Fechados</Text>
+            { height: '100%', textAlignVertical: 'center' },
+          ]}>
+          Fechados
+        </Text>
 
         <TouchableOpacity
           onPress={() => handleSorting()}
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-          }}
-        >
-          {sortMode === 'DESC'
-            ?
+          }}>
+          {sortMode === 'DESC' ? (
             <>
-              <Text
-                style={[
-                  styles.sub_text,
-                  { marginRight: 15 }
-                ]}
-              >Mais recentes primeiro</Text>
+              <Text style={[styles.sub_text, { marginRight: 15 }]}>
+                Mais recentes primeiro
+              </Text>
               <Icon name="sort-descending" size={22} color="#337AB7" />
             </>
-            :
+          ) : (
             <>
-              <Text
-                style={[
-                  styles.sub_text,
-                  { marginRight: 15 }
-                ]}
-              >Mais antigos primeiro</Text>
+              <Text style={[styles.sub_text, { marginRight: 15 }]}>
+                Mais antigos primeiro
+              </Text>
               <Icon name="sort-ascending" size={22} color="#337AB7" />
             </>
-          }
-
+          )}
         </TouchableOpacity>
       </View>
 
-      <ScrollView
-        style={{ flex: 1, marginTop: 5 }}
-      >
-        {state !== null &&
+      <ScrollView style={{ flex: 1, marginTop: 5 }}>
+        {state !== null && (
           <>
-            {state.closed_requests.length > 0
-              ?
+            {state.closed_requests.length > 0 ? (
               <>
                 {state.closed_requests.map(request => (
                   <Card key={request.id} data={request} />
                 ))}
               </>
-              :
+            ) : (
               <Text style={styles.sub_text}>Nenhum chamado</Text>
-            }
+            )}
           </>
-        }
+        )}
       </ScrollView>
-
-    </ScrollView >
+    </ScrollView>
   );
 }
 
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   main_text: {
     fontWeight: 'bold',
     fontSize: 16,
-    marginBottom: 5
+    marginBottom: 5,
   },
 
   sub_text: {

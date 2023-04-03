@@ -51,7 +51,7 @@ function AppTabs() {
         }}
       />
 
-      {isAdmin &&
+      {isAdmin && (
         <Tab.Screen
           name="Atrasados"
           component={OverdueScreen}
@@ -62,7 +62,7 @@ function AppTabs() {
             ),
           }}
         />
-      }
+      )}
 
       <Tab.Screen
         name="Search"
@@ -114,7 +114,9 @@ function SignedStack() {
   async function fetchStructure() {
     const { tenantID, employee_id } = globalStore.state;
     try {
-      const response = await api.get(`app/structure?tenant_id=${tenantID}&employee_id=${employee_id}`);
+      const response = await api.get(
+        `app/structure?tenant_id=${tenantID}&employee_id=${employee_id}`,
+      );
 
       setState(response.data);
     } catch (err) {
@@ -295,10 +297,7 @@ export default function MainStack() {
 
   return (
     <>
-      {globalState.state.userToken !== null
-        ? <SignedStack />
-        : <AuthStack />
-      }
+      {globalState.state.userToken !== null ? <SignedStack /> : <AuthStack />}
     </>
   );
 }

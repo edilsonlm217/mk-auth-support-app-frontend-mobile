@@ -1,4 +1,11 @@
-import React, { useEffect, useState, useContext, useRef, useReducer } from 'react';
+/* eslint-disable react-native/no-inline-styles */
+import React, {
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+  useReducer,
+} from 'react';
 import {
   View,
   Text,
@@ -33,6 +40,7 @@ import { store } from '../../store/store';
 
 import styles from './styles';
 import { icons, fonts } from '../../styles/index';
+import { Platform } from 'react-native';
 
 export default function InstallationRequestDetails({ route, navigation }) {
   const [state, setState] = useState({});
@@ -55,7 +63,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
   // Declaração do estado global da aplicação
   const globalState = useContext(store);
 
-  // Estado que armazena a lista mais recente de técnicos disponíveis  
+  // Estado que armazena a lista mais recente de técnicos disponíveis
   const [employees, setEmployees] = useState([]);
 
   // Estado que controla a visibilidade do modal de alteração de técnico
@@ -83,7 +91,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
         return {
           dest_latitude: action.payload.cto_latitude,
           dest_longitude: action.payload.cto_longitude,
-        }
+        };
     }
   }
 
@@ -106,12 +114,16 @@ export default function InstallationRequestDetails({ route, navigation }) {
   useEffect(() => {
     async function getCTOs() {
       setRefreshing(true);
-      const response = await api.get(`cto/${client_latitude}/${client_longitude}?tenant_id=${globalState.state.tenantID}`, {
-        timeout: 10000,
-        headers: {
-          Authorization: `Bearer ${globalState.state.userToken}`,
+      const response = await api.get(
+        `cto/${client_latitude}/${client_longitude}?tenant_id=${
+          globalState.state.tenantID
+        }`,
+        {
+          timeout: 10000,
+          headers: {
+            Authorization: `Bearer ${globalState.state.userToken}`,
+          },
         },
-      },
       );
 
       var queries_array = [];
@@ -121,23 +133,33 @@ export default function InstallationRequestDetails({ route, navigation }) {
         const longitude = parseFloat(item.longitude);
 
         array_cto.push(item);
-        queries_array.push(axios.get(`https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`));
+        queries_array.push(
+          axios.get(
+            `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${client_latitude},${client_longitude}&destinations=${latitude},${longitude}&mode=walking&key=${GOOGLE_MAPS_APIKEY}`,
+          ),
+        );
       });
 
       await axios.all(queries_array).then(response => {
         response.forEach((element, index) => {
-          array_cto[index].distance = element.data.rows[0].elements[0].distance.text;
-          array_cto[index].distance_value = element.data.rows[0].elements[0].distance.value;
+          array_cto[index].distance =
+            element.data.rows[0].elements[0].distance.text;
+          array_cto[index].distance_value =
+            element.data.rows[0].elements[0].distance.value;
         });
       });
 
       // Ordenação do array com mais próximos primeiro
-      array_cto.sort(function (a, b) {
+      array_cto.sort(function(a, b) {
         var keyA = a.distance_value,
           keyB = b.distance_value;
 
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
+        if (keyA < keyB) {
+          return -1;
+        }
+        if (keyA > keyB) {
+          return 1;
+        }
         return 0;
       });
 
@@ -150,14 +172,14 @@ export default function InstallationRequestDetails({ route, navigation }) {
   const swipeOut = () => {
     Animated.timing(swipeAnim, {
       toValue: 150,
-      duration: 200
+      duration: 200,
     }).start();
   };
 
   const swipeIn = () => {
     Animated.timing(swipeAnim, {
       toValue: 0,
-      duration: 200
+      duration: 200,
     }).start();
   };
 
@@ -195,20 +217,22 @@ export default function InstallationRequestDetails({ route, navigation }) {
 
     if (Platform.OS === 'android') {
       phoneNumber = `tel:${number}`;
-    }
-    else {
+    } else {
       phoneNumber = `telprompt:${number}`;
     }
 
     Linking.openURL(phoneNumber);
-  };
+  }
 
   async function loadAPI() {
     setRefreshing(true);
     const { id: request_id } = route.params;
 
     try {
-      const response = await api.get(`request/${request_id}/${request_type}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `request/${request_id}/${request_type}?tenant_id=${
+          globalState.state.tenantID
+        }`,
         {
           timeout: 10000,
           headers: {
@@ -220,7 +244,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setState(response.data);
       setRefreshing(false);
     } catch {
-      ToastAndroid.show("Não foi possível atualizar", ToastAndroid.SHORT);
+      ToastAndroid.show('Não foi possível atualizar', ToastAndroid.SHORT);
       setRefreshing(false);
     }
   }
@@ -229,9 +253,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
     loadAPI();
   }, []);
 
-  useEffect(() => {
-
-  }, [state]);
+  useEffect(() => {}, [state]);
 
   async function handleNewDate(event, selectedDate) {
     if (event.type === 'set') {
@@ -241,9 +263,10 @@ export default function InstallationRequestDetails({ route, navigation }) {
         setIsLoading(true);
         const { id: request_id } = route.params;
 
-        await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        await api.post(
+          `request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
-            action: "update_visita_date",
+            action: 'update_visita_date',
             new_visita_date: selectedDate,
             request_type: request_type,
             madeBy: globalState.state.employee_id,
@@ -257,8 +280,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
         );
 
         setIsLoading(false);
-        
-        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+
+        ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
         onRefresh();
       } catch {
         setIsLoading(false);
@@ -277,10 +300,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
         setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        const response = await api.post(
+          `request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
-            action: "update_visita_time",
-            new_visita_time: new Date(time.valueOf() - time.getTimezoneOffset() * 60000),
+            action: 'update_visita_time',
+            new_visita_time: new Date(
+              time.valueOf() - time.getTimezoneOffset() * 60000,
+            ),
             request_type: request_type,
             madeBy: globalState.state.employee_id,
           },
@@ -291,10 +317,10 @@ export default function InstallationRequestDetails({ route, navigation }) {
             },
           },
         );
-        
+
         setIsLoading(false);
-        
-        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
+
+        ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
         onRefresh();
       } catch (e) {
         setIsLoading(false);
@@ -321,10 +347,9 @@ export default function InstallationRequestDetails({ route, navigation }) {
         </View>
       );
     } else {
-
       const [, closing_reason] = state.motivo_fechamento.split(': ');
-      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy')
-      const hora = format(parseISO(state.fechamento), 'hh:mm:ss')
+      const date = format(parseISO(state.fechamento), 'dd/MM/yyyy');
+      const hora = format(parseISO(state.fechamento), 'hh:mm:ss');
 
       return (
         <>
@@ -337,7 +362,9 @@ export default function InstallationRequestDetails({ route, navigation }) {
           <View style={styles.line_container}>
             <View>
               <Text style={styles.sub_text}>Data de fechamento</Text>
-              <Text style={styles.main_text}>{date} às {hora}</Text>
+              <Text style={styles.main_text}>
+                {date} às {hora}
+              </Text>
             </View>
           </View>
         </>
@@ -354,21 +381,23 @@ export default function InstallationRequestDetails({ route, navigation }) {
         client_id,
         client_name,
       });
-    }
-    else {
+    } else {
       const [firstName] = client_name.split(' ');
-      ToastAndroid.show(`${firstName} ainda não é um cliente`, ToastAndroid.SHORT);
+      ToastAndroid.show(
+        `${firstName} ainda não é um cliente`,
+        ToastAndroid.SHORT,
+      );
     }
-
   }
 
   async function closeRequest() {
     try {
       const { id: request_id } = route.params;
 
-      const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.post(
+        `request/${request_id}?tenant_id=${globalState.state.tenantID}`,
         {
-          action: "close_request",
+          action: 'close_request',
           employee_id: globalState.state.employee_id,
           request_type: request_type,
           isVisited: isVisited,
@@ -395,31 +424,38 @@ export default function InstallationRequestDetails({ route, navigation }) {
     if (globalState.state.isAdmin) {
       setIsDialogVisible(true);
     } else {
-      Alert.alert('Acesso negado', 'Você não possui permissão para fechar chamados!');
+      Alert.alert(
+        'Acesso negado',
+        'Você não possui permissão para fechar chamados!',
+      );
     }
   }
 
   function RadioButton(props) {
     return (
-      <View style={[{
-        height: 15,
-        width: 15,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#000',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }, props.style]}>
-        {
-          props.selected ?
-            <View style={{
+      <View
+        style={[
+          {
+            height: 15,
+            width: 15,
+            borderRadius: 12,
+            borderWidth: 1,
+            borderColor: '#000',
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+          props.style,
+        ]}>
+        {props.selected ? (
+          <View
+            style={{
               height: 11,
               width: 11,
               borderRadius: 6,
               backgroundColor: '#000',
-            }} />
-            : null
-        }
+            }}
+          />
+        ) : null}
       </View>
     );
   }
@@ -427,7 +463,8 @@ export default function InstallationRequestDetails({ route, navigation }) {
   async function getEmployees() {
     try {
       setEmployeeRefreshing(true);
-      const response = await api.get(`employees?tenant_id=${globalState.state.tenantID}`,
+      const response = await api.get(
+        `employees?tenant_id=${globalState.state.tenantID}`,
         {
           timeout: 10000,
           headers: {
@@ -440,7 +477,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
       setEmployeeRefreshing(false);
     } catch {
       setEmployeeRefreshing(false);
-      ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+      ToastAndroid.show('Tente novamente', ToastAndroid.SHORT);
     }
   }
 
@@ -451,15 +488,19 @@ export default function InstallationRequestDetails({ route, navigation }) {
 
   async function handleChangeEmployee() {
     if (Object.keys(newEmployee).length === 0) {
-      ToastAndroid.show("Selecione um técnico antes de confirmar", ToastAndroid.SHORT);
+      ToastAndroid.show(
+        'Selecione um técnico antes de confirmar',
+        ToastAndroid.SHORT,
+      );
     } else {
       try {
         setIsLoading(true);
         const { id: request_id } = route.params;
 
-        const response = await api.post(`request/${request_id}?tenant_id=${globalState.state.tenantID}`,
+        const response = await api.post(
+          `request/${request_id}?tenant_id=${globalState.state.tenantID}`,
           {
-            action: "update_employee",
+            action: 'update_employee',
             employee_id: newEmployee.id,
             request_type: request_type,
           },
@@ -472,20 +513,19 @@ export default function InstallationRequestDetails({ route, navigation }) {
         );
 
         setIsLoading(false);
-        setEmployeesModal(false)
+        setEmployeesModal(false);
         onRefresh();
-        ToastAndroid.show("Alteração salva com sucesso", ToastAndroid.SHORT);
-
+        ToastAndroid.show('Alteração salva com sucesso', ToastAndroid.SHORT);
       } catch {
         setIsLoading(false);
-        ToastAndroid.show("Tente novamente", ToastAndroid.SHORT);
+        ToastAndroid.show('Tente novamente', ToastAndroid.SHORT);
       }
     }
   }
 
   function copyToClipboard(text) {
     Clipboard.setString(text);
-    ToastAndroid.show("Copiado para o clipboard", ToastAndroid.SHORT);
+    ToastAndroid.show('Copiado para o clipboard', ToastAndroid.SHORT);
   }
 
   function getRegionForCoordinates(points) {
@@ -493,7 +533,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
     let minX, maxX, minY, maxY;
 
     // init first point
-    ((point) => {
+    (point => {
       minX = point.latitude;
       maxX = point.latitude;
       minY = point.longitude;
@@ -501,7 +541,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
     })(points[0]);
 
     // calculate rect
-    points.map((point) => {
+    points.map(point => {
       minX = Math.min(minX, point.latitude);
       maxX = Math.max(maxX, point.latitude);
       minY = Math.min(minY, point.longitude);
@@ -510,14 +550,14 @@ export default function InstallationRequestDetails({ route, navigation }) {
 
     const midX = (minX + maxX) / 2;
     const midY = (minY + maxY) / 2;
-    const deltaX = (maxX - minX);
-    const deltaY = (maxY - minY);
+    const deltaX = maxX - minX;
+    const deltaY = maxY - minY;
 
     return {
       latitude: midX,
       longitude: midY,
       latitudeDelta: deltaX,
-      longitudeDelta: deltaY
+      longitudeDelta: deltaY,
     };
   }
 
@@ -525,7 +565,9 @@ export default function InstallationRequestDetails({ route, navigation }) {
     if (dest_lat == null || dest_lgt == null) {
       Alert.alert('Erro', 'Caixa Hermetica sugerida não está no mapa');
     } else {
-      const { latitudeDelta, longitudeDelta } = getRegionForCoordinates(arrayCTOs);
+      const { latitudeDelta, longitudeDelta } = getRegionForCoordinates(
+        arrayCTOs,
+      );
 
       dispatch({
         type: 'traceroute',
@@ -544,24 +586,29 @@ export default function InstallationRequestDetails({ route, navigation }) {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigateToClient(state.client_id, state.nome)} style={styles.section_header}>
+      <TouchableOpacity
+        onPress={() => navigateToClient(state.client_id, state.nome)}
+        style={styles.section_header}>
         <Text style={styles.header_title}>{route.params.nome}</Text>
         <Text style={[styles.sub_text, { textAlign: 'center' }]}>
-          {`${route.params.plano === 'nenhum'
-            ? 'Nenhum'
-            : route.params.plano} | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`
-          }
+          {`${
+            route.params.plano === 'nenhum' ? 'Nenhum' : route.params.plano
+          } | ${route.params.ip === null ? 'Nenhum' : route.params.ip}`}
         </Text>
-        {state.equipment_status &&
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+        {state.equipment_status && (
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
             <Text
               style={[
                 styles.client_status,
                 {
-                  color: state.equipment_status === 'Online' ? 'green' : 'red'
-                }
-              ]}
-            >
+                  color: state.equipment_status === 'Online' ? 'green' : 'red',
+                },
+              ]}>
               {state.equipment_status}
             </Text>
             <Icon
@@ -571,29 +618,29 @@ export default function InstallationRequestDetails({ route, navigation }) {
               style={{ marginTop: 2 }}
             />
           </View>
-        }
+        )}
       </TouchableOpacity>
       <ScrollView
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {refreshing !== true &&
+        }>
+        {refreshing !== true && (
           <>
-            {globalState.state.isAdmin
-              ?
+            {globalState.state.isAdmin ? (
               <>
                 <TouchableOpacity onPress={() => setIsTimePickerVisible(true)}>
                   <View style={styles.cto_line}>
                     <View>
                       <Text style={styles.sub_text}>Horário de visita</Text>
-                      <Text style={styles.main_text}>
-                        {state.visita}
-                      </Text>
+                      <Text style={styles.main_text}>{state.visita}</Text>
                     </View>
                     <View style={{ justifyContent: 'center' }}>
-                      <Icon name="clock-outline" size={icons.tiny} color="#000" />
+                      <Icon
+                        name="clock-outline"
+                        size={icons.tiny}
+                        color="#000"
+                      />
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -602,9 +649,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
                   <View style={styles.cto_line}>
                     <View>
                       <Text style={styles.sub_text}>Data de visita</Text>
-                      <Text style={styles.main_text}>
-                        {state.data_visita}
-                      </Text>
+                      <Text style={styles.main_text}>{state.data_visita}</Text>
                     </View>
                     <View style={{ justifyContent: 'center' }}>
                       <Icon name="calendar" size={icons.tiny} color="#000" />
@@ -612,15 +657,13 @@ export default function InstallationRequestDetails({ route, navigation }) {
                   </View>
                 </TouchableOpacity>
               </>
-              :
+            ) : (
               <>
                 <View>
                   <View style={styles.cto_line}>
                     <View>
                       <Text style={styles.sub_text}>Horário de visita</Text>
-                      <Text style={styles.main_text}>
-                        {state.visita}
-                      </Text>
+                      <Text style={styles.main_text}>{state.visita}</Text>
                     </View>
                   </View>
                 </View>
@@ -629,16 +672,14 @@ export default function InstallationRequestDetails({ route, navigation }) {
                   <View style={styles.cto_line}>
                     <View>
                       <Text style={styles.sub_text}>Data de visita</Text>
-                      <Text style={styles.main_text}>
-                        {state.data_visita}
-                      </Text>
+                      <Text style={styles.main_text}>{state.data_visita}</Text>
                     </View>
                   </View>
                 </View>
               </>
-            }
+            )}
 
-            {globalState.state.isAdmin &&
+            {globalState.state.isAdmin && (
               <TouchableOpacity onPress={() => openChangeEmployeeModal()}>
                 <View style={styles.cto_line}>
                   <View>
@@ -646,8 +687,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
                     <Text style={styles.main_text}>
                       {state.employee_name === null
                         ? 'Não assinalado'
-                        : state.employee_name
-                      }
+                        : state.employee_name}
                     </Text>
                   </View>
                   <View style={{ justifyContent: 'center' }}>
@@ -655,71 +695,101 @@ export default function InstallationRequestDetails({ route, navigation }) {
                   </View>
                 </View>
               </TouchableOpacity>
-            }
+            )}
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Assunto</Text>
               <Text style={styles.main_text}>{state.assunto}</Text>
             </View>
 
-            {state.instalado === 'sim' &&
-              <View style={[styles.line_container, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            {state.instalado === 'sim' && (
+              <View
+                style={[
+                  styles.line_container,
+                  { flexDirection: 'row', justifyContent: 'space-between' },
+                ]}>
                 <View>
                   <Text style={styles.sub_text}>Visitado</Text>
                   <TouchableOpacity
                     onPress={() => copyToClipboard(state.login)}
-                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-                  >
-                    <Text style={[styles.main_text_login_senha, { color: state.visitado === 'sim' ? 'green' : 'red' }]}>{state.visitado === 'sim' ? 'Sim' : 'Não'}</Text>
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      style={[
+                        styles.main_text_login_senha,
+                        { color: state.visitado === 'sim' ? 'green' : 'red' },
+                      ]}>
+                      {state.visitado === 'sim' ? 'Sim' : 'Não'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
                 <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>Instalado</Text>
+                  <Text style={[styles.sub_text, { textAlign: 'right' }]}>
+                    Instalado
+                  </Text>
                   <TouchableOpacity
                     onPress={() => copyToClipboard(state.senha)}
-                    style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-                  >
-                    <Text style={[styles.main_text_login_senha, { color: state.instalado === 'sim' ? 'green' : 'red' }]}>{state.instalado === 'sim' ? 'Sim' : 'Não'}</Text>
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      style={[
+                        styles.main_text_login_senha,
+                        { color: state.instalado === 'sim' ? 'green' : 'red' },
+                      ]}>
+                      {state.instalado === 'sim' ? 'Sim' : 'Não'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
-            }
+            )}
 
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Equipamento</Text>
               <Text style={styles.main_text}>
-                {state.equipamento !== "nenhum"
-                  ? state.equipamento
-                  : 'Nenhum'
-                }
+                {state.equipamento !== 'nenhum' ? state.equipamento : 'Nenhum'}
               </Text>
             </View>
             <View style={styles.line_container}>
               <Text style={styles.sub_text}>Mensagem</Text>
               <Text style={styles.main_text}>
-                {state.mensagem
-                  ? state.mensagem
-                  : 'Sem comentários'
-                }
+                {state.mensagem ? state.mensagem : 'Sem comentários'}
               </Text>
             </View>
 
-            <View style={[styles.line_container, { flexDirection: 'row', justifyContent: 'space-between' }]}>
+            <View
+              style={[
+                styles.line_container,
+                { flexDirection: 'row', justifyContent: 'space-between' },
+              ]}>
               <View>
                 <Text style={styles.sub_text}>Login</Text>
                 <TouchableOpacity
                   onPress={() => copyToClipboard(state.login)}
-                  style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-                >
-                  <Text style={styles.main_text_login_senha}>{state.login}</Text>
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={styles.main_text_login_senha}>
+                    {state.login}
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View>
-                <Text style={[styles.sub_text, { textAlign: 'right' }]}>Senha</Text>
+                <Text style={[styles.sub_text, { textAlign: 'right' }]}>
+                  Senha
+                </Text>
                 <TouchableOpacity
                   onPress={() => copyToClipboard(state.senha)}
-                  style={{ flexDirection: 'row', justifyContent: 'space-between' }}
-                >
-                  <Text style={styles.main_text_login_senha}>{state.senha}</Text>
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <Text style={styles.main_text_login_senha}>
+                    {state.senha}
+                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -732,16 +802,17 @@ export default function InstallationRequestDetails({ route, navigation }) {
                     {state.telefone ? state.telefone : 'Não informado'}
                   </Text>
                 </View>
-                {state.telefone &&
+                {state.telefone && (
                   <View style={{ justifyContent: 'center' }}>
                     <CallIcon name="call" size={icons.tiny} color="#000" />
                   </View>
-                }
+                )}
               </View>
             </TouchableOpacity>
 
             <View>
-              <TouchableOpacity onPress={() => FloatActionBar('open', state.celular)}>
+              <TouchableOpacity
+                onPress={() => FloatActionBar('open', state.celular)}>
                 <View style={styles.clickable_line}>
                   <View>
                     <Text style={styles.sub_text}>Celular</Text>
@@ -749,38 +820,39 @@ export default function InstallationRequestDetails({ route, navigation }) {
                       {state.celular ? state.celular : 'Não informado'}
                     </Text>
                   </View>
-                  {state.celular &&
+                  {state.celular && (
                     <View style={{ justifyContent: 'center' }}>
                       <CallIcon name="call" size={icons.tiny} color="#000" />
                     </View>
-                  }
+                  )}
                 </View>
               </TouchableOpacity>
-              <Animated.View style={[styles.swiped_options, { width: swipeAnim }]}>
-                <TouchableOpacity
-                  onPress={() => openWhatsapp(state.celular)}
-                >
+              <Animated.View
+                style={[styles.swiped_options, { width: swipeAnim }]}>
+                <TouchableOpacity onPress={() => openWhatsapp(state.celular)}>
                   <Icon name="whatsapp" color="green" size={26} />
                 </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => dialCall(state.celular)}
-                >
+                <TouchableOpacity onPress={() => dialCall(state.celular)}>
                   <CallIcon name="call" size={26} color="green" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => FloatActionBar('close')}
-                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}
-                >
+                  style={{ alignItems: 'center', borderRadius: 5, padding: 5 }}>
                   <Icon name="close" size={18} color="#000" />
                 </TouchableOpacity>
               </Animated.View>
             </View>
 
-            <TouchableOpacity onPress={() => LocationService.navigateToCoordinate(state.coordenadas)}>
+            <TouchableOpacity
+              onPress={() =>
+                LocationService.navigateToCoordinate(state.coordenadas)
+              }>
               <View style={styles.location_line}>
                 <View>
                   <Text style={styles.sub_text}>Endereço</Text>
-                  <Text style={styles.main_text}>{`${state.endereco}, ${state.numero} - ${state.bairro}`}</Text>
+                  <Text style={styles.main_text}>{`${state.endereco}, ${
+                    state.numero
+                  } - ${state.bairro}`}</Text>
                 </View>
                 <View style={{ justifyContent: 'center' }}>
                   <Icon name="navigation" size={icons.tiny} color="#000" />
@@ -788,7 +860,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
               </View>
             </TouchableOpacity>
 
-            {state && client_latitude !== null && client_longitude !== null &&
+            {state && client_latitude !== null && client_longitude !== null && (
               <View>
                 <View style={[styles.cto_line, { borderBottomWidth: 0 }]}>
                   <Text style={styles.sub_text}>Mapa de caixas</Text>
@@ -801,8 +873,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
                     longitude: longitude,
                     latitudeDelta: latitudeDelta,
                     longitudeDelta: longitudeDelta,
-                  }}
-                >
+                  }}>
                   <Marker
                     coordinate={{
                       latitude: client_latitude,
@@ -818,20 +889,47 @@ export default function InstallationRequestDetails({ route, navigation }) {
                         latitude: parseFloat(cto.latitude),
                         longitude: parseFloat(cto.longitude),
                       }}
-                      onPress={() => handleTraceRoute(parseFloat(cto.latitude), parseFloat(cto.longitude))}
-                    >
-                      <Icon name={"access-point-network"} size={icons.small} color="#FF0000" />
+                      onPress={() =>
+                        handleTraceRoute(
+                          parseFloat(cto.latitude),
+                          parseFloat(cto.longitude),
+                        )
+                      }>
+                      <Icon
+                        name={'access-point-network'}
+                        size={icons.small}
+                        color="#FF0000"
+                      />
                       <Callout tooltip={true}>
-                        <View style={{ width: 120, padding: 15, backgroundColor: '#FFF', opacity: 0.8, borderRadius: 10, alignItems: 'center' }}>
-                          <Text style={{ fontWeight: "bold", fontSize: 12, color: '#000' }}>{cto.nome}</Text>
-                          <Text style={{ color: '#000', fontSize: 10 }}>Distancia: {cto.distance}</Text>
-                          <Text style={{ color: '#000', fontSize: 10 }}>Conectados: {cto.connection_amount}</Text>
+                        <View
+                          style={{
+                            width: 120,
+                            padding: 15,
+                            backgroundColor: '#FFF',
+                            opacity: 0.8,
+                            borderRadius: 10,
+                            alignItems: 'center',
+                          }}>
+                          <Text
+                            style={{
+                              fontWeight: 'bold',
+                              fontSize: 12,
+                              color: '#000',
+                            }}>
+                            {cto.nome}
+                          </Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>
+                            Distancia: {cto.distance}
+                          </Text>
+                          <Text style={{ color: '#000', fontSize: 10 }}>
+                            Conectados: {cto.connection_amount}
+                          </Text>
                         </View>
                       </Callout>
                     </Marker>
                   ))}
 
-                  {_state.dest_latitude !== null &&
+                  {_state.dest_latitude !== null && (
                     <MapViewDirections
                       apikey={GOOGLE_MAPS_APIKEY}
                       strokeWidth={8}
@@ -846,43 +944,47 @@ export default function InstallationRequestDetails({ route, navigation }) {
                         longitude: _state.dest_longitude,
                       }}
                     />
-                  }
+                  )}
                 </MapView>
               </View>
-            }
+            )}
 
-            {state.instalado !== 'sim' &&
-              <TouchableOpacity onPress={handleCloseRequest} style={styles.close_request_btn}>
+            {state.instalado !== 'sim' && (
+              <TouchableOpacity
+                onPress={handleCloseRequest}
+                style={styles.close_request_btn}>
                 <Text style={styles.btn_label}>Fechar Chamado</Text>
               </TouchableOpacity>
-            }
+            )}
           </>
-        }
-
+        )}
       </ScrollView>
 
-      {isDatePickerVisible &&
+      {isDatePickerVisible && (
         <DateTimePicker
           mode="datetime"
           display="calendar"
           value={date}
-          onChange={(event, selectedDate) => { handleNewDate(event, selectedDate) }}
+          onChange={(event, selectedDate) => {
+            handleNewDate(event, selectedDate);
+          }}
         />
-      }
-      {isTimePickerVisible &&
+      )}
+      {isTimePickerVisible && (
         <DateTimePicker
           mode="time"
           value={time}
-          onChange={(event, date) => { handleNewTime(event, date) }}
+          onChange={(event, date) => {
+            handleNewTime(event, date);
+          }}
         />
-      }
+      )}
 
       <Modal
         onBackButtonPress={() => setEmployeesModal(false)}
         onBackdropPress={() => setEmployeesModal(false)}
         children={
           <View style={styles.modal_for_employees}>
-
             <View style={styles.mfe_current_employee_section}>
               <Text style={styles.mfe_main_text}>Técnico Atual</Text>
               <Text>{state.employee_name}</Text>
@@ -895,30 +997,44 @@ export default function InstallationRequestDetails({ route, navigation }) {
               <ScrollView
                 showsVerticalScrollIndicator={true}
                 refreshControl={
-                  <RefreshControl refreshing={employeeRefreshing} onRefresh={() => getEmployees()} />
+                  <RefreshControl
+                    refreshing={employeeRefreshing}
+                    onRefresh={() => getEmployees()}
+                  />
                 }
-                style={{ minHeight: 100, maxHeight: modalHeight }}
-              >
-                {employeeRefreshing === false && employees.map(employee => {
-                  if (employee.nome !== state.employee_name) {
-                    return (
-                      < TouchableOpacity onPress={() => setNewEmployee(employee)} key={employee.id} style={{ flexDirection: 'row', alignItems: 'center', height: 30 }}>
-                        {(employee.id === newEmployee.id)
-                          ? <RadioButton selected />
-                          : <RadioButton />
-                        }
-                        <Text style={{ marginLeft: 10, alignSelf: 'center' }}>{employee.nome}</Text>
-                      </TouchableOpacity>
-                    );
-                  }
-                })}
+                style={{ minHeight: 100, maxHeight: modalHeight }}>
+                {employeeRefreshing === false &&
+                  employees.map(employee => {
+                    if (employee.nome !== state.employee_name) {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => setNewEmployee(employee)}
+                          key={employee.id}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            height: 30,
+                          }}>
+                          {employee.id === newEmployee.id ? (
+                            <RadioButton selected />
+                          ) : (
+                            <RadioButton />
+                          )}
+                          <Text style={{ marginLeft: 10, alignSelf: 'center' }}>
+                            {employee.nome}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    }
+                  })}
               </ScrollView>
             </View>
 
-            <TouchableOpacity onPress={() => handleChangeEmployee()} style={styles.mfe_confirm_btn}>
+            <TouchableOpacity
+              onPress={() => handleChangeEmployee()}
+              style={styles.mfe_confirm_btn}>
               <Text style={styles.mfe_confirm_btn_label}>Confirmar</Text>
             </TouchableOpacity>
-
           </View>
         }
         isVisible={employeesModal}
@@ -928,14 +1044,14 @@ export default function InstallationRequestDetails({ route, navigation }) {
         useNativeDriver={true}
       />
 
-      {isLoading &&
+      {isLoading && (
         <Modal
           children={
             <View
               style={{
                 width: 300,
-                backgroundColor: "#FFF",
-                alignSelf: "center",
+                backgroundColor: '#FFF',
+                alignSelf: 'center',
                 borderWidth: 0,
                 borderRadius: 5,
                 padding: 20,
@@ -945,12 +1061,11 @@ export default function InstallationRequestDetails({ route, navigation }) {
               <Text
                 style={{
                   fontSize: fonts.regular,
-                  textAlign: "center",
+                  textAlign: 'center',
                   marginBottom: 10,
-                }}
-              >
+                }}>
                 Carregando...
-            </Text>
+              </Text>
             </View>
           }
           isVisible={isLoading}
@@ -959,52 +1074,85 @@ export default function InstallationRequestDetails({ route, navigation }) {
           animationOutTiming={500}
           useNativeDriver={true}
         />
-      }
+      )}
 
-      {isDialogVisible &&
+      {isDialogVisible && (
         <Modal
           onBackButtonPress={() => setIsDialogVisible(false)}
           onBackdropPress={() => setIsDialogVisible(false)}
           children={
             <View style={styles.modal_style}>
-              <View style={{ height: 35, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                <Text style={styles.modal_header}>
-                  Fechar chamado
-                </Text>
+              <View
+                style={{
+                  height: 35,
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                }}>
+                <Text style={styles.modal_header}>Fechar chamado</Text>
                 <TouchableOpacity
-                  style={{ backgroundColor: '#337AB7', borderRadius: 5, height: '100%', justifyContent: 'center' }}
-                  onPress={() => closeRequest()}
-                >
-                  <Text style={{ marginLeft: 10, marginRight: 10, color: '#FFF', fontFamily: 'Roboto-Bold' }}>Concluir</Text>
+                  style={{
+                    backgroundColor: '#337AB7',
+                    borderRadius: 5,
+                    height: '100%',
+                    justifyContent: 'center',
+                  }}
+                  onPress={() => closeRequest()}>
+                  <Text
+                    style={{
+                      marginLeft: 10,
+                      marginRight: 10,
+                      color: '#FFF',
+                      fontFamily: 'Roboto-Bold',
+                    }}>
+                    Concluir
+                  </Text>
                 </TouchableOpacity>
               </View>
               <View style={{ marginTop: 30 }}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                  }}>
                   <Text>Visitado</Text>
                   <Switch
                     value={isVisited}
-                    trackColor={{ false: "#767577", true: "#337AB7" }}
-                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    trackColor={{ false: '#767577', true: '#337AB7' }}
+                    thumbColor={true ? '#f4f3f4' : '#f4f3f4'}
                     onValueChange={() => setIsVisited(!isVisited)}
                   />
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                  }}>
                   <Text>Instalado</Text>
                   <Switch
                     value={isInstalled}
-                    trackColor={{ false: "#767577", true: "#337AB7" }}
-                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    trackColor={{ false: '#767577', true: '#337AB7' }}
+                    thumbColor={true ? '#f4f3f4' : '#f4f3f4'}
                     onValueChange={() => setIsInstalled(!isInstalled)}
                   />
                 </View>
 
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10, marginBottom: 10 }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginTop: 10,
+                    marginBottom: 10,
+                  }}>
                   <Text>Disponível</Text>
                   <Switch
                     value={isAvailable}
-                    trackColor={{ false: "#767577", true: "#337AB7" }}
-                    thumbColor={true ? "#f4f3f4" : "#f4f3f4"}
+                    trackColor={{ false: '#767577', true: '#337AB7' }}
+                    thumbColor={true ? '#f4f3f4' : '#f4f3f4'}
                     onValueChange={() => setIsAvailable(!isAvailable)}
                   />
                 </View>
@@ -1017,7 +1165,7 @@ export default function InstallationRequestDetails({ route, navigation }) {
           animationOutTiming={500}
           useNativeDriver={true}
         />
-      }
-    </View >
+      )}
+    </View>
   );
 }

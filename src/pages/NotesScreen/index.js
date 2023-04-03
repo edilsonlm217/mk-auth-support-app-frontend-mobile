@@ -173,8 +173,9 @@ export default function NotesScreen({ navigation, route }) {
                   size={30}
                   name={note.atendente}
                 />
-                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${note.atendente
-                  }`}</Text>
+                <Text style={{ fontFamily: 'Roboto-Bold', marginLeft: 5 }}>{` ${
+                  note.atendente
+                }`}</Text>
               </View>
               <Text
                 style={{

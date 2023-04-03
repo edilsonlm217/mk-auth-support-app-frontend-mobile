@@ -80,6 +80,11 @@ const StateProvider = ({ children }) => {
   useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
+      let employee_id;
+      let isAdmin;
+      let restoreKey;
+      let tenantID;
+      let oneSignalUserId;
 
       try {
         userToken = await AsyncStorage.getItem('@auth_token');

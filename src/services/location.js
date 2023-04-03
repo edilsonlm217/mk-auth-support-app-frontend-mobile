@@ -1,6 +1,6 @@
 import { PermissionsAndroid, Alert } from 'react-native';
 // import openMap from 'react-native-open-maps';
-import OpenMap from "react-native-open-map";
+import OpenMap from 'react-native-open-map';
 import LocationServicesDialogBox from 'react-native-android-location-services-dialog-box';
 
 class LocationService {
@@ -8,7 +8,7 @@ class LocationService {
     this.init();
   }
 
-  init() { }
+  init() {}
 
   async isGPSEnable() {
     try {
@@ -68,7 +68,7 @@ class LocationService {
           latitude: latitude,
           longitude: longitude,
           cancelText: 'Fechar',
-          actionSheetTitle: 'Como deseja navegar?', 
+          actionSheetTitle: 'Como deseja navegar?',
         });
       } else {
         Alert.alert('Erro', 'Não foi possível recuperar sua Localização');

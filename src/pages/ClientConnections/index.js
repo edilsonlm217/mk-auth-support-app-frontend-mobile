@@ -166,7 +166,9 @@ export default function ClientConnections(props) {
   }
 
   const renderFooter = () => {
-    if (!refreshing) return null;
+    if (!refreshing) {
+      return null;
+    }
     return (
       <View style={styles.loading}>
         <ActivityIndicator size="large" color="#0000ff" />

@@ -3,7 +3,7 @@ import { fonts } from '../../styles/index';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     width: '100%',
     height: '100%',
     padding: 20,
@@ -12,16 +12,16 @@ const styles = StyleSheet.create({
   header_container: {
     flexDirection: 'row',
     marginBottom: 15,
-    justifyContent: "space-between",
+    justifyContent: 'space-between',
   },
 
   main_text_login_senha: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
   },
 
   main_text: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     minWidth: '90%',
     maxWidth: '90%',
@@ -40,14 +40,14 @@ const styles = StyleSheet.create({
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    justifyContent: "space-between"
+    justifyContent: 'space-between',
   },
 
   cto_line: {
     padding: 5,
     borderBottomWidth: StyleSheet.hairlineWidth,
     flexDirection: 'row',
-    justifyContent: "space-between"
+    justifyContent: 'space-between',
   },
 
   line_container: {
@@ -55,10 +55,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
   },
   btns_contaier: {
-    flexDirection: "row",
+    flexDirection: 'row',
     justifyContent: 'space-around',
     marginTop: 20,
-    backgroundColor: '#FFF'
+    backgroundColor: '#FFF',
   },
   secondary_btn: {
     backgroundColor: '#FFF',
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
 
   secondary_btn_text: {
     fontSize: fonts.medium,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#337AB7',
   },
 
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
 
   main_btn_text: {
     fontSize: fonts.medium,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: '#FFF',
   },
 
@@ -130,8 +130,8 @@ const styles = StyleSheet.create({
   modal_for_employees: {
     width: '100%',
     maxWidth: 275,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   },
 
   mfe_main_text: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     marginBottom: 10,
     fontSize: fonts.regular,
   },
@@ -184,13 +184,13 @@ const styles = StyleSheet.create({
   client_status: {
     fontSize: fonts.small,
     textAlign: 'center',
-    marginRight: 5
+    marginRight: 5,
   },
 
   modal_style: {
     width: 300,
-    backgroundColor: "#FFF",
-    alignSelf: "center",
+    backgroundColor: '#FFF',
+    alignSelf: 'center',
     borderWidth: 0,
     borderRadius: 10,
     padding: 20,
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
 
   modal_header: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
     fontSize: fonts.regular,
     width: '100%',
     marginBottom: 5,
